@@ -7,7 +7,7 @@ interface IPackage extends Document {
   medicineDiscount: number;
   familyDiscount: number;
   isLatest: boolean;
-  lastSubscribedUserEndDate?: Date;
+  
 }
 
 const packageSchema = new Schema<IPackage>({
@@ -17,7 +17,6 @@ const packageSchema = new Schema<IPackage>({
     medicineDiscount: { type: Number, required: true },
     familyDiscount: { type: Number, required: true },
     isLatest: { type: Boolean, required: true },
-    lastSubscribedUserEndDate: { type: Date, required: false },
 });
 
 const PackageModel = mongoose.model<IPackage>('Package', packageSchema);

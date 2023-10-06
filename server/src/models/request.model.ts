@@ -5,24 +5,18 @@ interface ILicenses {
 }
 interface IRequest extends Document{
     doctorID: mongoose.Schema.Types.ObjectId;
+    ID:String
     degree: string[];
-    licenses: ILicenses[];
+    licenses: string[];
     status: 'Pending' | 'Approved' | 'Rejected';
     date: Date;
 }
 
 const requestSchema = new Schema<IRequest>({
     doctorID: { type: mongoose.Schema.Types.ObjectId , ref:'User', required: true },
+    ID:{ type: String, required: true },
     degree: { type: [String], required: true },
-    licenses:
-    {
-        type: [
-            {
-                licenseID: { type: String, required: true },
-                licenseImage: { type: String, required: true },
-            },
-        ], required: true
-    },
+    licenses:{type: [String], required: true},
     status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], required: true },
     date: { type: Date, required: true },
 });
