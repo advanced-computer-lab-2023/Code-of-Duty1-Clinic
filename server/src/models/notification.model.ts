@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface Notification {
+interface INotification {
   receiverId : mongoose.Schema.Types.ObjectId;
   title: string;
   content: string;
@@ -8,7 +8,7 @@ interface Notification {
   date: Date;
 }
 
-const notificationSchema = new Schema<Notification & Document>({
+const notificationSchema = new Schema<INotification>({
     receiverId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -20,7 +20,7 @@ const notificationSchema = new Schema<Notification & Document>({
     date: { type: Date, required: true },
   
 });
-
-const NotificationModel = mongoose.model<Notification & Document>('Notification', notificationSchema);
+notificationSchema.index({ receiverID: 1 });
+const NotificationModel = mongoose.model<INotification>('Notification', notificationSchema);
 
 export default NotificationModel;

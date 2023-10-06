@@ -25,7 +25,7 @@ interface Prescription {
   dosage: string;
 }
 
-interface User {
+interface IUser extends Document {
   name: {
     first: string;
     middle: string;
@@ -47,7 +47,7 @@ interface User {
   prescriptions?: Prescription[];
   medicalHistory?: MedicalHistory[];
   package?: {
-    packageID: string;
+    packageID: mongoose.Schema.Types.ObjectId;
     packageStatus: 'subscribed with renewal date' | 'unsubscribed' | 'cancelled with end date';
     endDate: Date;
     };
@@ -71,7 +71,7 @@ interface User {
     doctorRequestStatus?: 'Pending' | 'Accepted' | 'Rejected';
 }
 
-const userSchema = new Schema<User & Document>({
+const userSchema = new Schema<IUser>({
     name: {
         first: { type: String, required: true },
         middle: { type: String, required: false },
@@ -101,7 +101,7 @@ const userSchema = new Schema<User & Document>({
     family: {
         type: [
             {
-                userId: { type: mongoose.Types.ObjectId, required: false },
+                userId: { type: mongoose.Schema.Types.ObjectId, required: false },
                 name: { type: String, required: false },
                 nationalID: { type: String, required: false },
                 phone: { type: String, required: false },
@@ -113,10 +113,8 @@ const userSchema = new Schema<User & Document>({
         },
         validate: {
             validator: function (arr: FamilyMember[]) {
-                // 'this' refers to the document being saved
                 const hasNameNationalIDPhone = (arr[arr.length - 1].name || arr[arr.length - 1].nationalID || arr[arr.length - 1].phone) && !(arr[arr.length - 1].userId || arr[arr.length - 1].relation);
                 const hasUserIdRelation = (arr[arr.length - 1].userId || arr[arr.length - 1].relation) && !(arr[arr.length - 1].name || arr[arr.length - 1].nationalID || arr[arr.length - 1].phone);
-
                 return Boolean(hasNameNationalIDPhone || hasUserIdRelation);
             },
             message: 'Either name, nationalID, and phone should be provided, or userId and relation should be provided.',
@@ -135,7 +133,7 @@ const userSchema = new Schema<User & Document>({
     },
     package: {
         type: {
-            packageID: { type: String, required: true },
+            packageID: { type:  mongoose.Schema.Types.ObjectId , ref:'Package', required: true },
             packageStatus: {
                 type: String,
                 enum: ['subscribed with renewal date', 'unsubscribed', 'cancelled with end date'],
@@ -150,28 +148,14 @@ const userSchema = new Schema<User & Document>({
   
     hourRate: { type: Number, required: function () { return this.role === 'Doctor'; } },
     hospital: { type: String, required: function () { return this.role === 'Doctor'; } },
-    educationBackground: { type: String, required: function () { return this.role === 'Doctor'; } },
     specialization: { type: String, required: function () { return this.role === 'Doctor'; } },
-    medicalDegree: { type: String, required: function () { return this.role === 'Doctor'; } },
-    medicalLicenses:
-    {
-        type: [
-            {
-                licenseID: { type: String, required: true },
-                licenseImage: { type: String, required: true },
-            },
-        ],
-        required: function () {
-            return this.role === 'Doctor';
-        }
-    },
-    acceptedContractId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Contract',
-    required: function (this: { role?: string }) {
-        return this.role === 'Doctor';
-    }
-},
+//     acceptedContractId: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: 'Contract',
+//     required: function (this: { role?: string }) {
+//         return this.role === 'Doctor';
+//     }// TODO do we need this here?
+// },
 
     sessionTime: { type: Number, required: function () { return this.role === 'Doctor' } },
     availableSlots: {
@@ -184,12 +168,10 @@ const userSchema = new Schema<User & Document>({
         required: function () {
             return this.role === 'Doctor';
         }
-    },
-    doctorRequestStatus : {type:String ,enum: [ 'Pending' , 'Accepted' , 'Rejected'], required: function () { return this.role === 'Doctor' }},
-
+    }
     
 });
-userSchema.pre<User & Document>('save', function (next) {
+userSchema.pre<IUser>('save', function (next) {
 
   if (!this.isModified('password')) {
     return next();
@@ -203,7 +185,8 @@ userSchema.pre<User & Document>('save', function (next) {
 userSchema.methods.isCorrectPassword = function (enteredPassword: string): boolean {
   return bcrypt.compareSync(enteredPassword, this.password);
 };
-userSchema.index({ _id: 1 });
-
-const UserModel = mongoose.model<User & Document>('User', userSchema);
+// userSchema.index({ _id: 1 });
+// mongo automatically creates index on _id and unique fields 
+// https://docs.mongodb.com/manual/indexes/#default-id-index
+const UserModel = mongoose.model<IUser>('User', userSchema);
 export default UserModel;

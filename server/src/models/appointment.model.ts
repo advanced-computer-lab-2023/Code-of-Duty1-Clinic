@@ -31,6 +31,8 @@ const appointmentSchema = new Schema<Appointment & Document>({
   previousAppointment: { type: mongoose.Schema.Types.ObjectId, required: false },
   
 });
+appointmentSchema.index({ doctorID: 1 });
+appointmentSchema.index({ patientID: 1 });
 
 const AppointmentModel = mongoose.model<Appointment & Document>('Appointment', appointmentSchema);
 

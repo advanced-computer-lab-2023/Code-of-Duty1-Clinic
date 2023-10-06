@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface Package {
+interface IPackage extends Document {
   name: string;
   price: number;
   sessionDiscount: number;
@@ -10,7 +10,7 @@ interface Package {
   lastSubscribedUserEndDate?: Date;
 }
 
-const packageSchema = new Schema<Package & Document>({
+const packageSchema = new Schema<IPackage>({
     name: { type: String, required: true },
     price: { type: Number, required: true },
     sessionDiscount: { type: Number, required: true },
@@ -20,6 +20,6 @@ const packageSchema = new Schema<Package & Document>({
     lastSubscribedUserEndDate: { type: Date, required: false },
 });
 
-const PackageModel = mongoose.model<Package & Document>('Package', packageSchema);
+const PackageModel = mongoose.model<IPackage>('Package', packageSchema);
 
 export default PackageModel;
