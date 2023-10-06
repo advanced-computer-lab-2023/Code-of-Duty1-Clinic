@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface MedicineDosage {
   medicine: string;
-  dosage: string; // what is a dosage is it a number 
+  dosage: string;
 }
 
 interface IPrescription extends Document {
@@ -16,30 +16,29 @@ interface IPrescription extends Document {
 }
 
 const prescriptionSchema = new Schema<IPrescription>({
- doctorID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    patientID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    medicines: {
-        type: [
-            {
-                medicine: { type: String, required: true },
-                dosage: { type: String, required: true },
-            },
-        ],
-        required: true,
-    },
-    description: { type: String, required: true },
-    isFilled: { type: Boolean, required: true },
-    dateIssued: { type: Date, required: true },
-    isSubmitted: { type: Boolean, required: true },
-    
+  doctorID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  patientID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  medicines: {
+    type: [
+      {
+        medicine: { type: String, required: true },
+        dosage: { type: String, required: true }
+      }
+    ],
+    required: true
+  },
+  description: { type: String, required: true },
+  isFilled: { type: Boolean, required: true },
+  dateIssued: { type: Date, required: true },
+  isSubmitted: { type: Boolean, required: true }
 });
 prescriptionSchema.index({ doctorID: 1 });
 prescriptionSchema.index({ patientID: 1 });

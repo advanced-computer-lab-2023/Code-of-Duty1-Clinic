@@ -1,13 +1,13 @@
+import app from './app';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-import express, { Application, Request, Response } from "express";
+dotenv.config();
 
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI || '';
 
-const app: Application = express();
-
-
-app.get("/", (req:Request, res:Response) => {
-    res.send("Hello World");
-});
-
-app.listen(3000, (): void => console.log("Server is running on http://localhost:3000"))
-
+mongoose
+  .connect(MONGO_URI)
+  .then(() => app.listen(PORT, () => console.log(`Server started on port ${PORT}`)))
+  .catch((err) => console.log(err.message));
