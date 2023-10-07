@@ -1,6 +1,6 @@
-import { Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { HttpError } from '../utils';
+import { Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import { HttpError } from "../utils";
 
 const controller = (res: Response, session?: any) => {
   return (service: Function) => {
@@ -10,7 +10,7 @@ const controller = (res: Response, session?: any) => {
         if (session && result.token) session.token = result.token;
 
         res.status(result.status).json(result);
-      } catch (error) {
+      } catch (error: any) {
         // console.log(error);
 
         if (error instanceof HttpError) {

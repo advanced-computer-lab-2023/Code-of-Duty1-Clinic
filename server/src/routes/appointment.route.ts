@@ -1,12 +1,7 @@
-import express from'express'; 
-const router =  express.Router();
+import express from "express";
+const router = express.Router();
 // http methods required for this router
-
-
-
-
 
 //
 
-
-module.exports = router; 
+module.exports = router;
