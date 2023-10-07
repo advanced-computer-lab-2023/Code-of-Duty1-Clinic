@@ -1,7 +1,7 @@
-import { Model, Document } from "mongoose";
+import { Model, Document } from 'mongoose';
 
 class APIFeatures<T extends Document> {
-  private features = ["page", "sort", "limit", "select", "txtSearch"];
+  private features = ['page', 'sort', 'limit', 'select', 'txtSearch'];
 
   private modelName: string;
   private query: any;
@@ -24,7 +24,7 @@ class APIFeatures<T extends Document> {
     if (this.reqQuery.select) this.select();
     if (this.reqQuery.limit) this.limit();
     if (this.reqQuery.page) this.paginate();
-    if (this.reqQuery.txtSearch && this.modelName === "Medicine") this.search();
+    if (this.reqQuery.txtSearch && this.modelName === 'Medicine') this.search();
 
     return this.query;
   }
@@ -32,22 +32,19 @@ class APIFeatures<T extends Document> {
   // field.(eq|ne|gte|gt|lte|lt)=value
   private filter() {
     let filterStr = JSON.stringify(this.filterQuery);
-    filterStr = filterStr.replace(
-      /\b(eq|ne|gte|gt|lte|lt)\b/g,
-      (match) => `$${match}`
-    );
+    filterStr = filterStr.replace(/\b(eq|ne|gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
     this.query = this.query.find(JSON.parse(filterStr));
   }
 
   // sort=(-|)field1,(-|)field2
   private sort() {
-    const fields = this.reqQuery.sort.split(",");
+    const fields = this.reqQuery.sort.split(',');
     const sortBy: { [key: string]: number } = {};
 
     fields.forEach((field: string) => {
-      const fieldName = field.startsWith("-") ? field.slice(1) : field;
-      const sortOrder = field.startsWith("-") ? -1 : 1;
+      const fieldName = field.startsWith('-') ? field.slice(1) : field;
+      const sortOrder = field.startsWith('-') ? -1 : 1;
 
       sortBy[fieldName] = sortOrder;
     });
@@ -57,7 +54,7 @@ class APIFeatures<T extends Document> {
 
   // select=field1,field2
   private select() {
-    const selected = this.reqQuery.select.split(",").join(" ");
+    const selected = this.reqQuery.select.split(',').join(' ');
 
     this.query = this.query.select(selected);
   }
@@ -82,8 +79,8 @@ class APIFeatures<T extends Document> {
     const search = this.reqQuery.txtSearch;
 
     this.query = this.query
-      .find({ $text: { $search: search } }, { score: { $meta: "textScore" } })
-      .sort({ score: { $meta: "textScore" } });
+      .find({ $text: { $search: search } }, { score: { $meta: 'textScore' } })
+      .sort({ score: { $meta: 'textScore' } });
   }
 }
 

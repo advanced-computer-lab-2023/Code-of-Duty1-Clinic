@@ -1,4 +1,4 @@
-import { StatusCodes } from "http-status-codes";
+import { StatusCodes } from 'http-status-codes';
 
 class HttpError extends Error {
   statusCode: number;

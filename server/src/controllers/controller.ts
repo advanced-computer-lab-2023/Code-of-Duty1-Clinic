@@ -1,6 +1,6 @@
-import { Response } from "express";
-import { StatusCodes } from "http-status-codes";
-import { HttpError } from "../utils";
+import { Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { HttpError } from '../utils';
 
 const controller = (res: Response, session?: any) => {
   return (service: Function) => {

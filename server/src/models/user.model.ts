@@ -154,8 +154,7 @@ const userSchema = new Schema<IUser>(
             return false;
           }
         },
-        message:
-          'Either name, nationalID, and phone should be provided, or userID and relation should be provided.'
+        message: 'Either name, nationalID, and phone should be provided, or userID and relation should be provided.'
       }
     },
     medicalHistory: {
