@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 // http methods required for this router
 
+<<<<<<< HEAD
 import {
   register,
   login,
@@ -26,3 +27,9 @@ router.put("/change-password", (req, res) =>
 );
 
 module.exports = router;
+=======
+
+
+
+module.exports = router; 
+>>>>>>> 91117dbd5776fdc25c3d25a9984edc8ba75471ab
