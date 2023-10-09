@@ -1,8 +1,10 @@
-import UserModel, { IPatient, IUserDocument, IUser } from '../models/user.model';
+import UserModel, { IPatient, IUserDocument, IUser, IDoctor } from '../models/user.model';
 import PackageModel, { IPackageDocument } from '../models/package.model';
 import mongoose from 'mongoose';
 import { getAllDoctor } from './doctor';
 import { getPackageById } from './package';
+import { HttpError } from '../utils';
+import { StatusCodes } from 'http-status-codes';
 const hasActivePackage = (patient: IPatient): Boolean => {
   if (patient.package && patient.package.packageID && patient.package.packageStatus) {
     if (patient.package.endDate && patient.package.endDate.getTime() > Date.now()) {
@@ -23,16 +25,18 @@ const viewAllDoctorsForPatient = async (patientId: string) => {
     const pkg: IPackageDocument | null = await getPackageById(pkgID!);
     sessionDiscount = pkg?.sessionDiscount || 0;
 
-    const doctors = await getAllDoctor();
+    const doctors: IUserDocument[] = (await getAllDoctor()).result;
     if (Array.isArray(doctors)) {
-      for (const element of doctors) {
-        element.hourRate = element.hourRate - (element.hourRate * sessionDiscount) / 100;
+      for (let i = 0; i < doctors.length; i++) {
+        let temp = doctors[i] as IDoctor;
+        temp.hourRate = temp.hourRate - (temp.hourRate * sessionDiscount) / 100;
       }
     }
-    return doctors;
+
+    return { result: doctors, status: StatusCodes.OK, message: 'R' };
   } catch (error) {
     console.error('Error retrieving patient or doctors:', error);
-    return error;
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors');
   }
 };
 

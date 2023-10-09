@@ -1,4 +1,6 @@
-import UserModel from '../models/user.model';
+import UserModel, { IPatient, IUserDocument } from '../models/user.model';
+import { HttpError } from '../utils';
+import StatusCodes from 'http-status-codes';
 const getAllDoctor = async (doctorName?: string, specialty?: string, date?: Date) => {
   try {
     let nameFilter = doctorName ? getNameFilter(doctorName) : null;
@@ -28,10 +30,9 @@ const getAllDoctor = async (doctorName?: string, specialty?: string, date?: Date
       profileImage: 1,
       _id: 1
     });
-    return doctors;
+    return { result: doctors as IUserDocument[] };
   } catch (error) {
-    console.error('Error retrieving doctors:', error);
-    return error;
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors ');
   }
 };
 const getNameFilter = (doctorName: string): object | null => {
