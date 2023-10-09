@@ -1,13 +1,38 @@
-import app from './app';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+// import express, { Request, Response } from 'express';
+// // import session from 'express-session';
+// import { json, urlencoded } from 'body-parser';
+// import logger from 'morgan';
+// import helmet from 'helmet';
+// import compression from 'compression';
+// import { queryParser } from './middlewares';
 
-dotenv.config();
+// const app = express();
 
-const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || '';
+// app.use(queryParser());
+// app.use(urlencoded({ extended: false }));
+// app.use(logger('dev'));
+// app.use(helmet());
+// app.use(compression());
+// // app.use(
+// //   session({
+// //     secret: 'superSecret',
+// //     resave: false,
+// //     saveUninitialized: false,
+// //     cookie: {
+// //       sameSite: true,
+// //       secure: false
+// //     }
+// //   })
+// // );
+// app.use(queryParser);
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => app.listen(PORT, () => console.log(`Server started on port ${PORT}`)))
-  .catch((err) => console.log(err.message));
+// app.use('/auth',loginroute);
+// app.use('/users');
+// app.use('/products');
+// app.use('/reviews');
+// app.use('/cart');
+// app.use('/orders');
+
+// app.all('*', (req: Request, res: Response) => res.status(404).send('NOT FOUND'));
+
+// export default app;
