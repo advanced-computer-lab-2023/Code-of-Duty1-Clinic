@@ -4,7 +4,7 @@
   "description": "Full-stack website",
   "main": "server.ts",
   "scripts": {
-    "start": "tsc server.ts",
+    "start": "ts server.ts",
     "dev": "nodemon server.ts",
     "test": "jest tests/ --forceExit",
     "prettier": "prettier --check **/*.ts",
