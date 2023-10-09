@@ -4,7 +4,7 @@
   "description": "Full-stack website",
   "main": "server.ts",
   "scripts": {
-    "start": "ts server.ts",
+    "start": "tsc server.ts",
     "dev": "nodemon server.ts",
     "test": "jest tests/ --forceExit",
     "prettier": "prettier --check **/*.ts",
@@ -48,6 +48,7 @@
     "prettier": "^3.0.0",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
   "jest": {

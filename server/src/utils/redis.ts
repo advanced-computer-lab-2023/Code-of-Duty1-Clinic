@@ -20,15 +20,19 @@ redisClient.on('error', (error) => {
 const putRedis = async (key: any, data: any): Promise<string> =>
   redisClient.set(JSON.stringify(key), JSON.stringify(data), 'EX', 3600);
 
-const getRedis = async (key: any): Promise<string | null> => redisClient.get(JSON.stringify(key));
+interface Key {
+  [key: string]: any;
+}
 
-const delRedis = async (key: any): Promise<number> => redisClient.del(JSON.stringify(key));
+const getRedis = async (key: Key): Promise<string | null> => redisClient.get(JSON.stringify(key));
 
-const clearRedis = async () => redisClient.flushall();
+const delRedis = async (key: Key): Promise<number> => redisClient.del(JSON.stringify(key));
 
-const keyGenerator = (reqKey: object): object => {
+const clearRedis = async (): Promise<string> => redisClient.flushall();
+
+const keyGenerator = (reqKey: Key): Key => {
   const sortedKeys = Object.keys(reqKey).sort();
-  const sortedKey: object = {};
+  const sortedKey: Key = {};
   for (const key of sortedKeys) sortedKey[key] = reqKey[key];
 
   return sortedKey;
