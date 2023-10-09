@@ -1,7 +1,7 @@
 import UserModel, { IPatient, IUserDocument, IUser } from '../models/user.model';
 import PackageModel, { IPackageDocument } from '../models/package.model';
 import mongoose from 'mongoose';
-import { getAllDoctorForGuest } from './doctor';
+import { getAllDoctor } from './doctor';
 import { getPackageById } from './package';
 const hasActivePackage = (patient: IPatient): Boolean => {
   if (patient.package && patient.package.packageID && patient.package.packageStatus) {
@@ -23,7 +23,7 @@ const viewAllDoctorsForPatient = async (patientId: string) => {
     const pkg: IPackageDocument | null = await getPackageById(pkgID!);
     sessionDiscount = pkg?.sessionDiscount || 0;
 
-    const doctors = await getAllDoctorForGuest();
+    const doctors = await getAllDoctor();
     if (Array.isArray(doctors)) {
       for (const element of doctors) {
         element.hourRate = element.hourRate - (element.hourRate * sessionDiscount) / 100;
