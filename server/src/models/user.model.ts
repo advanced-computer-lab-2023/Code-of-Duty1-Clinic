@@ -80,12 +80,12 @@ type IUser = ICommonUser | IPatient | IDoctor;
 type IUserDocument = IUser & Document;
 const dailyScheduleSchema = new mongoose.Schema({
   from: {
-    type: Number,
-    required: true
+    hours: { type: Number, required: true, min: 0, max: 23 },
+    minutes: { type: Number, required: false, default: 0, min: 0, max: 59 }
   },
   to: {
-    type: Number,
-    required: true
+    hours: { type: Number, required: true, min: 0, max: 23 },
+    minutes: { type: Number, required: false, default: 0, min: 0, max: 59 }
   },
   maxPatients: {
     type: Number,
