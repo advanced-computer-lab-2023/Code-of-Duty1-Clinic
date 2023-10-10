@@ -26,13 +26,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
-        run: cd ../server; npm i
+        run: cd server; npm i
 
       - name: Run Prettier
-        run: cd ../server; npm run prettier:fix
+        run: cd server; npm run prettier:fix
 
       - name: Build Project
-        run: cd ../server; npm run build --if-present
+        run: cd server; npm run build --if-present
 
       # - name: Run tests
       #   run: npm test
