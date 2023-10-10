@@ -33,12 +33,14 @@ const viewAllDoctorsForPatient = async (patientId: string) => {
       }
     }
 
-    return { result: doctors, status: StatusCodes.OK, message: 'R' };
+    return {
+      result: doctors,
+      status: StatusCodes.OK,
+      message: 'Successfully retrieved Doctors'
+    };
   } catch (error) {
     console.error('Error retrieving patient or doctors:', error);
     throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors');
   }
 };
-
-// Replace 'PackageModel' with the actual model name for the package if it's different.
-// Also, ensure that you have the correct field name in your package model that references doctors.
+export { viewAllDoctorsForPatient };

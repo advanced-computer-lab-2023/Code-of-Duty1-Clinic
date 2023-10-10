@@ -38,6 +38,7 @@ interface ICommonUser {
   profileImage: string;
   isEmailVerified: boolean;
   wallet: number;
+  isCorrectPassword(password: string): Promise<boolean>;
 }
 interface IEmergencyContact {
   name: string;
