@@ -1,6 +1,35 @@
 import { StatusCodes } from 'http-status-codes';
 import UserModel from '../models/user.model';
 import AppointmentModel from '../models/appointment.model';
+import PrescriptionModel from '../models/prescription.model';
+
+const selectDoctor = async (doctorID: string) => {
+    // Use Mongoose to find the doctor by ID
+    const doctor = await UserModel.findById(doctorID);
+
+    // Check if the doctor was found
+    if (!doctor) {
+        return {
+            status: StatusCodes.NOT_FOUND,
+            message: 'No doctor with this ID',
+            result: null
+        };
+    }
+
+    return {
+        status: StatusCodes.OK,
+        message: 'Doctor selected successfully',
+        result: doctor
+    };
+}
+const getAllPresecription = async (patientID : string) => {
+    const presecription = await PrescriptionModel.find({patientID : patientID});
+    return {
+        status: StatusCodes.OK,
+        message: 'here all presecription',
+        result: presecription
+    };
+}
 
 
 const getPatients = async (doctorID: string) => {
