@@ -18,7 +18,7 @@ const requestSchema = new Schema<IRequest>({
   degree: { type: [String], required: true },
   licenses: { type: [String], required: true },
   status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], required: true },
-  date: { type: Date,default:Date.now(), required: true }
+  date: { type: Date, default: Date.now(), required: true }
 });
 
 const Request = mongoose.model<IRequest>('Request', requestSchema);

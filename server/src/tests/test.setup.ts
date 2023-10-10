@@ -5,8 +5,6 @@ import '@types/jest';
 
 jest.mock('ioredis', () => require('ioredis-mock'));
 
-import { clearRedis } from '../utils';
-
 import app from '../server';
 const myRequest = supertest(app);
 
@@ -24,7 +22,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await clearRedis();
+  // await clearRedis();
 
   await mongoose.disconnect();
   await mongoServer.stop();
