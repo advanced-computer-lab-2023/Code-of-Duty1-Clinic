@@ -4,7 +4,7 @@ import AppointmentModel from '../models/appointment.model';
 
 const getPatients = async (doctorID: string) => {
   //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID }).distinct('patientID').populate('patientID');
+  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
   if (!patients) {
     return {
       status: StatusCodes.NOT_FOUND,
@@ -22,7 +22,7 @@ const getPatients = async (doctorID: string) => {
 //select a patient from the list of patients
 const selectPatient = async (doctorID: string, patientID: string) => {
   //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
+  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
   const patient = patients.find((patient: any) => patient._id.toString() === patientID);
   //check if there is no patient with this id throw an error
   if (!patient) {
