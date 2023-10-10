@@ -1,6 +1,14 @@
-import express, { Request, Response } from 'express';
-import { login, logout, register, changePassword } from '../services/auth';
-import controller from '../controllers/controller';
-const UserRouter = express.Router();
+import express from 'express';
+const router = express.Router();
 
-module.exports = UserRouter;
+import controller from '../controllers/controller';
+import { isAuthenticated, isAuthorized, queryParser } from '../middlewares';
+
+// import the user service
+import { getPatients, selectPatient } from '../services/userService';
+// http methods required for this router
+
+router.get('/me/patient/', async (req, res) => controller(res)(getPatients)(req.query.doctorID));
+router.get('/me/patient/:id', async (req, res) => controller(res)(selectPatient)(req.query.doctorID, req.params.id));
+
+export default router;
