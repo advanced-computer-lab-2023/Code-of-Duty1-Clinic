@@ -1,11 +1,12 @@
-import dotenv from 'dotenv';
-dotenv.config();
-let BACKEND_SERVER_PORT: Number = 3000;
-const MONGO_URI: String = process.env.MONGO_URI || '';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '../src/.env' });
 
-if (process.env.PORT) BACKEND_SERVER_PORT = Number(process.env.PORT);
-
-export const config = {
-  server: { port: BACKEND_SERVER_PORT },
-  DB: { url: MONGO_URI }
+const MONGO_URI: string = process.env.MONGO_URI || '';
+const BACKEND_SERVER_PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const config = {
+  server: { PORT: BACKEND_SERVER_PORT },
+  DB: { URL: MONGO_URI }
 };
+
+console.log(config);
+export default config;

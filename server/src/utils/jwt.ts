@@ -6,7 +6,7 @@ dotenv.config();
 const TOKEN_SECRET = process.env.TOKEN_SECRET || '';
 
 const generateToken = (userID: string, userRole: string): string =>
-  jwt.sign({ id: userID, role: userRole }, TOKEN_SECRET);
+  jwt.sign({ id: userID, role: userRole }, TOKEN_SECRET, { expiresIn: '1h' });
 
 const verifyToken = (token: string): string | jwt.JwtPayload => jwt.verify(token, TOKEN_SECRET);
 

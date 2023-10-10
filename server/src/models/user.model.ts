@@ -1,6 +1,6 @@
-import mongoose, { Date, Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import validator from 'validator';
+import mongoose, { Document, Schema } from 'mongoose';
 
 interface FamilyMemberWithID {
   userID: mongoose.Types.ObjectId;
@@ -15,14 +15,13 @@ interface FamilyMemberWithDetails {
 }
 
 type FamilyMember = FamilyMemberWithID | FamilyMemberWithDetails;
-
 interface DailySchedule {
   from: number;
   to: number;
   maxPatients: number;
 }
 
-interface ICommonUser extends Document {
+interface ICommonUser {
   name: {
     first: string;
     middle: string;
@@ -39,22 +38,24 @@ interface ICommonUser extends Document {
   profileImage: string;
   isEmailVerified: boolean;
   wallet: number;
+  isCorrectPassword(password: string): Promise<boolean>;
+}
+interface IEmergencyContact {
+  name: string;
+  phone: string;
+  relation: 'Husband' | 'Wife' | 'Child';
 }
 
 interface IPatient extends ICommonUser {
   family: FamilyMember[];
-  emergencyContact: {
-    name: string;
-    phone: string;
-    relation: 'Husband' | 'Wife' | 'Child';
-  };
+  emergencyContact: IEmergencyContact[];
   medicalHistory: {
     name: string;
     medicalRecord: string;
   }[];
-  package: {
-    packageID: mongoose.Schema.Types.ObjectId;
-    packageStatus: 'Subscribed' | 'Unsubscribed' | 'Cancelled';
+  package?: {
+    packageID: mongoose.Types.ObjectId;
+    packageStatus?: 'Subscribed' | 'Unsubscribed' | 'Cancelled';
     endDate: Date;
   };
 }
@@ -63,7 +64,7 @@ interface IDoctor extends ICommonUser {
   hourRate: number;
   hospital: string;
   educationBackground: string;
-  speciality: string;
+  specialty: string;
   weeklySlots: {
     Sunday?: DailySchedule[];
     Monday?: DailySchedule[];
@@ -77,15 +78,15 @@ interface IDoctor extends ICommonUser {
 }
 
 type IUser = ICommonUser | IPatient | IDoctor;
-
+type IUserDocument = IUser & Document;
 const dailyScheduleSchema = new mongoose.Schema({
   from: {
-    type: Number,
-    required: true
+    hours: { type: Number, required: true, min: 0, max: 23 },
+    minutes: { type: Number, required: false, default: 0, min: 0, max: 59 }
   },
   to: {
-    type: Number,
-    required: true
+    hours: { type: Number, required: true, min: 0, max: 23 },
+    minutes: { type: Number, required: false, default: 0, min: 0, max: 59 }
   },
   maxPatients: {
     type: Number,
@@ -93,7 +94,7 @@ const dailyScheduleSchema = new mongoose.Schema({
   }
 });
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUserDocument>(
   {
     name: {
       first: { type: String, required: true },
@@ -121,11 +122,13 @@ const userSchema = new Schema<IUser>(
     wallet: { type: Number, required: true },
 
     emergencyContact: {
-      type: {
-        name: { type: String, required: true },
-        phone: { type: String, required: true },
-        relation: { type: String, enum: ['Husband', 'Wife', 'Child'], required: true }
-      },
+      type: [
+        {
+          name: { type: String, required: true },
+          phone: { type: String, required: true },
+          relation: { type: String, enum: ['Husband', 'Wife', 'Child'], required: true }
+        }
+      ],
       required: function () {
         return this.role === 'Patient';
       }
@@ -160,7 +163,7 @@ const userSchema = new Schema<IUser>(
     medicalHistory: {
       type: [
         {
-          name: { type: String, required: true, unique: true },
+          name: { type: String, required: true },
           medicalRecord: { type: String, required: true }
         }
       ],
@@ -173,12 +176,12 @@ const userSchema = new Schema<IUser>(
         packageID: { type: mongoose.Schema.Types.ObjectId, ref: 'Package', required: true },
         packageStatus: {
           type: String,
-          enum: ['subscribed with renewal date', 'unsubscribed', 'cancelled'],
+          enum: ['subscribed', 'unsubscribed', 'cancelled'],
           required: true
         },
         endDate: { type: Date, required: true }
       },
-      default: {}
+      required: false
     },
 
     hourRate: {
@@ -193,7 +196,7 @@ const userSchema = new Schema<IUser>(
         return this.role === 'Doctor';
       }
     },
-    speciality: {
+    specialty: {
       type: String,
       required: function () {
         return this.role === 'Doctor';
@@ -209,6 +212,12 @@ const userSchema = new Schema<IUser>(
         Friday: [dailyScheduleSchema],
         Saturday: [dailyScheduleSchema]
       },
+      required: function () {
+        return this.role === 'Doctor';
+      }
+    },
+    vacations: {
+      type: [{ from: Date, to: Date }],
       required: function () {
         return this.role === 'Doctor';
       }
@@ -238,7 +247,8 @@ userSchema.virtual('contractID', {
   justOne: false
 });
 
-userSchema.pre<IUser>('save', function (next) {
+userSchema.pre<IUserDocument>('save', function (next) {
+  console.log('bghnjmnbnhjbthnbtvbhnvgbhbyvfgdcuneyud877847477');
   if (!this.isModified('password')) return next();
 
   const Rounds = 10;
@@ -257,7 +267,8 @@ userSchema.methods.isCorrectPassword = function (enteredPassword: string): boole
 // mongo automatically creates index on _id and unique fields
 // https://docs.mongodb.com/manual/indexes/#default-id-index
 
-const UserModel = mongoose.model<IUser>('User', userSchema);
+const UserModel = mongoose.model<IUserDocument>('User', userSchema);
 
 export default UserModel;
-export { IUser };
+export { FamilyMember, IEmergencyContact };
+export { IUser, IUserDocument, IPatient, IDoctor, ICommonUser };

@@ -1,7 +1,7 @@
 import { hashPassword, comparePasswords } from './hash';
 import HttpError from './HttpError';
 import { generateToken, verifyToken } from './jwt';
-import { putRedis, getRedis, delRedis, clearRedis, keyGenerator } from './redis';
+// import { putRedis, getRedis, delRedis, clearRedis, keyGenerator } from './redis';
 import APIFeatures from './apiFeatures';
 
 export {
@@ -10,10 +10,10 @@ export {
   hashPassword,
   comparePasswords,
   generateToken,
-  verifyToken,
-  putRedis,
-  delRedis,
-  getRedis,
-  clearRedis,
-  keyGenerator
+  verifyToken
+  // putRedis,
+  // delRedis,
+  // getRedis,
+  // clearRedis,
+  // keyGenerator
 };

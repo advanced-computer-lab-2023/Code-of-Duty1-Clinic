@@ -1,13 +1,25 @@
-import app from './app';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import express, { Request, Response } from 'express';
+import { json, urlencoded } from 'body-parser';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import helmet from 'helmet';
+import { queryParser } from './middlewares';
+import loginRouter from './routes/auth.route';
+import generalRouter from './routes/general.route';
+import {  userRouter
+} from './routes';
+import cors from 'cors';
+const app = express();
+app.use(cors());
+app.use(cookieParser());
+app.use(json());
+app.use(urlencoded({ extended: true }));
+app.use(logger('dev'));
+app.use(helmet());
+app.use(queryParser);
+app.use('/auth', loginRouter);
+app.use('/users', userRouter);
+app.use('/', generalRouter);
+app.all('*', (req: Request, res: Response) => res.status(404).send('NOT FOUND'));
 
-dotenv.config();
-
-const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || '';
-
-mongoose
-  .connect(MONGO_URI)
-  .then(() => app.listen(PORT, () => console.log(`Server started on port ${PORT}`)))
-  .catch((err) => console.log(err.message));
+export default app;
