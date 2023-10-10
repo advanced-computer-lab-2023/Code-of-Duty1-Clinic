@@ -6,6 +6,17 @@ import helmet from 'helmet';
 import compression from 'compression';
 import { queryParser } from './middlewares';
 
+import {
+  authRouter,
+  appointmentRouter,
+  chatroomRouter,
+  contractRouter,
+  notificationRouter,
+  packageRouter,
+  prescriptionRouter,
+  userRouter
+} from './routes';
+
 const app = express();
 
 app.use(json());
@@ -26,12 +37,14 @@ app.use(compression());
 // );
 app.use(queryParser);
 
-app.use('/auth');
-app.use('/users');
-app.use('/products');
-app.use('/reviews');
-app.use('/cart');
-app.use('/orders');
+app.use('/auth', authRouter);
+app.use('/appointments', appointmentRouter);
+app.use('/chatrooms', chatroomRouter);
+app.use('/contracts', contractRouter);
+app.use('/notifications', notificationRouter);
+app.use('/packages', packageRouter);
+app.use('/prescriptions', prescriptionRouter);
+app.use('/users', userRouter);
 
 app.all('*', (req: Request, res: Response) => res.status(404).send('NOT FOUND'));
 

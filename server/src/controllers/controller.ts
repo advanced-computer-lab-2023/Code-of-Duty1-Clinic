@@ -2,12 +2,11 @@ import { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
 
-const controller = (res: Response, session?: any) => {
+const controller = (res: Response) => {
   return (service: Function) => {
     return async (...args: any[]) => {
       try {
         const result = await service(...args);
-        if (session && result.token) session.token = result.token;
 
         res.status(result.status).json(result);
       } catch (error: any) {
