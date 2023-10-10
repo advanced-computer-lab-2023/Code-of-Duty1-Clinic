@@ -4,7 +4,6 @@ import { StatusCodes } from 'http-status-codes';
 
 const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Get the JWT token from the request headers, query parameters, or cookies, as needed
     const token = req.headers.authorization || req.query.token || req.cookies.token;
 
     if (!token) return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Missing token' });

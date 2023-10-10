@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Model, Document } from 'mongoose';
-
+import { HttpError, verifyToken } from '../utils';
 const isAuthorized = (authorizedRole: string) => (req: Request, res: Response, next: NextFunction) => {
   try {
     const { role } = req.body.user;
@@ -29,5 +29,14 @@ const isResourceOwner =
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e.message);
     }
   };
-
-export { isAuthorized, isResourceOwner };
+const decodeJWTToken = (res: Response, req: Request) => {
+  try {
+    const JWTToken = req.cookies.token;
+    if (!JWTToken) return;
+    const decodedToken = verifyToken(JWTToken);
+    req.body.decodedToken = decodedToken;
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json('Token is not valid');
+  }
+};
+export { isAuthorized, isResourceOwner, decodeJWTToken };

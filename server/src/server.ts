@@ -1,38 +1,22 @@
-// import express, { Request, Response } from 'express';
-// // import session from 'express-session';
-// import { json, urlencoded } from 'body-parser';
-// import logger from 'morgan';
-// import helmet from 'helmet';
-// import compression from 'compression';
-// import { queryParser } from './middlewares';
+import express, { Request, Response } from 'express';
+import { json, urlencoded } from 'body-parser';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import helmet from 'helmet';
+import { queryParser } from './middlewares';
+import loginRouter from './routes/auth.route';
+import generalRouter from './routes/general.route';
+import cors from 'cors';
+const app = express();
+app.use(cors());
+app.use(cookieParser());
+app.use(json());
+app.use(urlencoded({ extended: true }));
+app.use(logger('dev'));
+app.use(helmet());
+app.use(queryParser);
+app.use('/auth', loginRouter);
+app.use('/', generalRouter);
+app.all('*', (req: Request, res: Response) => res.status(404).send('NOT FOUND'));
 
-// const app = express();
-
-// app.use(queryParser());
-// app.use(urlencoded({ extended: false }));
-// app.use(logger('dev'));
-// app.use(helmet());
-// app.use(compression());
-// // app.use(
-// //   session({
-// //     secret: 'superSecret',
-// //     resave: false,
-// //     saveUninitialized: false,
-// //     cookie: {
-// //       sameSite: true,
-// //       secure: false
-// //     }
-// //   })
-// // );
-// app.use(queryParser);
-
-// app.use('/auth',loginroute);
-// app.use('/users');
-// app.use('/products');
-// app.use('/reviews');
-// app.use('/cart');
-// app.use('/orders');
-
-// app.all('*', (req: Request, res: Response) => res.status(404).send('NOT FOUND'));
-
-// export default app;
+export default app;

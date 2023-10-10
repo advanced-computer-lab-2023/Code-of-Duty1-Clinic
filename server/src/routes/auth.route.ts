@@ -1,6 +1,16 @@
-import express from 'express';
-const router = express.Router();
+import express, { Request, Response } from 'express';
+import { login, logout, register, changePassword } from '../services/auth';
+import controller from '../controllers/controller';
+const loginRouter = express.Router();
 
-// http methods required for this router
-router.post('/login', contoller(res)(view));
-module.exports = router;
+loginRouter.post('/register/patient', (req: Request, res: Response) => {});
+loginRouter.post('/register/doctor', (req: Request, res: Response) => {});
+loginRouter.post('/login', (req: Request, res: Response) => {
+  const userData = req.body;
+  const userName = req.body.username;
+  const password = req.body.password;
+  delete req.body.password;
+  controller(res)(login)(userName, password);
+});
+
+export default loginRouter;
