@@ -6,14 +6,16 @@ import helmet from 'helmet';
 import compression from 'compression';
 import { queryParser } from './middlewares';
 
-import authRouter from './routes/auth.route';
-import appointmentRouter from './routes/appointment.route';
-import chatroomRouter from './routes/chatroom.route';
-import contractRouter from './routes/contract.route';
-import notificationRouter from './routes/notification.route';
-import packageRouter from './routes/package.route';
-import prescriptionRouter from './routes/prescription.route';
-import userRouter from './routes/user.route';
+import {
+  authRouter,
+  appointmentRouter,
+  chatroomRouter,
+  contractRouter,
+  notificationRouter,
+  packageRouter,
+  prescriptionRouter,
+  userRouter
+} from './routes';
 
 const app = express();
 

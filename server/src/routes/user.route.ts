@@ -5,13 +5,10 @@ import controller from '../controllers/controller';
 import { isAuthenticated, isAuthorized, queryParser } from '../middlewares';
 
 // import the user service
-import getPatients from '../services/userService';
-import getPatientsByName from '../services/userService';
-import getUpcomingPatients from '../services/userService';
-import selectPatient from '../services/userService';
-
+import { getPatients, selectPatient } from '../services/userService';
 // http methods required for this router
 
-//
+router.get('/me/patient/', async (req, res) => controller(res)(getPatients)(req.query.doctorID));
+router.get('/me/patient/:id', async (req, res) => controller(res)(selectPatient)(req.query.doctorID, req.params.id));
 
 export default router;

@@ -25,7 +25,7 @@ const clearRedis = async () => redisClient.flushall();
 const keyGenerator = (reqKey: object): object => {
   const sortedKeys = Object.keys(reqKey).sort();
   const sortedKey: object = {};
-  for (const key of sortedKeys) sortedKey[key] = reqKey[key];
+  //for (const key of sortedKeys) sortedKey[key] = reqKey[key];
 
   return sortedKey;
 };
