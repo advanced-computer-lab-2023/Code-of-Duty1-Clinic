@@ -236,14 +236,14 @@ const userSchema = new Schema<IUserDocument>(
 userSchema.virtual('requestID', {
   ref: 'Request',
   localField: '_id',
-  foreignField: 'medicID,',
+  foreignField: 'medicID',
   justOne: false
 });
 
 userSchema.virtual('contractID', {
   ref: 'Contract',
   localField: '_id',
-  foreignField: 'doctorID,,',
+  foreignField: 'doctorID',
   justOne: false
 });
 
