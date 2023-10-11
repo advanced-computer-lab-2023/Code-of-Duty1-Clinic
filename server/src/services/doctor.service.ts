@@ -58,7 +58,60 @@ const selectPatient = async (doctorID: string, patientID: string) => {
     result: patient
   };
 };
+const getPatientsByName = async (doctorID: string, name: string) => {
+  //get patients that have appointments with this doctor
+  const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
+  const patientsByName = patients.filter((patient: any) => patient.name.includes(name));
+  //check if there is no patient with this name throw an error
+  if (patientsByName.length === 0) {
+    return {
+      status: StatusCodes.NOT_FOUND,
+      message: 'No patient with this name',
+      result: null
+    };
+  }
+  return {
+    status: StatusCodes.OK,
+    message: 'Patients retrieved successfully',
+    result: patientsByName
+  };
+};
 
+// const getDoctorDetails = async (doctorID: string) => {
+//   try {
+//     // Fetch the specific doctor by ID
+//     const doctor = await UserModel.findOne({ _id: doctorID });
+
+//     if (!doctor) {
+//       return {
+//         status: StatusCodes.NOT_FOUND,
+//         message: 'Doctor not found',
+//         result: null,
+//       };
+//     }
+
+//     // Return the doctor's details
+//     return {
+//       status: StatusCodes.OK,
+//       message: 'Doctor details',
+//       result: {
+//         name: doctor.name,
+//         hourRate: doctor.hourRate,
+//         hospital: doctor.hospital,
+//         educationBackground: doctor.educationBackground,
+//         specialty: doctor.specialty,
+//       },
+//     };
+//   } catch (error) {
+//     return {
+//       status: StatusCodes.INTERNAL_SERVER_ERROR,
+//       message: 'Error while fetching doctor details',
+//       result: null,
+//     };
+//   }
+// };
+
+////////////////////////////////////////////////
 const getAllDoctor = async (doctorName?: string, specialty?: string, date?: Date) => {
   try {
     let nameFilter = doctorName ? getNameFilter(doctorName) : null;
