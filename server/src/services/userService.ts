@@ -22,7 +22,7 @@ const selectDoctor = async (doctorID: string) => {
         result: doctor
     };
 }
-const getAllPresecription = async (patientID : string) => {
+const getAllPrescription = async (patientID : string) => {
     const presecription = await PrescriptionModel.find({patientID : patientID});
     return {
         status: StatusCodes.OK,
@@ -31,6 +31,47 @@ const getAllPresecription = async (patientID : string) => {
     };
 }
 
+const filterPrescriptions = async (
+  patientID: string,
+  filterType: 'date' | 'doctor' | 'filled' | 'unfilled',
+  filterValue: Date | string | boolean
+) => {
+  // Get all prescriptions first using getAllPrescription
+  const allPrescriptions = await getAllPrescription(patientID);
+
+  // Filter the prescriptions based on the selected filter type
+  const filteredPrescriptions = allPrescriptions.result.filter(prescription => {
+    if (filterType === 'date' && prescription.dateIssued === filterValue) {
+      return true;
+    }
+    if (filterType === 'doctor' && prescription.doctorID.toString() === filterValue) {
+      return true;
+    }
+    if (filterType === 'filled' && prescription.isFilled === filterValue) {
+      return true;
+    }
+    if (filterType === 'unfilled' && prescription.isFilled !== filterValue) {
+      return true;
+    }
+    return false;
+  });
+
+ // Check if no prescriptions match the filter criteria
+ if (filteredPrescriptions.length === 0) {
+  return {
+    status: StatusCodes.OK,
+    message: `No prescriptions found for the selected ${filterType}`,
+    result: [],
+  };
+}
+
+return {
+  status: StatusCodes.OK,
+  message: `Filtered prescriptions by ${filterType}`,
+  result: filteredPrescriptions,
+};
+};
+  
 
 const getPatients = async (doctorID: string) => {
     //get patients that have appointments with this doctor
