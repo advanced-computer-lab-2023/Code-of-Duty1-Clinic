@@ -63,7 +63,20 @@ const filterPrescriptions = async (
       result: [],
     };
   }
+  // Check if no prescriptions match the filter criteria
+  if (filteredPrescriptions.length === 0) {
+    return {
+      status: StatusCodes.OK,
+      message: `No prescriptions found for the selected ${filterType}`,
+      result: [],
+    };
+  }
 
+  return {
+    status: StatusCodes.OK,
+    message: `Filtered prescriptions by ${filterType}`,
+    result: filteredPrescriptions,
+  };
   return {
     status: StatusCodes.OK,
     message: `Filtered prescriptions by ${filterType}`,
@@ -72,13 +85,10 @@ const filterPrescriptions = async (
 };
 
 
-const selectPrescription = async (
-  patientID: string,
-  doctorID: string
-) => {
+const selectPrescription = async (prescriptionID: string) => {
   try {
     // Fetch prescriptions for the given patient and doctor
-    const prescriptions = await PrescriptionModel.find({ patientID, doctorID });
+    const prescriptions = await PrescriptionModel.find({ prescriptionID });
 
     if (!prescriptions || prescriptions.length === 0) {
       return {
