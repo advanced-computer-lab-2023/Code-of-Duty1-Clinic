@@ -6,8 +6,8 @@ import helmet from 'helmet';
 import { queryParser } from './middlewares';
 import loginRouter from './routes/auth.route';
 import generalRouter from './routes/general.route';
-import {  userRouter
-} from './routes';
+import { userRouter } from './routes';
+import packageRoute from './routes/package.route';
 import cors from 'cors';
 const app = express();
 app.use(cors());
@@ -19,6 +19,7 @@ app.use(helmet());
 app.use(queryParser);
 app.use('/auth', loginRouter);
 app.use('/users', userRouter);
+app.use('/packages', packageRoute);
 app.use('/', generalRouter);
 app.all('*', (req: Request, res: Response) => res.status(404).send('NOT FOUND'));
 

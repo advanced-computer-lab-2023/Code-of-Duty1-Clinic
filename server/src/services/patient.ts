@@ -2,7 +2,7 @@ import UserModel, { IPatient, IUserDocument, IUser, IDoctor } from '../models/us
 import PackageModel, { IPackageDocument } from '../models/package.model';
 import mongoose from 'mongoose';
 import { getAllDoctor } from './doctor';
-import { getPackageById } from './package';
+import { getPackageById } from './package/package.service';
 import { HttpError } from '../utils';
 import { StatusCodes } from 'http-status-codes';
 const hasActivePackage = (patient: IPatient): Boolean => {
@@ -22,7 +22,7 @@ const viewAllDoctorsForPatient = async (patientId: string) => {
     var sessionDiscount = 0;
     const patient: IUserDocument | null = await getPatientByID(patientId);
     const pkgID = (patient as IPatient)?.package?.packageID;
-    const pkg: IPackageDocument | null = await getPackageById(pkgID!);
+    const pkg: IPackageDocument | null = await getPackageById(pkgID?.toString()!);
     sessionDiscount = pkg?.sessionDiscount || 0;
 
     const doctors: IUserDocument[] = (await getAllDoctor()).result;
