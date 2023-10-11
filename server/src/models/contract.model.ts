@@ -1,14 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface IContract extends Document {
+interface IContract {
   doctorID: mongoose.Schema.Types.ObjectId;
   start: Date;
   state: 'Rejected' | 'Accepted' | 'Pending';
   end: Date;
   markUpProfit: number;
 }
-
-const contractSchema = new Schema<IContract>({
+type IContractDocument = IContract & Document;
+const contractSchema = new Schema<IContractDocument>({
   doctorID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -20,6 +20,6 @@ const contractSchema = new Schema<IContract>({
   markUpProfit: { type: Number, required: true }
 });
 contractSchema.index({ doctorID: 1 });
-const ContractModel = mongoose.model<IContract>('Contract', contractSchema);
+const ContractModel = mongoose.model<IContractDocument>('Contract', contractSchema);
 
 export default ContractModel;

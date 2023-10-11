@@ -1,11 +1,11 @@
 import UserModel, { IPatient, IUserDocument, IUser, IDoctor } from '../models/user.model';
 import PackageModel, { IPackageDocument } from '../models/package.model';
 import mongoose, { Document } from 'mongoose';
-import { getAllDoctor } from './doctor';
-import { getPackageById } from './package/package.service';
+import { getAllDoctor } from './doctor.service';
+import { getPackageById } from './package.service';
 import { HttpError } from '../utils';
 import { StatusCodes } from 'http-status-codes';
-const hasActivePackage = (patient: IPatient): Boolean => {
+const hasActivePackage = (patient: (IPatient & Document) | IPatient): Boolean => {
   if (patient.package && patient.package.packageID && patient.package.packageStatus) {
     if (patient.package.endDate && patient.package.endDate.getTime() > Date.now()) {
       return true;
@@ -55,4 +55,4 @@ const calculateFinalSessionPrice = (
   return finalPrice;
 };
 
-export { viewAllDoctorsForPatient };
+export { viewAllDoctorsForPatient, calculateFinalSessionPrice };

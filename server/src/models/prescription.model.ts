@@ -5,7 +5,7 @@ interface MedicineDosage {
   dosage: string;
 }
 
-interface IPrescription extends Document {
+interface IPrescription {
   doctorID: mongoose.Types.ObjectId;
   patientID: mongoose.Types.ObjectId;
   medicines: MedicineDosage[];
@@ -14,8 +14,8 @@ interface IPrescription extends Document {
   dateIssued: Date;
   isSubmitted: boolean;
 }
-
-const prescriptionSchema = new Schema<IPrescription>({
+type IPrescriptionDocument = IPrescription & Document;
+const prescriptionSchema = new Schema<IPrescriptionDocument>({
   doctorID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -42,6 +42,6 @@ const prescriptionSchema = new Schema<IPrescription>({
 });
 prescriptionSchema.index({ doctorID: 1 });
 prescriptionSchema.index({ patientID: 1 });
-const PrescriptionModel = mongoose.model<IPrescription>('Prescription', prescriptionSchema);
+const PrescriptionModel = mongoose.model<IPrescriptionDocument>('Prescription', prescriptionSchema);
 
 export default PrescriptionModel;

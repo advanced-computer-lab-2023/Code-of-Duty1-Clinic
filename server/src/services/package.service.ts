@@ -1,8 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
-import Package from '../../models/package.model';
-import { HttpError } from '../../utils';
-import User from '../../models/user.model';
-import { ObjectID, ObjectId } from 'bson';
+import Package from '../models/package.model';
+import { HttpError } from '../utils';
+import User from '../models/user.model';
+
 export const addPackage = async (packageDetails: any) => {
   const newpackage = new Package(packageDetails);
   await newpackage.save();

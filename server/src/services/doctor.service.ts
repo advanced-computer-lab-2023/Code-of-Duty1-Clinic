@@ -2,6 +2,63 @@ import UserModel, { IPatient, IUserDocument, IDoctor } from '../models/user.mode
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
 import mongoose, { Document } from 'mongoose';
+import AppointmentModel from '../models/appointment.model';
+const selectDoctor = async (doctorID: string) => {
+  // Use Mongoose to find the doctor by ID
+  const doctor = await UserModel.findById(doctorID);
+
+  // Check if the doctor was found
+  if (!doctor) {
+    return {
+      status: StatusCodes.NOT_FOUND,
+      message: 'No doctor with this ID',
+      result: null
+    };
+  }
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Doctor selected successfully',
+    result: doctor
+  };
+};
+const getPatients = async (doctorID: string) => {
+  //get patients that have appointments with this doctor
+  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
+  if (!patients) {
+    return {
+      status: StatusCodes.NOT_FOUND,
+      message: 'No patient',
+      result: null
+    };
+  }
+  return {
+    status: StatusCodes.OK,
+    message: 'Patients retrieved successfully',
+    result: patients
+  };
+};
+
+//select a patient from the list of patients
+const selectPatient = async (doctorID: string, patientID: string) => {
+  //get patients that have appointments with this doctor
+  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
+  const patient = patients.find((patient: any) => patient._id.toString() === patientID);
+  //check if there is no patient with this id throw an error
+  if (!patient) {
+    return {
+      status: StatusCodes.NOT_FOUND,
+      message: 'No patient with this id',
+      result: null
+    };
+  }
+  return {
+    status: StatusCodes.OK,
+    message: 'Patient selected successfully',
+    result: patient
+  };
+};
+
 const getAllDoctor = async (doctorName?: string, specialty?: string, date?: Date) => {
   try {
     let nameFilter = doctorName ? getNameFilter(doctorName) : null;
@@ -122,4 +179,4 @@ const getDateFilter = (date: Date) => {
 
   return filter;
 };
-export { getAllDoctor };
+export { getAllDoctor, getPatients, selectPatient };
