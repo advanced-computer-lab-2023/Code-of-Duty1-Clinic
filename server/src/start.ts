@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import config from '../config/DB&ServerConfig';
 import app from './server';
-
+console.log(config.DB.URL.toString());
 mongoose
   .connect(config.DB.URL.toString(), {
     useNewUrlParser: true,
