@@ -21,85 +21,42 @@ const selectDoctor = async (doctorID: string) => {
     message: 'Doctor selected successfully',
     result: doctor
   };
-}
-const getAllPrescription = async (patientID: string) => {
-  const presecription = await PrescriptionModel.find({ patientID: patientID });
-  return {
-    status: StatusCodes.OK,
-    message: 'here all presecription',
-    result: presecription
-  };
-}
-
-const filterPrescriptions = async (
-  patientID: string,
-  filterType: 'date' | 'doctor' | 'filled' | 'unfilled',
-  filterValue: Date | string | boolean
-) => {
-  // Get all prescriptions first using getAllPrescription
-  const allPrescriptions = await getAllPrescription(patientID);
-
-  // Filter the prescriptions based on the selected filter type
-  const filteredPrescriptions = allPrescriptions.result.filter(prescription => {
-    if (filterType === 'date' && prescription.dateIssued === filterValue) {
-      return true;
-    }
-    if (filterType === 'doctor' && prescription.doctorID.toString() === filterValue) {
-      return true;
-    }
-    if (filterType === 'filled' && prescription.isFilled === filterValue) {
-      return true;
-    }
-    if (filterType === 'unfilled' && prescription.isFilled !== filterValue) {
-      return true;
-    }
-    return false;
-  });
-
-  // Check if no prescriptions match the filter criteria
-  if (filteredPrescriptions.length === 0) {
-    return {
-      status: StatusCodes.OK,
-      message: `No prescriptions found for the selected ${filterType}`,
-      result: [],
-    };
-  }
-
-  return {
-    status: StatusCodes.OK,
-    message: `Filtered prescriptions by ${filterType}`,
-    result: filteredPrescriptions,
-  };
 };
 
 
-const selectPrescription = async (prescriptionID: string) => {
-  try {
-    // Fetch prescriptions for the given patient and doctor
-    const prescriptions = await PrescriptionModel.find({ prescriptionID });
+// const getDoctorDetails = async (doctorID: string) => {
+//   try {
+//     // Fetch the specific doctor by ID
+//     const doctor = await UserModel.findOne({ _id: doctorID });
 
-    if (!prescriptions || prescriptions.length === 0) {
-      return {
-        status: StatusCodes.NOT_FOUND,
-        message: 'No prescriptions found for the given patient and doctor',
-        result: [],
-      };
-    }
+//     if (!doctor) {
+//       return {
+//         status: StatusCodes.NOT_FOUND,
+//         message: 'Doctor not found',
+//         result: null,
+//       };
+//     }
 
-    // Return the prescriptions
-    return {
-      status: StatusCodes.OK,
-      message: 'Prescriptions for the patient and doctor',
-      result: prescriptions,
-    };
-  } catch (error) {
-    return {
-      status: StatusCodes.INTERNAL_SERVER_ERROR,
-      message: 'Error while fetching prescriptions',
-      result: [],
-    };
-  }
-};
+//     // Return the doctor's details
+//     return {
+//       status: StatusCodes.OK,
+//       message: 'Doctor details',
+//       result: {
+//         name: doctor.name,
+//         hourRate: doctor.hourRate,
+//         hospital: doctor.hospital,
+//         educationBackground: doctor.educationBackground,
+//         specialty: doctor.specialty,
+//       },
+//     };
+//   } catch (error) {
+//     return {
+//       status: StatusCodes.INTERNAL_SERVER_ERROR,
+//       message: 'Error while fetching doctor details',
+//       result: null,
+//     };
+//   }
+// };
 
 const getPatients = async (doctorID: string) => {
   //get patients that have appointments with this doctor
@@ -168,3 +125,4 @@ const selectPatient = async (doctorID: string, patientID: string) => {
     result: patient
   };
 }
+export { selectDoctor, getPatients, getPatientsByName, getUpcomingPatients, selectPatient };
