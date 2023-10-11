@@ -30,6 +30,7 @@ const getAllPrescription = async (patientID: string) => {
     result: presecription
   };
 }
+
 const filterPrescriptions = async (
   patientID: string,
   filterType: 'date' | 'doctor' | 'filled' | 'unfilled',
@@ -63,20 +64,7 @@ const filterPrescriptions = async (
       result: [],
     };
   }
-  // Check if no prescriptions match the filter criteria
-  if (filteredPrescriptions.length === 0) {
-    return {
-      status: StatusCodes.OK,
-      message: `No prescriptions found for the selected ${filterType}`,
-      result: [],
-    };
-  }
 
-  return {
-    status: StatusCodes.OK,
-    message: `Filtered prescriptions by ${filterType}`,
-    result: filteredPrescriptions,
-  };
   return {
     status: StatusCodes.OK,
     message: `Filtered prescriptions by ${filterType}`,
@@ -115,25 +103,56 @@ const selectPrescription = async (prescriptionID: string) => {
 
 const getPatients = async (doctorID: string) => {
   //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
-  if (!patients) {
+  const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
+  return {
+    status: StatusCodes.OK,
+    message: 'User updated successfully',
+    result: patients
+  };
+};
+
+const getPatientsByName = async (doctorID: string, name: string) => {
+  //get patients that have appointments with this doctor
+  const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
+  const patientsByName = patients.filter((patient: any) => patient.name.includes(name));
+  //check if there is no patient with this name throw an error
+  if (patientsByName.length === 0) {
     return {
       status: StatusCodes.NOT_FOUND,
-      message: 'No patient',
+      message: 'No patient with this name',
       result: null
     };
   }
   return {
     status: StatusCodes.OK,
     message: 'Patients retrieved successfully',
-    result: patients
+    result: patientsByName
   };
-};
+}
+
+const getUpcomingPatients = async (doctorID: string) => {
+  //get patients that have appointments with this doctor
+  const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
+  const upcomingPatients = patients.filter((patient: any) => patient.appointments[0].status === 'Upcoming');
+  //check if there is no upcoming appointment throw an error
+  if (upcomingPatients.length === 0) {
+    return {
+      status: StatusCodes.NOT_FOUND,
+      message: 'No upcoming appointments',
+      result: null
+    };
+  }
+  return {
+    status: StatusCodes.OK,
+    message: 'Patients filtered successfully',
+    result: upcomingPatients
+  };
+}
 
 //select a patient from the list of patients
 const selectPatient = async (doctorID: string, patientID: string) => {
   //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
+  const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
   const patient = patients.find((patient: any) => patient._id.toString() === patientID);
   //check if there is no patient with this id throw an error
   if (!patient) {
@@ -148,7 +167,4 @@ const selectPatient = async (doctorID: string, patientID: string) => {
     message: 'Patient selected successfully',
     result: patient
   };
-};
-
-//export all functions as a module
-export { getPatients, selectPatient };
+}
