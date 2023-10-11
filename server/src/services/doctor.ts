@@ -1,6 +1,7 @@
-import UserModel, { IPatient, IUserDocument } from '../models/user.model';
+import UserModel, { IPatient, IUserDocument, IDoctor } from '../models/user.model';
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
+import mongoose, { Document } from 'mongoose';
 const getAllDoctor = async (doctorName?: string, specialty?: string, date?: Date) => {
   try {
     let nameFilter = doctorName ? getNameFilter(doctorName) : null;
@@ -29,8 +30,11 @@ const getAllDoctor = async (doctorName?: string, specialty?: string, date?: Date
       addresses: 1,
       profileImage: 1,
       _id: 1
-    });
-    return { result: doctors as IUserDocument[] };
+    }).populate({ path: 'contract', select: 'markUpProfit' });
+    interface temp {
+      markUpProfit: number;
+    }
+    return { result: doctors as (IDoctor & Document & temp)[] };
   } catch (error) {
     throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors ');
   }

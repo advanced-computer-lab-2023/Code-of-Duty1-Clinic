@@ -268,7 +268,12 @@ userSchema.methods.isCorrectPassword = function (enteredPassword: string): boole
 // https://docs.mongodb.com/manual/indexes/#default-id-index
 
 const UserModel = mongoose.model<IUserDocument>('User', userSchema);
-
+userSchema.virtual('contract', {
+  ref: 'Contract',
+  localField: '_id',
+  foreignKey: 'doctorID',
+  justOne: true
+});
 export default UserModel;
 export { FamilyMember, IEmergencyContact };
 export { IUser, IUserDocument, IPatient, IDoctor, ICommonUser };
