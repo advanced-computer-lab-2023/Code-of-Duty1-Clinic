@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../utils';
+import { HttpError, verifyToken } from '../utils';
 import { StatusCodes } from 'http-status-codes';
+const User = require('../models/user.model')
 
 const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -24,4 +25,4 @@ const isAuthenticated = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-export { isAuthenticated };
+export { isAuthenticated};

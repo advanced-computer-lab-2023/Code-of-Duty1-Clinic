@@ -26,6 +26,7 @@ const delRedis = async (key: any): Promise<number> => redisClient.del(JSON.strin
 
 const clearRedis = async () => redisClient.flushall();
 
+/*
 const keyGenerator = (reqKey: object): object => {
   const sortedKeys = Object.keys(reqKey).sort();
   const sortedKey: object = {};
@@ -33,5 +34,6 @@ const keyGenerator = (reqKey: object): object => {
 
   return sortedKey;
 };
+*/
 
-export { putRedis, getRedis, delRedis, clearRedis, keyGenerator };
+export { putRedis, getRedis, delRedis, clearRedis};
