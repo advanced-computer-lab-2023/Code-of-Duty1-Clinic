@@ -4,14 +4,14 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface FamilyMemberWithID {
   userID: mongoose.Types.ObjectId;
-  relation: "Husband" | "Wife" | "Child";
+  relation: 'Husband' | 'Wife' | 'Child';
 }
 
 interface FamilyMemberWithDetails {
   name: string;
   nationalID: string;
   phone: string;
-  relation: "Husband" | "Wife" | "Child";
+  relation: 'Husband' | 'Wife' | 'Child';
 }
 
 type FamilyMember = FamilyMemberWithID | FamilyMemberWithDetails;
@@ -31,10 +31,10 @@ interface ICommonUser {
   email: string;
   password: string;
   birthDate: Date;
-  gender: "Male" | "Female";
+  gender: 'Male' | 'Female';
   phone: string;
   addresses: string[];
-  role: "Patient" | "Doctor" | "Administrator";
+  role: 'Patient' | 'Doctor' | 'Administrator';
   profileImage: string;
   isEmailVerified: boolean;
   wallet: number;
@@ -90,8 +90,8 @@ const dailyScheduleSchema = new mongoose.Schema({
   },
   maxPatients: {
     type: Number,
-    required: true,
-  },
+    required: true
+  }
 });
 
 const userSchema = new Schema<IUserDocument>(
@@ -99,7 +99,7 @@ const userSchema = new Schema<IUserDocument>(
     name: {
       first: { type: String, required: true },
       middle: String,
-      last: { type: String, required: true },
+      last: { type: String, required: true }
     },
     email: {
       type: String,
@@ -108,18 +108,18 @@ const userSchema = new Schema<IUserDocument>(
       trim: true,
       validate(value: string) {
         return validator.isEmail(value);
-      },
+      }
     },
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     birthDate: { type: Date, required: true },
-    gender: { type: String, enum: ["Male", "Female"], required: true },
+    gender: { type: String, enum: ['Male', 'Female'], required: true },
     phone: { type: String, required: true },
     addresses: { type: [String], required: false },
     role: {
       type: String,
-      enum: ["Patient", "Doctor", "Administrator"],
-      required: true,
+      enum: ['Patient', 'Doctor', 'Administrator'],
+      required: true
     },
     profileImage: { type: String, required: true },
     isEmailVerified: { type: Boolean, required: true },
@@ -134,8 +134,8 @@ const userSchema = new Schema<IUserDocument>(
         }
       ],
       required: function () {
-        return this.role === "Patient";
-      },
+        return this.role === 'Patient';
+      }
     },
     family: {
       type: [
@@ -146,15 +146,16 @@ const userSchema = new Schema<IUserDocument>(
           phone: String,
           relation: {
             type: String,
-            enum: ["Husband", "Wife", "Child"],
-            required: true,
-          },
-        },
+            enum: ['Husband', 'Wife', 'Child'],
+            required: true
+          }
+        }
       ],
       required: function () {
-        return this.role === "Patient";
+        return this.role === 'Patient';
       },
       validate: {
+        //TODO
         validator: function (arr: any) {
           try {
             arr.forEach((elem: any) => {
@@ -176,22 +177,22 @@ const userSchema = new Schema<IUserDocument>(
         }
       ],
       required: function () {
-        return this.role === "Patient";
-      },
+        return this.role === 'Patient';
+      }
     },
     package: {
       type: {
         packageID: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Package",
-          required: true,
+          ref: 'Package',
+          required: true
         },
         packageStatus: {
           type: String,
           enum: ['subscribed', 'unsubscribed', 'cancelled'],
           required: true
         },
-        endDate: { type: Date, required: true },
+        endDate: { type: Date, required: true }
       },
       required: false
     },
@@ -199,20 +200,20 @@ const userSchema = new Schema<IUserDocument>(
     hourRate: {
       type: Number,
       required: function () {
-        return this.role === "Doctor";
-      },
+        return this.role === 'Doctor';
+      }
     },
     hospital: {
       type: String,
       required: function () {
-        return this.role === "Doctor";
-      },
+        return this.role === 'Doctor';
+      }
     },
     specialty: {
       type: String,
       required: function () {
-        return this.role === "Doctor";
-      },
+        return this.role === 'Doctor';
+      }
     },
     weeklySlots: {
       type: {
@@ -222,7 +223,7 @@ const userSchema = new Schema<IUserDocument>(
         Wednesday: [dailyScheduleSchema],
         Thursday: [dailyScheduleSchema],
         Friday: [dailyScheduleSchema],
-        Saturday: [dailyScheduleSchema],
+        Saturday: [dailyScheduleSchema]
       },
       required: function () {
         return this.role === 'Doctor';
@@ -237,11 +238,11 @@ const userSchema = new Schema<IUserDocument>(
   },
   {
     toObject: {
-      virtuals: true,
+      virtuals: true
     },
     toJSON: {
-      virtuals: true,
-    },
+      virtuals: true
+    }
   }
 );
 
@@ -271,9 +272,7 @@ userSchema.pre<IUserDocument>('save', function (next) {
   next();
 });
 
-userSchema.methods.isCorrectPassword = function (
-  enteredPassword: string
-): boolean {
+userSchema.methods.isCorrectPassword = function (enteredPassword: string): boolean {
   return bcrypt.compareSync(enteredPassword, this.password);
 };
 
@@ -282,7 +281,12 @@ userSchema.methods.isCorrectPassword = function (
 // https://docs.mongodb.com/manual/indexes/#default-id-index
 
 const UserModel = mongoose.model<IUserDocument>('User', userSchema);
-
+userSchema.virtual('contract', {
+  ref: 'Contract',
+  localField: '_id',
+  foreignKey: 'doctorID',
+  justOne: true
+});
 export default UserModel;
 export { FamilyMember, IEmergencyContact };
 export { IUser, IUserDocument, IPatient, IDoctor, ICommonUser };

@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import { HttpError } from '../../utils';
-import User from '../../models/user.model';
+import { HttpError } from '../utils';
+import User from '../models/user.model';
 
 export const updateInfo = async (info: any) => {
   console.log('you got there ');

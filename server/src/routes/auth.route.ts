@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { login, logout, register, changePassword } from '../services/auth';
+import { login, logout, register, changePassword } from '../services/auth.service';
 import controller from '../controllers/controller';
 const loginRouter = express.Router();
 

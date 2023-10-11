@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface Appointment {
+interface IAppointment {
   doctorID: mongoose.Schema.Types.ObjectId;
   patientID: mongoose.Schema.Types.ObjectId;
   status: 'Upcoming' | 'Completed' | 'Cancelled' | 'Rescheduled';
@@ -10,8 +10,8 @@ interface Appointment {
   isFollowUp: boolean;
   previousAppointment?: mongoose.Schema.Types.ObjectId;
 }
-
-const appointmentSchema = new Schema<Appointment & Document>({
+type IAppointmentDocument = IAppointment & Document;
+const appointmentSchema = new Schema<IAppointmentDocument>({
   doctorID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -32,6 +32,6 @@ const appointmentSchema = new Schema<Appointment & Document>({
 appointmentSchema.index({ doctorID: 1 });
 appointmentSchema.index({ patientID: 1 });
 
-const AppointmentModel = mongoose.model<Appointment & Document>('Appointment', appointmentSchema);
+const AppointmentModel = mongoose.model<IAppointmentDocument>('Appointment', appointmentSchema);
 
 export default AppointmentModel;

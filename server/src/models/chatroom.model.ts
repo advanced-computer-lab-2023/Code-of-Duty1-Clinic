@@ -11,8 +11,8 @@ interface IChatRoom {
   messages: ChatMessage[];
   date: Date;
 }
-
-const chatRoomSchema = new Schema<IChatRoom>({
+type IChatRoomDocument = IChatRoom & Document;
+const chatRoomSchema = new Schema<IChatRoomDocument>({
   patientID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -39,6 +39,6 @@ const chatRoomSchema = new Schema<IChatRoom>({
 chatRoomSchema.index({ patientID: 1 });
 chatRoomSchema.index({ medicID: 1 });
 
-const ChatRoomModel = mongoose.model<IChatRoom>('ChatRoom', chatRoomSchema);
+const ChatRoomModel = mongoose.model<IChatRoomDocument>('ChatRoom', chatRoomSchema);
 
 export default ChatRoomModel;
