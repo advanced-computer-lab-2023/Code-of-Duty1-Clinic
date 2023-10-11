@@ -73,6 +73,37 @@ return {
 };
   
 
+const selectPrescription = async (
+  patientID: string,
+  doctorID: string
+) => {
+  try {
+    // Fetch prescriptions for the given patient and doctor
+    const prescriptions = await PrescriptionModel.find({ patientID, doctorID });
+
+    if (!prescriptions || prescriptions.length === 0) {
+      return {
+        status: StatusCodes.NOT_FOUND,
+        message: 'No prescriptions found for the given patient and doctor',
+        result: [],
+      };
+    }
+
+    // Return the prescriptions
+    return {
+      status: StatusCodes.OK,
+      message: 'Prescriptions for the patient and doctor',
+      result: prescriptions,
+    };
+  } catch (error) {
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      message: 'Error while fetching prescriptions',
+      result: [],
+    };
+  }
+};
+
 const getPatients = async (doctorID: string) => {
     //get patients that have appointments with this doctor
     const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
