@@ -24,8 +24,9 @@ const selectDoctor = async (doctorID: string) => {
 };
 //this method takes the doctor id and the req.query
 const getPatients = async (doctorID: string, query: Object) => {
+  console.log(query);
   //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID').find(query);
+  const patients = await AppointmentModel.find({ doctorID }).find(query).select('patientID').populate('patientID');
   if (!patients) {
     return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
   }
@@ -38,9 +39,8 @@ const getPatients = async (doctorID: string, query: Object) => {
 
 //select a patient from the list of patients
 const selectPatient = async (doctorID: string, patientID: string) => {
-  //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
-  const patient = patients.find((patient: any) => patient._id.toString() === patientID);
+  //get patient that have appointments with this doctor and matches the patient id
+  const patient = await AppointmentModel.find({ doctorID, patientID }).select('patientID').populate('patientID');
   //check if there is no patient with this id throw an error
   if (!patient) {
     return new HttpError(StatusCodes.NOT_FOUND, 'No patient with this ID');
