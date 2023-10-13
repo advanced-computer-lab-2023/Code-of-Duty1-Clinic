@@ -1,14 +1,14 @@
 import express from 'express';
 import controller from '../controllers/controller';
 import { isAuthorized } from '../middlewares';
-import { getPackages, addPackage, updatePackage, deletePackage } from '../services/package/package.service';
+import { addPackage, updatePackage, deletePackage } from '../services/package/package.service';
 const router = express.Router();
 // http methods required for this router
 
 // router.use(isAuthorized("Administrator"));
-router.get('/', (req, res) => {
-  controller(res)(getPackages)(req.query);
-});
+// router.get('/', (req, res) => {
+//   controller(res)(getPackages)(req.query);
+// });
 
 router.post('/', (req, res) => {
   controller(res)(addPackage)(req.body);

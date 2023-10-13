@@ -3,15 +3,15 @@ import Package from '../../models/package.model';
 import { HttpError } from '../../utils';
 import User from '../../models/user.model';
 
-const getPackages = async (query: Object) => {
-  const packages = await Package.find(query);
-  if (!packages) throw new HttpError(StatusCodes.NOT_FOUND, 'No packages found');
+// const getPackages = async (query: Object) => {
+//   const packages = await Package.find(query);
+//   if (!packages) throw new HttpError(StatusCodes.NOT_FOUND, 'No packages found');
 
-  return {
-    status: StatusCodes.OK,
-    result: packages
-  };
-};
+//   return {
+//     status: StatusCodes.OK,
+//     result: packages
+//   };
+// };
 
 const addPackage = async (packageDetails: any) => {
   const newpackage = new Package(packageDetails);
@@ -60,4 +60,4 @@ const getPackageById = async (packageID: string) => {
   return await Package.findOne({ _id: packageID });
 };
 
-export { addPackage, getPackages, updatePackage, deletePackage, getPackageById };
+export { addPackage, updatePackage, deletePackage, getPackageById };
