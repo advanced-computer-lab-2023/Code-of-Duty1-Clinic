@@ -4,6 +4,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface FamilyMemberWithID {
   userID: mongoose.Types.ObjectId;
+  nationalID: string;
   relation: 'Husband' | 'Wife' | 'Child';
 }
 
@@ -11,6 +12,8 @@ interface FamilyMemberWithDetails {
   name: string;
   nationalID: string;
   phone: string;
+  birthDate: Date;
+  gender: 'Male' | 'Female';
   relation: 'Husband' | 'Wife' | 'Child';
 }
 
@@ -144,6 +147,8 @@ const userSchema = new Schema<IUserDocument>(
           name: String,
           nationalID: String,
           phone: String,
+          birthDate: Date,
+          gender: { type: String, enum: ['Male', 'Female'] },
           relation: {
             type: String,
             enum: ['Husband', 'Wife', 'Child'],
@@ -155,7 +160,6 @@ const userSchema = new Schema<IUserDocument>(
         return this.role === 'Patient';
       },
       validate: {
-        //TODO
         validator: function (arr: any) {
           try {
             arr.forEach((elem: any) => {
