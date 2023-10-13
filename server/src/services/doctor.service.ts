@@ -22,15 +22,12 @@ const selectDoctor = async (doctorID: string) => {
     result: doctor
   };
 };
-const getPatients = async (doctorID: string) => {
+//this method takes the doctor id and the req.query
+const getPatients = async (doctorID: string, query: Object) => {
   //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
+  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID').find(query);
   if (!patients) {
-    return {
-      status: StatusCodes.NOT_FOUND,
-      message: 'No patient',
-      result: null
-    };
+    return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
   }
   return {
     status: StatusCodes.OK,
@@ -46,34 +43,12 @@ const selectPatient = async (doctorID: string, patientID: string) => {
   const patient = patients.find((patient: any) => patient._id.toString() === patientID);
   //check if there is no patient with this id throw an error
   if (!patient) {
-    return {
-      status: StatusCodes.NOT_FOUND,
-      message: 'No patient with this id',
-      result: null
-    };
+    return new HttpError(StatusCodes.NOT_FOUND, 'No patient with this ID');
   }
   return {
     status: StatusCodes.OK,
     message: 'Patient selected successfully',
     result: patient
-  };
-};
-const getPatientsByName = async (doctorID: string, name: string) => {
-  //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
-  const patientsByName = patients.filter((patient: any) => patient.name.includes(name));
-  //check if there is no patient with this name throw an error
-  if (patientsByName.length === 0) {
-    return {
-      status: StatusCodes.NOT_FOUND,
-      message: 'No patient with this name',
-      result: null
-    };
-  }
-  return {
-    status: StatusCodes.OK,
-    message: 'Patients retrieved successfully',
-    result: patientsByName
   };
 };
 
