@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -37,40 +37,93 @@ const AdministratorPage = () => {
   const [newAdminUsername, setNewAdminUsername] = useState("");
   const [newAdminPassword, setNewAdminPassword] = useState("");
   const [newPackageName, setNewPackageName] = useState("");
-  const [newPackageDescription, setNewPackageDescription] = useState("");
   const [newPackagePrice, setNewPackagePrice] = useState("");
-  const [healthPackages, setHealthPackages] = useState([
-    {
-      id: 1,
-      name: "Package 1",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      price: "$99",
-    },
-    {
-      id: 2,
-      name: "Package 2",
-      description: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      price: "$149",
-    },
-    {
-      id: 3,
-      name: "Package 3",
-      description: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      price: "$199",
-    },
-  ]);
+  const [newPackageSessionDiscount, setNewPackageSessionDiscount] = useState("");
+  const [newPackageMedicineDiscount, setNewPackageMedicineDiscount] = useState("");
+  const [newPackageFamilyDiscount, setNewPackageFamilyDiscount] = useState("");
+  const [newPackageIsLatest, setNewPackageIsLatest] = useState("");
+  const [healthPackages, setHealthPackages] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/packages", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        console.log(data);
+        setHealthPackages(data.result);
+        //setError(null);
+      } catch (error) {
+        setHealthPackages([]);
+        console.error(error.message);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const fetchRequests = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/requests", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setRequests(data.result);
+    } catch (error) {
+      setRequests([]);
+      console.error(error.message);
+    }
+  };
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/users", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setUsers(data.result);
+    } catch (error) {
+      setUsers([]);
+      console.error(error.message);
+    }
+  };
 
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [updatedPackageName, setUpdatedPackageName] = useState("");
-  const [updatedPackageDescription, setUpdatedPackageDescription] = useState("");
   const [updatedPackagePrice, setUpdatedPackagePrice] = useState("");
+  const [updatePackageSessionDiscount, setUpdatedPackageSessionDiscount] = useState("");
+  const [updatedPackageMedicineDiscount, setUpdatedPackageMedicineDiscount] = useState("");
+  const [updatedPackageFamilyDiscount, setUpdatedPackageFamilyDiscount] = useState("");
+  const [updatedPackageIsLatest, setUpdatedPackageIsLatest] = useState("");
 
   const openUpdateModal = (packageData) => {
     setSelectedPackage(packageData);
     setUpdatedPackageName(packageData.name);
-    setUpdatedPackageDescription(packageData.description);
     setUpdatedPackagePrice(packageData.price);
+    setUpdatedPackageSessionDiscount(packageData.sessionDiscount);
+    setUpdatedPackageMedicineDiscount(packageData.medicineDiscount);
+    setUpdatedPackageFamilyDiscount(packageData.familyDiscount);
+    setUpdatedPackageIsLatest(packageData.isLatest);
     setUpdateModalOpen(true);
   };
 
@@ -78,14 +131,6 @@ const AdministratorPage = () => {
     setSelectedPackage(null);
     setUpdateModalOpen(false);
   };
-
-  const usersData = [
-    { id: 1, type: "Admin", username: "admin1" },
-    { id: 2, type: "Doctor", username: "doctor1" },
-    { id: 3, type: "Patient", username: "patient1" },
-    { id: 4, type: "Doctor", username: "doctor2" },
-    { id: 5, type: "Patient", username: "patient2" },
-  ];
 
   const handleTabChange = (index) => {
     setSelectedTab(index);
@@ -107,49 +152,73 @@ const AdministratorPage = () => {
     // Implement reject request logic here
     console.log(`Reject request for user with ID ${userId}`);
   };
+  const handleDeleteUser = (userId) => {
+    // Implement logic to delete a user
+    // Example: Make an API call to delete the user with the given ID
+    // After deletion, update the users list
+  };
+
+  useEffect(() => {
+    fetchRequests(); // Fetch requests when the component mounts
+    fetchUsers();   // Fetch users when the component mounts
+  }, []);
 
   const handleAddHealthPackage = () => {
     const newHealthPackage = {
       id: healthPackages.length + 1,
       name: newPackageName,
-      description: newPackageDescription,
       price: newPackagePrice,
+      sessionDiscount: newPackageSessionDiscount,
+      medicineDiscount: newPackageMedicineDiscount,
+      familyDiscount: newPackageFamilyDiscount,
+      isLatest: newPackageIsLatest,
     };
 
     setHealthPackages([...healthPackages, newHealthPackage]);
     setNewPackageName("");
-    setNewPackageDescription("");
     setNewPackagePrice("");
+    setNewPackageIsLatest("");
+    setNewPackageFamilyDiscount("");
+    setNewPackageMedicineDiscount("");
+    setNewPackageSessionDiscount("");
   };
 
   const handleUpdateHealthPackage = () => {
+    if (!selectedPackage) {
+      return;
+    }
+  
+    const updatedPackageId = selectedPackage._id;
+    console.log(selectedPackage._id);
+  
     const updatedPackage = {
       ...selectedPackage,
       name: updatedPackageName,
-      description: updatedPackageDescription,
       price: updatedPackagePrice,
+      sessionDiscount: updatePackageSessionDiscount,
+      medicineDiscount: updatedPackageMedicineDiscount,
+      familyDiscount: updatedPackageFamilyDiscount,
+      isLatest: updatedPackageIsLatest,
     };
-
+  
+    // Update the state with the modified package
     const updatedPackages = healthPackages.map((Package) =>
-      Package.id === updatedPackage.id ? updatedPackage : Package
+      Package._id === updatedPackageId ? updatedPackage : Package
     );
-
+  
     setHealthPackages(updatedPackages);
     closeUpdateModal();
   };
-
+  
   const handleDeleteHealthPackage = (packageId) => {
-    const updatedPackages = healthPackages.filter((Package) => Package.id !== packageId);
+    const updatedPackages = healthPackages.filter((Package) => Package._id !== packageId);
     setHealthPackages(updatedPackages);
   };
 
   return (
     <Grid templateColumns="1fr" gap={8} ml="auto" mr="auto" maxWidth="auto" width="auto">
       <Flex align="center" justify="space-between" bg="teal.500" p={4}>
-        <Image alt="Logo" h={8} />
-        <Text color="white" fontWeight="bold">
-          Welcome, {/* User info */}
-        </Text>
+        {/* ... Your header content ... */}
       </Flex>
 
       <Container maxW="auto">
@@ -165,87 +234,89 @@ const AdministratorPage = () => {
           </TabList>
 
           <TabPanels>
-            <TabPanel>
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th>ID</Th>
-                    <Th>Type</Th>
-                    <Th>Username</Th>
-                    <Th>Actions</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {usersData.map((user) => (
-                    <Tr key={user.id}>
-                      <Td>{user.id}</Td>
-                      <Td>{user.type}</Td>
-                      <Td>{user.username}</Td>
-                      <Td>
-                        <Button
-                          colorScheme="teal"
-                          size="sm"
-                          mr={2}
-                          onClick={() => handleApproveRequest(user.id)}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          colorScheme="red"
-                          size="sm"
-                          onClick={() => handleRejectRequest(user.id)}
-                        >
-                          Reject
-                        </Button>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TabPanel>
+          <TabPanel>
+          <Table variant="simple">
+            {/* Table headers for requests */}
+            <Thead>
+              <Tr>
+                <Th>User Name</Th>
+                <Th>Request Type</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {requests.map((request) => (
+                <Tr key={request.id}>
+                  <Td>{request.userName}</Td>
+                  <Td>{request.requestType}</Td>
+                  <Td>
+                    <Button
+                      colorScheme="teal"
+                      size="sm"
+                      onClick={() => handleApproveRequest(request.id)}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      size="sm"
+                      onClick={() => handleRejectRequest(request.id)}
+                    >
+                      Reject
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TabPanel>
 
-            <TabPanel>
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th>Type</Th>
-                    <Th>Username</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {usersData.map((user) => (
-                    <Tr key={user.id}>
-                      <Td>{user.type}</Td>
-                      <Td>{user.username}</Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-
-              <Stack direction="row" mt={4} align="center">
-                <Input
-                  placeholder="Username"
-                  value={newAdminUsername}
-                  onChange={(e) => setNewAdminUsername(e.target.value)}
-                />
-                <Input
-                  placeholder="Password"
-                  value={newAdminPassword}
-                  onChange={(e) => setNewAdminPassword(e.target.value)}
-                />
-                <Button colorScheme="teal" onClick={handleAddAdmin} size="lg">
-                  Add Admin
-                </Button>
-              </Stack>
-            </TabPanel>
-
+        <TabPanel>
+          <Table variant="simple">
+            {/* Table headers for users */}
+            <Thead>
+              <Tr>
+                <Th>User Name</Th>
+                <Th>Role</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {users.map((user) => (
+                <Tr key={user.id}>
+                  <Td>{user.userName}</Td>
+                  <Td>{user.role}</Td>
+                  <Td>
+                    <Button
+                      colorScheme="teal"
+                      size="sm"
+                      onClick={handleAddAdmin}
+                    >
+                      Add Admin
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      size="sm"
+                      onClick={() => handleDeleteUser(user.id)}
+                    >
+                      Delete
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TabPanel>
             <TabPanel>
               <Table variant="simple">
                 <Thead>
                   <Tr>
                     <Th>Name</Th>
-                    <Th>Description</Th>
                     <Th>Price</Th>
+                    <Th>sessionDiscount</Th>
+                    <Th>medicineDiscount</Th>
+                    <Th>familyDiscount</Th>
+                    <Th>isLatest</Th>
                     <Th>Actions</Th>
                   </Tr>
                 </Thead>
@@ -253,8 +324,11 @@ const AdministratorPage = () => {
                   {healthPackages.map((Package) => (
                     <Tr key={Package.id}>
                       <Td>{Package.name}</Td>
-                      <Td>{Package.description}</Td>
                       <Td>{Package.price}</Td>
+                      <Td>{Package.sessionDiscount}</Td>
+                      <Td>{Package.medicineDiscount}</Td>
+                      <Td>{Package.familyDiscount}</Td>
+                      <Td>{Package.isLatest}</Td>
                       <Td>
                         <Button
                           colorScheme="teal"
@@ -266,7 +340,7 @@ const AdministratorPage = () => {
                         <Button
                           colorScheme="red"
                           size="sm"
-                          onClick={() => handleDeleteHealthPackage(Package.id)}
+                          onClick={() => handleDeleteHealthPackage(Package._id)}
                         >
                           Delete
                         </Button>
@@ -286,17 +360,38 @@ const AdministratorPage = () => {
                   />
                 </FormControl>
                 <FormControl mt={4}>
-                  <FormLabel>Description</FormLabel>
-                  <Input
-                    value={newPackageDescription}
-                    onChange={(e) => setNewPackageDescription(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl mt={4}>
                   <FormLabel>Price</FormLabel>
                   <Input
                     value={newPackagePrice}
                     onChange={(e) => setNewPackagePrice(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>sessionDiscount</FormLabel>
+                  <Input
+                    value={newPackageSessionDiscount}
+                    onChange={(e) => setNewPackageSessionDiscount(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>medicineDiscount</FormLabel>
+                  <Input
+                    value={newPackageMedicineDiscount}
+                    onChange={(e) => setNewPackageMedicineDiscount(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>familyDiscount</FormLabel>
+                  <Input
+                    value={newPackageFamilyDiscount}
+                    onChange={(e) => setNewPackageFamilyDiscount(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>isLatest</FormLabel>
+                  <Input
+                    value={newPackageIsLatest}
+                    onChange={(e) => setNewPackageIsLatest(e.target.value)}
                   />
                 </FormControl>
                 <Button
@@ -327,17 +422,38 @@ const AdministratorPage = () => {
               />
             </FormControl>
             <FormControl mt={4}>
-              <FormLabel>Description</FormLabel>
-              <Input
-                value={updatedPackageDescription}
-                onChange={(e) => setUpdatedPackageDescription(e.target.value)}
-              />
-            </FormControl>
-            <FormControl mt={4}>
               <FormLabel>Price</FormLabel>
               <Input
                 value={updatedPackagePrice}
                 onChange={(e) => setUpdatedPackagePrice(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mt={4}>
+              <FormLabel>sessionDiscount</FormLabel>
+              <Input
+                value={updatePackageSessionDiscount}
+                onChange={(e) => setUpdatedPackageSessionDiscount(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mt={4}>
+              <FormLabel>medicineDiscount</FormLabel>
+              <Input
+                value={updatedPackageMedicineDiscount}
+                onChange={(e) => setUpdatedPackageMedicineDiscount(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mt={4}>
+              <FormLabel>familyDiscount</FormLabel>
+              <Input
+                value={updatedPackageFamilyDiscount}
+                onChange={(e) => setUpdatedPackageFamilyDiscount(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mt={4}>
+              <FormLabel>isLatest</FormLabel>
+              <Input
+                value={updatedPackageIsLatest}
+                onChange={(e) => setUpdatedPackageIsLatest(e.target.value)}
               />
             </FormControl>
           </ModalBody>

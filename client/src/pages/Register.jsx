@@ -28,22 +28,58 @@ const DoctorRegistrationSchema = Yup.object().shape({
 
 
 const Register = () => {
-  const patientHandleSubmit = (values, actions) => {
-    setTimeout(() => {
+  const patientHandleSubmit = async (values, actions) => {
+    try {
+      const response = await fetch('your_patient_registration_api_endpoint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+  
+      if (response.ok) {
+        // Registration successful
+        console.log('Patient registration successful');
+        actions.setSubmitting(false);
+      } else {
+        // Handle registration error
+        console.error('Patient registration failed');
+        actions.setSubmitting(false);
+      }
+    } catch (error) {
+      // Handle network or API error
+      console.error('API call error:', error);
       actions.setSubmitting(false);
-      console.log(values);
-      // Perform registration logic here
-    }, 1000);
+    }
   };
-
-  const DoctorHandleSubmit = (values, actions) => {
-    setTimeout(() => {
+  
+  const DoctorHandleSubmit = async (values, actions) => {
+    try {
+      const response = await fetch('your_doctor_registration_api_endpoint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+  
+      if (response.ok) {
+        // Registration successful
+        console.log('Doctor registration successful');
+        actions.setSubmitting(false);
+      } else {
+        // Handle registration error
+        console.error('Doctor registration failed');
+        actions.setSubmitting(false);
+      }
+    } catch (error) {
+      // Handle network or API error
+      console.error('API call error:', error);
       actions.setSubmitting(false);
-      console.log(values);
-      // Perform registration logic here
-    }, 1000);
+    }
   };
-
+  
   return (
    <>
           <Stack spacing={4} maxW="400px" mx="auto">

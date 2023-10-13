@@ -1,9 +1,27 @@
 import { StatusCodes } from 'http-status-codes';
+<<<<<<< HEAD:server/src/services/package/package.service.ts
+import Package from '../../models/package.model';
+import { HttpError } from '../../utils';
+import User from '../../models/user.model';
+
+// const getPackages = async (query: Object) => {
+//   const packages = await Package.find(query);
+//   if (!packages) throw new HttpError(StatusCodes.NOT_FOUND, 'No packages found');
+
+//   return {
+//     status: StatusCodes.OK,
+//     result: packages
+//   };
+// };
+
+const addPackage = async (packageDetails: any) => {
+=======
 import Package from '../models/package.model';
 import { HttpError } from '../utils';
 import User from '../models/user.model';
 
 export const addPackage = async (packageDetails: any) => {
+>>>>>>> origin/main:server/src/services/package.service.ts
   const newpackage = new Package(packageDetails);
   await newpackage.save();
   return {
@@ -12,7 +30,7 @@ export const addPackage = async (packageDetails: any) => {
     Package: newpackage
   };
 };
-export const updatePackage = async (id: string, packageDetails: any) => {
+const updatePackage = async (id: string, packageDetails: any) => {
   const packageI = await Package.findByIdAndUpdate(
     { _id: id },
     {
@@ -37,7 +55,7 @@ export const updatePackage = async (id: string, packageDetails: any) => {
   };
 };
 
-export const deletePackage = async (id: string) => {
+const deletePackage = async (id: string) => {
   const deletedPackage = await Package.findOneAndDelete({ _id: id });
   if (!deletedPackage) throw new HttpError(StatusCodes.NOT_FOUND, 'Package Not Found');
   await User.updateMany({ 'package.type.packageID': id }, { $set: { package: {} } });
@@ -46,8 +64,8 @@ export const deletePackage = async (id: string) => {
     message: 'Package deleted successfully'
   };
 };
-export const getPackageById = async (packageID: string) => {
+const getPackageById = async (packageID: string) => {
   return await Package.findOne({ _id: packageID });
 };
 
-export default { addPackage, updatePackage, deletePackage, getPackageById };
+export { addPackage, updatePackage, deletePackage, getPackageById };
