@@ -1,14 +1,13 @@
 import express from 'express';
-const router = express.Router();
-
 import controller from '../controllers/controller';
 import { isAuthenticated, isAuthorized, queryParser } from '../middlewares';
+import { getPatients, selectPatient } from '../services/doctor.service';
+const UserMeRouter = express.Router();
 
-// import the user service
-import { getPatients, selectPatient } from '../services/userService';
-// http methods required for this router
+UserMeRouter.get('/me/patient/', (req, res) => controller(res)(getPatients)(req.body.doctorID, req.query));
+UserMeRouter.get('/me/patient/:id', (req, res) => controller(res)(selectPatient)(req.body.doctorID, req.params.id));
+UserMeRouter.put('/me/info/', (req, res) => {
+  //   controller(res)(updateInfo)(req.body);
+});
 
-router.get('/me/patient/', async (req, res) => controller(res)(getPatients)(req.query.doctorID));
-router.get('/me/patient/:id', async (req, res) => controller(res)(selectPatient)(req.query.doctorID, req.params.id));
-
-export default router;
+export default UserMeRouter;

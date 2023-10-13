@@ -1,6 +1,92 @@
-import UserModel, { IPatient, IUserDocument } from '../models/user.model';
+import UserModel, { IPatient, IUserDocument, IDoctor } from '../models/user.model';
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
+import mongoose, { Document } from 'mongoose';
+import AppointmentModel from '../models/appointment.model';
+const selectDoctor = async (doctorID: string) => {
+  // Use Mongoose to find the doctor by ID
+  const doctor = await UserModel.findById(doctorID);
+
+  // Check if the doctor was found
+  if (!doctor) {
+    return {
+      status: StatusCodes.NOT_FOUND,
+      message: 'No doctor with this ID',
+      result: null
+    };
+  }
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Doctor selected successfully',
+    result: doctor
+  };
+};
+//this method takes the doctor id and the req.query
+const getPatients = async (doctorID: string, query: Object) => {
+  console.log(query);
+  //get patients that have appointments with this doctor
+  const patients = await AppointmentModel.find({ doctorID }).find(query).select('patientID').populate('patientID');
+  if (!patients) {
+    return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
+  }
+  return {
+    status: StatusCodes.OK,
+    message: 'Patients retrieved successfully',
+    result: patients
+  };
+};
+
+//select a patient from the list of patients
+const selectPatient = async (doctorID: string, patientID: string) => {
+  //get patient that have appointments with this doctor and matches the patient id
+  const patient = await AppointmentModel.find({ doctorID, patientID }).select('patientID').populate('patientID');
+  //check if there is no patient with this id throw an error
+  if (!patient) {
+    return new HttpError(StatusCodes.NOT_FOUND, 'No patient with this ID');
+  }
+  return {
+    status: StatusCodes.OK,
+    message: 'Patient selected successfully',
+    result: patient
+  };
+};
+
+// const getDoctorDetails = async (doctorID: string) => {
+//   try {
+//     // Fetch the specific doctor by ID
+//     const doctor = await UserModel.findOne({ _id: doctorID });
+
+//     if (!doctor) {
+//       return {
+//         status: StatusCodes.NOT_FOUND,
+//         message: 'Doctor not found',
+//         result: null,
+//       };
+//     }
+
+//     // Return the doctor's details
+//     return {
+//       status: StatusCodes.OK,
+//       message: 'Doctor details',
+//       result: {
+//         name: doctor.name,
+//         hourRate: doctor.hourRate,
+//         hospital: doctor.hospital,
+//         educationBackground: doctor.educationBackground,
+//         specialty: doctor.specialty,
+//       },
+//     };
+//   } catch (error) {
+//     return {
+//       status: StatusCodes.INTERNAL_SERVER_ERROR,
+//       message: 'Error while fetching doctor details',
+//       result: null,
+//     };
+//   }
+// };
+
+////////////////////////////////////////////////
 const getAllDoctor = async (doctorName?: string, specialty?: string, date?: Date) => {
   try {
     let nameFilter = doctorName ? getNameFilter(doctorName) : null;
@@ -29,8 +115,11 @@ const getAllDoctor = async (doctorName?: string, specialty?: string, date?: Date
       addresses: 1,
       profileImage: 1,
       _id: 1
-    });
-    return { result: doctors as IUserDocument[] };
+    }).populate({ path: 'contract', select: 'markUpProfit' });
+    interface temp {
+      markUpProfit: number;
+    }
+    return { result: doctors as (IDoctor & Document & temp)[] };
   } catch (error) {
     throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors ');
   }
@@ -118,4 +207,4 @@ const getDateFilter = (date: Date) => {
 
   return filter;
 };
-export { getAllDoctor };
+export { getAllDoctor, getPatients, selectPatient };

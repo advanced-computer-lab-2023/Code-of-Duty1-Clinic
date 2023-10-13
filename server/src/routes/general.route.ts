@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
-import { login, logout, register, changePassword } from '../services/auth';
+import { login, logout, register, changePassword } from '../services/auth.service';
 import controller from '../controllers/controller';
-import { viewAllDoctorsForPatient } from '../services/patient';
-import { getAllDoctor } from '../services/doctor';
+import { viewAllDoctorsForPatient } from '../services/patient.service';
+import { getAllDoctor } from '../services/doctor.service';
 
 import { decodeJWTToken } from '../middlewares/authorization';
 
