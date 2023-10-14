@@ -151,9 +151,6 @@ const userSchema = new Schema<IUserDocument>(
           }
         }
       ],
-      required: function () {
-        return this.role === 'Patient';
-      },
       validate: {
         //TODO
         validator: function (arr: any) {
@@ -175,10 +172,7 @@ const userSchema = new Schema<IUserDocument>(
           name: { type: String, required: true },
           medicalRecord: { type: String, required: true }
         }
-      ],
-      required: function () {
-        return this.role === 'Patient';
-      }
+      ]
     },
     package: {
       type: {
@@ -193,8 +187,7 @@ const userSchema = new Schema<IUserDocument>(
           required: true
         },
         endDate: { type: Date, required: true }
-      },
-      required: false
+      }
     },
 
     hourRate: {
@@ -281,6 +274,7 @@ userSchema.methods.isCorrectPassword = function (enteredPassword: string): boole
 // https://docs.mongodb.com/manual/indexes/#default-id-index
 
 const UserModel = mongoose.model<IUserDocument>('User', userSchema);
+
 export default UserModel;
 export { FamilyMember, IEmergencyContact };
 export { IUser, IUserDocument, IPatient, IDoctor, ICommonUser };

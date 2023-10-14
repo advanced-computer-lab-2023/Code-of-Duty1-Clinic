@@ -1,8 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
-<<<<<<< HEAD:server/src/services/package/package.service.ts
-import Package from '../../models/package.model';
-import { HttpError } from '../../utils';
-import User from '../../models/user.model';
+import Package from '../models/package.model';
+import { HttpError } from '../utils';
+import User from '../models/user.model';
 
 // const getPackages = async (query: Object) => {
 //   const packages = await Package.find(query);
@@ -15,13 +14,6 @@ import User from '../../models/user.model';
 // };
 
 const addPackage = async (packageDetails: any) => {
-=======
-import Package from '../models/package.model';
-import { HttpError } from '../utils';
-import User from '../models/user.model';
-
-export const addPackage = async (packageDetails: any) => {
->>>>>>> origin/main:server/src/services/package.service.ts
   const newpackage = new Package(packageDetails);
   await newpackage.save();
   return {
