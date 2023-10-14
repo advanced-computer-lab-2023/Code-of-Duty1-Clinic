@@ -3,6 +3,7 @@ import { HttpError } from '../utils';
 import User from '../models/user.model';
 
 const updateInfo = async (info: any) => {
+  console.log(info);
   const id = info.id;
   if ('password' in info) throw new HttpError(StatusCodes.FORBIDDEN, "you can't modify the password");
   if ('role' in info) throw new HttpError(StatusCodes.FORBIDDEN, "you can't change the role ");
