@@ -5,13 +5,13 @@ import { getPatients, selectPatient, getAllDoctor } from '../services/doctor.ser
 import { addFamilyMember, getFamily, getPatient, viewAllDoctorsForPatient } from '../services//patient.service';
 import { filterAppointment } from '../services/appointment.service';
 import { decodeJWTToken } from '../middlewares/authorization';
-import { getUsers } from '../services/user.service';
+import { getUsers, updateInfo } from '../services/user.service';
 const router = express.Router();
 
 router.get('/me/patient/:id', (req, res) => controller(res)(selectPatient)(req.body.doctorID, req.params.id));
 router.get('/me/patient/', (req, res) => controller(res)(getPatients)(req.body.doctorID, req.query));
 router.put('/me/info/', (req, res) => {
-  //   controller(res)(updateInfo)(req.body);
+  controller(res)(updateInfo)(req.body);
 });
 router.post('/me/family', (req, res) => {
   // TODO if login is used we should add the patient id in the body form the jwt token
