@@ -38,12 +38,16 @@ router.get('/doctors', (req: Request, res: Response) => {
     delete req.body.decodedToken; // no need to keep in the body
     if (role === 'Patient') return controller(res)(viewAllDoctorsForPatient)(id, req.query);
   }
-
+  if (req.body.role === 'Patient' && req.body.id) {
+   
+    return controller(res)(viewAllDoctorsForPatient)(req.body.id, req.query);
+  }
   controller(res)(getAllDoctor)(req.query);
 });
 router.get('/doctors', (req: Request, res: Response) => controller(res)(getUsers)({ role: 'Doctor', ...req.query }));
 
 router.get('/:id', (req: Request, res: Response) => controller(res)(getUsers)({ _id: req.params.id }));
+
 router.post('/', (req: Request, res: Response) => {
   controller(res)(addAdmin)(req.body);
 });
@@ -53,4 +57,5 @@ router.delete('/', (req: Request, res: Response) => {
 router.delete('/:id', (req: Request, res: Response) => {
   controller(res)(deleteUser)(req.params.id);
 });
+
 export default router;

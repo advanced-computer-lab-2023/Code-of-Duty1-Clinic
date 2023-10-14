@@ -125,14 +125,30 @@ const selectPatient = async (doctorID: string, patientID: string) => {
 const calculateTimeStamp = (slot: { hours: number; minutes: number }) => slot.hours * 60 + slot.minutes;
 const getAllDoctor = async (query?: any) => {
   try {
-    let nameFilter = query?.doctorName ? getNameFilter(query.doctorName) : null;
+    let nameFilter = query?.name ? getNameFilter(query.name) : null;
     let specialtyFilter = query?.specialty ? { specialty: query.specialty.trim().toLowerCase() } : null;
 
     let filter = { role: 'Doctor' };
-    filter = { ...filter, ...(nameFilter || {}), ...(specialtyFilter || {}) };
+    filter = { ...filter, ...(nameFilter || {}), ...(specialtyFilter || {}), role: 'Doctor' };
 
-    const doctors: IDoctor[] = await UserModel.find(filter).populate('contractID', 'markUpProfit', Contract);
-
+    const doctors: IDoctor[] = await UserModel.find(filter, {
+      contractID: 1,
+      name: 1,
+      specialty: 1,
+      weeklySlots: 1,
+      hourRate: 1,
+      hospital: 1,
+      vacations: 1,
+      gender: 1,
+      phone: 1,
+      addresses: 1,
+      profileImage: 1,
+      _id: 1
+    }).populate({
+      path: 'contractID',
+      model: Contract
+    });
+    console.log(doctors);
     if (query?.date) {
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const day: string = daysOfWeek[query.date.getDay()];
@@ -151,9 +167,16 @@ const getAllDoctor = async (query?: any) => {
       });
     }
     interface markUpProfitType {
-      markUpProfit: number;
+      contractID: { markUpProfit: number };
     }
-    return { result: doctors as (IDoctor & Document & markUpProfitType)[], status: StatusCodes.OK };
+    console.log('-----------------/****/*/*/****************');
+    doctors.forEach((e) => {
+      console.log((e as any).contractID);
+    });
+
+    console.log('-----------------/****/*/*/****************');
+
+    return { result: doctors as any[], status: StatusCodes.OK };
   } catch (error) {
     throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors' + error);
   }
@@ -172,74 +195,30 @@ const getNameFilter = (doctorName: string): object | null => {
     nameFilter = {
       $or: [
         {
-          $or: [
-            { 'name.first': { $regex: names[0], $options: 'i' } },
-            { 'name.middle': { $regex: names[1], $options: 'i' } }
-          ]
+          'name.first': { $regex: names[0], $options: 'i' },
+          'name.middle': { $regex: names[1], $options: 'i' }
         },
         {
-          $or: [
-            { 'name.first': { $regex: names[0], $options: 'i' } },
-            { 'name.last': { $regex: names[1], $options: 'i' } }
-          ]
+          'name.first': { $regex: names[0], $options: 'i' },
+          'name.last': { $regex: names[1], $options: 'i' }
         },
         {
-          $or: [
-            { 'name.middle': { $regex: names[0], $options: 'i' } },
-            { 'name.last': { $regex: names[1], $options: 'i' } }
-          ]
+          'name.middle': { $regex: names[0], $options: 'i' },
+          'name.last': { $regex: names[1], $options: 'i' }
         }
       ]
     };
   } else if (names.length == 1) {
-    nameFilter = [
-      {
-        $or: [
-          { 'name.first': { $regex: names[0], $options: 'i' } },
-          { 'name.middle': { $regex: names[0], $options: 'i' } },
-          { 'name.last': { $regex: names[0], $options: 'i' } }
-        ]
-      }
-    ];
+    nameFilter = {
+      $or: [
+        { 'name.first': { $regex: names[0], $options: 'i' } },
+        { 'name.middle': { $regex: names[0], $options: 'i' } },
+        { 'name.last': { $regex: names[0], $options: 'i' } }
+      ]
+    };
   }
 
   return nameFilter;
 };
 
-const getDateFilter = (date: Date) => {
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const day = daysOfWeek[date.getDay()];
-  const hours = date.getHours();
-  const minutes = date.getMinutes;
-
-  const filter = {
-    $and: [
-      { [`weeklySlots.${day}`]: { $exists: true } },
-      {
-        $or: [
-          { [`weeklySlots.${day}.from.hours`]: { $lt: hours } },
-          {
-            $and: [
-              { [`weeklySlots.${day}.from.hours`]: { $eq: hours } },
-              { [`weeklySlots.${day}.from.minutes`]: { $lte: minutes } }
-            ]
-          }
-        ]
-      },
-      {
-        $or: [
-          { [`weeklySlots.${day}.to.hours`]: { $gt: hours } },
-          {
-            $and: [
-              { [`weeklySlots.${day}.to.hours`]: { $eq: hours } },
-              { [`weeklySlots.${day}.to.minutes`]: { $gte: minutes } }
-            ]
-          }
-        ]
-      }
-    ]
-  };
-
-  return filter;
-};
 export { getAllDoctor, getPatients, selectPatient };
