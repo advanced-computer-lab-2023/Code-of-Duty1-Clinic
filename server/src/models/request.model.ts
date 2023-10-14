@@ -14,7 +14,7 @@ interface IRequest {
 type IRequestDocument = IRequest & Document;
 const requestSchema = new Schema<IRequestDocument>({
   medicID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  ID: { type: String, required: true },
+  ID: { type: String },
   degree: { type: [String], required: true },
   licenses: { type: [String], required: true },
   status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], required: true },

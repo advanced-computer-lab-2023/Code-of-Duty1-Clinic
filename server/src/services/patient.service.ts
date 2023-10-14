@@ -6,6 +6,7 @@ import { getPackageById } from './package.service';
 import { HttpError } from '../utils';
 import { StatusCodes } from 'http-status-codes';
 import PrescriptionModel from '../models/prescription.model';
+import AppointmentModel from '../models/appointment.model';
 const hasActivePackage = (patient: (IPatient & Document) | IPatient): Boolean => {
   if (patient.package && patient.package.packageID && patient.package.packageStatus) {
     if (patient.package.endDate && patient.package.endDate.getTime() > Date.now()) {
@@ -29,10 +30,11 @@ const addFamilyMember = async (body: any) => {
       body.nationalID,
       body.birthDate,
       body.gender,
-      body.relation
+      body.relation,
+      body.phone || null
     );
   } else if (body.userID) {
-    return await addUserFamilyMember(body.packageID, body.userID, body.relation, body.nationalID);
+    return await addUserFamilyMember(body.patientID, body.userID, body.relation, body.nationalID);
   }
   throw new HttpError(
     StatusCodes.BAD_REQUEST,
@@ -102,7 +104,8 @@ const addNonUserFamilyMember = async (
   nationalID: string,
   birthDate: Date,
   gender: string,
-  relation: string
+  relation: string,
+  phone: string
 ) => {
   try {
     const filter = { _id: new mongoose.Types.ObjectId(patientID) };
@@ -113,7 +116,8 @@ const addNonUserFamilyMember = async (
           nationalID: nationalID,
           birthDate: birthDate,
           gender: gender,
-          relation: relation
+          relation: relation,
+          phone: phone
         }
       }
     };
@@ -130,7 +134,7 @@ const addNonUserFamilyMember = async (
   }
 };
 
-const viewAllDoctorsForPatient = async (patientId: string, doctorName?: string, specialty?: string, date?: Date) => {
+const viewAllDoctorsForPatient = async (patientId: string, query?: any) => {
   try {
     var sessionDiscount = 0;
     const patient: IUserDocument | null = await getPatientByID(patientId);
@@ -138,7 +142,7 @@ const viewAllDoctorsForPatient = async (patientId: string, doctorName?: string, 
     const pkg: IPackageDocument | null = await getPackageById(pkgID?.toString()!);
     sessionDiscount = pkg?.sessionDiscount || 0;
 
-    let doctors = (await getAllDoctor(doctorName, specialty, date)).result;
+    let doctors = (await getAllDoctor(query)).result;
     if (!Array.isArray(doctors)) {
       doctors = [doctors];
     }
@@ -245,9 +249,22 @@ const selectPrescription = async (prescriptionID: string) => {
     };
   }
 };
-const getPatientHealthRecord = async (patientID: string) => {
+const getPatient = async (patientID: string, wantsMedicalHistory: boolean, doctorID?: string) => {
   try {
-    const result = await UserModel.findOne({ _id: new mongoose.Types.ObjectId(patientID) }).select('medicalHistory');
+    const notFoundMessage = {
+      status: StatusCodes.NOT_FOUND,
+      message: 'No patient found with this ID'
+    };
+    if (doctorID) {
+      const commonAppointments = await AppointmentModel.find({ patientID: patientID, doctorID: doctorID });
+      if (!commonAppointments) return notFoundMessage;
+    }
+    let select: any = { password: 0, isEmailVerified: 0, addresses: 0, _id: 0 };
+    if (wantsMedicalHistory) {
+      select = { medicalHistory: 1 };
+    }
+    const result = await UserModel.findOne({ _id: new mongoose.Types.ObjectId(patientID), role: 'Patient' }, select);
+    if (!result) return notFoundMessage;
     return {
       result: result,
       status: StatusCodes.OK,
@@ -257,6 +274,7 @@ const getPatientHealthRecord = async (patientID: string) => {
     throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Error happened while retrieving health record${e}`);
   }
 };
+
 export {
   viewAllDoctorsForPatient,
   calculateFinalSessionPrice,
@@ -265,6 +283,6 @@ export {
   selectPrescription,
   getFamily,
   hasActivePackage,
-  getPatientHealthRecord,
+  getPatient,
   addFamilyMember
 };

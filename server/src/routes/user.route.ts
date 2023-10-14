@@ -1,8 +1,10 @@
 import express, { Request, Response } from 'express';
 import controller from '../controllers/controller';
-import { isAuthenticated, isAuthorized } from '../middlewares';
-import { getPatients, selectPatient } from '../services/doctor.service';
-import { addFamilyMember } from '../services/patient.service';
+import { isAuthenticated, isAuthorized, queryParser } from '../middlewares';
+import { getPatients, selectPatient, getAllDoctor } from '../services/doctor.service';
+import { addFamilyMember, getFamily, getPatient, viewAllDoctorsForPatient } from '../services//patient.service';
+import { filterAppointment } from '../services/appointment.service';
+import { decodeJWTToken } from '../middlewares/authorization';
 import { getUsers } from '../services/user.service';
 const router = express.Router();
 
@@ -15,7 +17,30 @@ router.post('/me/family', (req, res) => {
   // TODO if login is used we should add the patient id in the body form the jwt token
   controller(res)(addFamilyMember)(req.body);
 });
+router.get('/me/family', (req, res) => {
+  // TODO if login is used we should add the patient id in the body form the jwt token
+  controller(res)(getFamily)(req.body.patientID);
+});
+router.get('/me/appointments', (req, res) => {
+  controller(res)(filterAppointment)(req.query);
+});
+router.get('/me/patient/:id/info', (req, res) => {
+  controller(res)(getPatient)(req.params.id);
+});
+router.get('/me/patient/:id/info/medicalhistory', (req, res) => {
+  controller(res)(getPatient)(req.params.id, true);
+});
+router.get('/doctors', (req: Request, res: Response) => {
+  if (req.body.decodedToken) {
+    // req.body.decodedToken is added by decodeJWTToken middleware
+    const id = req.body.decodedToken.id;
+    const role = req.body.decodedToken.role;
+    delete req.body.decodedToken; // no need to keep in the body
+    if (role === 'Patient') return controller(res)(viewAllDoctorsForPatient)(id, req.query);
+  }
 
+  controller(res)(getAllDoctor)(req.query);
+});
 router.get('/doctors', (req: Request, res: Response) => controller(res)(getUsers)({ role: 'Doctor', ...req.query }));
 
 router.get('/:id', (req: Request, res: Response) => controller(res)(getUsers)({ _id: req.params.id }));

@@ -21,6 +21,6 @@ app.use('/auth', loginRouter);
 app.use('/packages', packageRouter);
 app.use('/users', UserMeRouter);
 app.use('/', generalRouter);
-app.all('*', (req: Request, res: Response) => res.status(404).send('NOT FOUND'));
+// app.all('*', (req: Request, res: Response) => res.status(404).send('NOT F5551OUND'));
 
 export default app;

@@ -24,7 +24,7 @@ const generateFakeUser = async (): Promise<IUser> => {
     gender: randomArrayElement(['Male', 'Female']),
     phone: faker.phone.number(),
     addresses: [faker.location.secondaryAddress()],
-    role: 'Patient', //randomArrayElement(['Patient', 'Doctor', 'Administrator']),
+    role: 'Doctor', //randomArrayElement(['Patient', 'Doctor', 'Administrator']),
     profileImage: faker.image.avatar(),
     isEmailVerified: faker.number.int() % 2 === 0,
     wallet: faker.number.int(),
@@ -165,6 +165,47 @@ const generateFakeData = async (): Promise<void> => {
   const fakeUsers: IUser[] = await Promise.all(Array.from({ length: NUM_USERS_TO_GENERATE }, generateFakeUser));
   console.log(fakeUsers);
 };
+const generateFakeAppointment = () => {
+  const fakeAppointment = {
+    doctorID: 'a',
+    patientID: 'a',
+    status: randomArrayElement(['Upcoming', 'Completed', 'Cancelled', 'Rescheduled']),
+    sessionPrice: faker.number.int({ min: 250, max: 1000 }),
+    startTime: faker.date.future(),
+    endTime: faker.date.future(),
+    isFollowUp: faker.number.int() % 2 === 0
+  };
 
+  return fakeAppointment;
+};
+
+const generateFakeRequest = () => {
+  const degreeCount = faker.number.int({ min: 1, max: 3 });
+  const licenseCount = faker.number.int({ min: 1, max: 5 });
+
+  const degrees = Array.from({ length: degreeCount }, () => faker.finance.accountName);
+  const licenses = Array.from({ length: licenseCount }, () => faker.number.int());
+
+  return {
+    medicID: '',
+    ID: faker.number.int() + 'f',
+    degree: degrees,
+    licenses: licenses,
+    status: 'Pending',
+    date: faker.date.past()
+  };
+};
+const generateContract = () => {
+  return {
+    doctorID: '',
+    start: faker.date.past(),
+    state: 'Accepted',
+    end: faker.date.future(),
+    markUpProfit: faker.number.int()
+  };
+};
 // generateFakeData().then(() => console.log('Fake data generated successfully.'));
-console.log(generateFamilyMember());
+// console.log(generateFamilyMember());
+// console.log(generateFakeAppointment());
+console.log(generateContract());
+// generateContract();

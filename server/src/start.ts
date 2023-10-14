@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import config from '../config/DB&ServerConfig';
 import app from './server';
+import AppointmentModel from './models/appointment.model';
+import ContractModel from './models/contract.model';
 console.log(config.DB.URL.toString());
 mongoose
   .connect(config.DB.URL.toString(), {

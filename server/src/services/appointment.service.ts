@@ -30,36 +30,17 @@ const getPatients = async (doctorID: string) => {
     result: patients
   };
 };
-const filterAppointment = async (
-  doctorID?: string,
-  patientID?: string,
-  status?: string,
-  startDate?: Date,
-  endDate?: Date
-) => {
-  try {
-    let filter = {};
-    if (doctorID) filter = { ...filter, doctorID: new mongoose.Types.ObjectId(doctorID) };
-    if (patientID) filter = { ...filter, patientID: new mongoose.Types.ObjectId(patientID) };
-    if (status) filter = { ...filter, status: status };
-    if (startDate && endDate) {
-      filter = {
-        ...filter,
-        startTime: { $gte: startDate, $lte: endDate },
-        endTime: { $gte: startDate, $lte: endDate }
-      };
-    } else if (startDate) {
-      filter = { ...filter, startTime: { $lte: startDate }, endTime: { $gte: startDate } };
-    } else {
-      filter = { ...filter, startTime: { $lte: { endDate } }, endTime: { $gte: endDate } };
-    }
-    const result = await AppointmentModel.find(filter);
-    return {
-      result: result,
-      status: StatusCodes.OK,
-      message: 'Successfully retrieved appointments'
-    };
-  } catch (e) {
-    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Error happened while retrieving appointments${e}`);
+
+const filterAppointment = async (query: any) => {
+  if (query.startTime && query.endTime) {
+    query.startTime = { $gte: query.startTime };
+    query.endTime = { $lte: query.endTime };
   }
+  const result = await AppointmentModel.find(query);
+  return {
+    result: result,
+    status: StatusCodes.OK,
+    message: 'Successfully retrieved appointments'
+  };
 };
+export { filterAppointment };
