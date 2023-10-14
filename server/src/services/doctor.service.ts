@@ -22,11 +22,45 @@ const selectDoctor = async (doctorID: string) => {
     result: doctor
   };
 };
+
+interface PatientQuery {
+  name:
+    | string
+    | {
+        first: string;
+        middle: string;
+        last: string;
+      };
+}
 //this method takes the doctor id and the req.query
-const getPatients = async (doctorID: string, query: Object) => {
-  console.log(query);
+const getPatients = async (doctorID: string, query: PatientQuery) => {
   //get patients that have appointments with this doctor
+  if (query.name && typeof query.name === 'string') {
+    // Convert the string name query into an object with first, middle, and last properties
+    const nameParts = query.name.split(' ');
+    query.name = {
+      first: nameParts[0] || '',
+      middle: nameParts[1] || '',
+      last: nameParts[2] || ''
+    };
+    // console.log(query);
+    const patients = await AppointmentModel.find({ doctorID }).select('patientID');
+    const IDs: mongoose.Schema.Types.ObjectId[] = [];
+    patients.forEach((patient) => {
+      IDs.push(patient.patientID);
+    });
+    // console.log(IDs);
+    const filteredPatients = await UserModel.find({ _id: { $in: IDs }, name: query.name });
+    // console.log(filteredPatients);
+    return {
+      status: StatusCodes.OK,
+      message: 'Patients retrieved successfully',
+      result: filteredPatients
+    };
+  }
+
   const patients = await AppointmentModel.find({ doctorID }).find(query).select('patientID').populate('patientID');
+
   if (!patients) {
     return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
   }
