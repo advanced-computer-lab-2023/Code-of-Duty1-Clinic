@@ -1,4 +1,4 @@
-import UserModel, { IPatient, IUserDocument, IUser, IDoctor } from '../models/user.model';
+import UserModel, { IPatient, IUserDocument, IUser, IDoctor, FamilyMember } from '../models/user.model';
 import PackageModel, { IPackageDocument } from '../models/package.model';
 import mongoose, { Document } from 'mongoose';
 import { getAllDoctor } from './doctor.service';
@@ -16,6 +16,118 @@ const hasActivePackage = (patient: (IPatient & Document) | IPatient): Boolean =>
 };
 const getPatientByID = async (patientId: string) => {
   return UserModel.findOne({ _id: new mongoose.Types.ObjectId(patientId) });
+};
+const addFamilyMember = async (body: any) => {
+  console.log(body);
+  if (!(body.patientID && body.relation && body.nationalID)) {
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide patientID, relation and nationalID');
+  }
+  if (body.name && body.birthDate && body.gender) {
+    return await addNonUserFamilyMember(
+      body.patientID,
+      body.name,
+      body.nationalID,
+      body.birthDate,
+      body.gender,
+      body.relation
+    );
+  } else if (body.userID) {
+    return await addUserFamilyMember(body.packageID, body.userID, body.relation, body.nationalID);
+  }
+  throw new HttpError(
+    StatusCodes.BAD_REQUEST,
+    'Either name, nationalID,gender,birthDate, and phone should be provided, or userID and relation should be provided.'
+  );
+};
+const addUserFamilyMember = async (patientID: string, userID: string, relation: string, nationalID: string) => {
+  try {
+    const filter = { _id: new mongoose.Types.ObjectId(patientID) };
+    const update = {
+      $push: {
+        family: {
+          userID: new mongoose.Types.ObjectId(userID),
+          relation: relation,
+          nationalID: nationalID
+        }
+      }
+    };
+
+    const updatedUser = await UserModel.findOneAndUpdate(filter, update, { new: true }).catch((e) => {
+      console.log(e);
+    });
+    return {
+      result: updatedUser,
+      status: StatusCodes.OK,
+      message: 'Family member added successfully'
+    };
+  } catch (error) {
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member: ${error}`);
+  }
+};
+
+const getFamily = async (patientID: string) => {
+  try {
+    const family = await UserModel.find({
+      _id: new mongoose.Types.ObjectId(patientID)
+    }).select({
+      family: 1
+    });
+    let result = [];
+    for (const member of family as unknown as FamilyMember[]) {
+      let memberResult = { ...(member as any).toObject() };
+      if (memberResult.userID) {
+        const memberInfo = await UserModel.findById(memberResult.userID as mongoose.Types.ObjectId).select({
+          name: 1,
+          birthDate: 1,
+          gender: 1,
+          phone: 1
+        });
+        memberResult = { ...memberResult, ...memberInfo!.toObject() };
+        delete memberResult.userID;
+      }
+      result.push(memberResult);
+    }
+    return {
+      result: result,
+      status: StatusCodes.OK,
+      message: 'Family members retrieved successfully'
+    };
+  } catch (e) {
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member${e}`);
+  }
+};
+const addNonUserFamilyMember = async (
+  patientID: string,
+  memberName: string,
+  nationalID: string,
+  birthDate: Date,
+  gender: string,
+  relation: string
+) => {
+  try {
+    const filter = { _id: new mongoose.Types.ObjectId(patientID) };
+    const update = {
+      $push: {
+        family: {
+          name: memberName,
+          nationalID: nationalID,
+          birthDate: birthDate,
+          gender: gender,
+          relation: relation
+        }
+      }
+    };
+
+    const updatedUser = await UserModel.findOneAndUpdate(filter, update, { new: true });
+
+    return {
+      result: updatedUser,
+      status: StatusCodes.OK,
+      message: 'Family member added successfully'
+    };
+  } catch (error) {
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member: ${error}`);
+  }
 };
 
 const viewAllDoctorsForPatient = async (patientId: string, doctorName?: string, specialty?: string, date?: Date) => {
@@ -133,10 +245,26 @@ const selectPrescription = async (prescriptionID: string) => {
     };
   }
 };
+const getPatientHealthRecord = async (patientID: string) => {
+  try {
+    const result = await UserModel.findOne({ _id: new mongoose.Types.ObjectId(patientID) }).select('medicalHistory');
+    return {
+      result: result,
+      status: StatusCodes.OK,
+      message: 'Successfully retrieved health record'
+    };
+  } catch (e) {
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Error happened while retrieving health record${e}`);
+  }
+};
 export {
   viewAllDoctorsForPatient,
   calculateFinalSessionPrice,
   getAllPrescription,
   filterPrescriptions,
-  selectPrescription
+  selectPrescription,
+  getFamily,
+  hasActivePackage,
+  getPatientHealthRecord,
+  addFamilyMember
 };
