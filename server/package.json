@@ -1,5 +1,5 @@
 {
-  "name": "Clinic",
+  "name": "clinic",
   "version": "1.0.0",
   "description": "Full-stack website",
   "main": "server.ts",
@@ -40,7 +40,7 @@
     "@types/compression": "^1.7.3",
     "@types/cors": "^2.8.14",
     "@types/express": "^4.17.18",
-    "@types/faker": "^6.6.9",
+    "@faker-js/faker": "^8.1.0",
     "@types/jest": "^29.5.5",
     "@types/jsonwebtoken": "^9.0.3",
     "@types/morgan": "^1.9.6",
