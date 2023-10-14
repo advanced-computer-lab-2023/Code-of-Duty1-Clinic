@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
 import User from '../models/user.model';
 
-export const updateInfo = async (info: any) => {
+const updateInfo = async (info: any) => {
   console.log('you got there ');
   if ('password' in info) throw new HttpError(StatusCodes.FORBIDDEN, "you can't modify the password");
   if ('role' in info) throw new HttpError(StatusCodes.FORBIDDEN, "you can't change the role ");
@@ -15,4 +15,15 @@ export const updateInfo = async (info: any) => {
     user: updatedUser
   };
 };
-export default { updateInfo };
+
+const getUsers = async (query: Object) => {
+  const users = await User.find(query).select('-password');
+  if (!users) throw new HttpError(StatusCodes.NOT_FOUND, 'no users found');
+
+  return {
+    status: StatusCodes.OK,
+    result: users
+  };
+};
+
+export { updateInfo, getUsers };

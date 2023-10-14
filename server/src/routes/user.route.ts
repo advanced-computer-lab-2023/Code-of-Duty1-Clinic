@@ -1,17 +1,23 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import controller from '../controllers/controller';
-import { isAuthenticated, isAuthorized, queryParser } from '../middlewares';
+import { isAuthenticated, isAuthorized } from '../middlewares';
 import { getPatients, selectPatient } from '../services/doctor.service';
-import { addFamilyMember } from '../services//patient.service';
-const UserMeRouter = express.Router();
+import { addFamilyMember } from '../services/patient.service';
+import { getUsers } from '../services/user.service';
+const router = express.Router();
 
-UserMeRouter.get('/me/patient/', (req, res) => controller(res)(getPatients)(req.body.doctorID, req.query));
-UserMeRouter.get('/me/patient/:id', (req, res) => controller(res)(selectPatient)(req.body.doctorID, req.params.id));
-UserMeRouter.put('/me/info/', (req, res) => {
+router.get('/me/patient/:id', (req, res) => controller(res)(selectPatient)(req.body.doctorID, req.params.id));
+router.get('/me/patient/', (req, res) => controller(res)(getPatients)(req.body.doctorID, req.query));
+router.put('/me/info/', (req, res) => {
   //   controller(res)(updateInfo)(req.body);
 });
-UserMeRouter.post('/me/family', (req, res) => {
+router.post('/me/family', (req, res) => {
   // TODO if login is used we should add the patient id in the body form the jwt token
   controller(res)(addFamilyMember)(req.body);
 });
-export default UserMeRouter;
+
+router.get('/doctors', (req: Request, res: Response) => controller(res)(getUsers)({ role: 'Doctor', ...req.query }));
+
+router.get('/:id', (req: Request, res: Response) => controller(res)(getUsers)({ _id: req.params.id }));
+
+export default router;
