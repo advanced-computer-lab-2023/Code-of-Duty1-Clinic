@@ -83,7 +83,7 @@ const selectPatient = async (doctorID: string, patientID: string) => {
   return {
     status: StatusCodes.OK,
     message: 'Patient selected successfully',
-    result: patient
+    result: (patient as any)[0].patientID
   };
 };
 
