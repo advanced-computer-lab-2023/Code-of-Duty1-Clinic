@@ -24,7 +24,7 @@ const generateFakeUser = async (): Promise<IUser> => {
     gender: randomArrayElement(['Male', 'Female']),
     phone: faker.phone.number(),
     addresses: [faker.location.secondaryAddress()],
-    role: randomArrayElement(['Patient', 'Doctor', 'Administrator']),
+    role: 'Patient', //randomArrayElement(['Patient', 'Doctor', 'Administrator']),
     profileImage: faker.image.avatar(),
     isEmailVerified: faker.number.int() % 2 === 0,
     wallet: faker.number.int(),
@@ -159,11 +159,12 @@ const generateFakeVacations = (): { from: Date; to: Date }[] => {
   return vacations;
 };
 
-const NUM_USERS_TO_GENERATE = 10;
+const NUM_USERS_TO_GENERATE = 1;
 
 const generateFakeData = async (): Promise<void> => {
   const fakeUsers: IUser[] = await Promise.all(Array.from({ length: NUM_USERS_TO_GENERATE }, generateFakeUser));
   console.log(fakeUsers);
 };
 
-generateFakeData().then(() => console.log('Fake data generated successfully.'));
+// generateFakeData().then(() => console.log('Fake data generated successfully.'));
+console.log(generateFamilyMember());

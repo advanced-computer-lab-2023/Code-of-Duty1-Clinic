@@ -17,25 +17,54 @@ const hasActivePackage = (patient: (IPatient & Document) | IPatient): Boolean =>
 const getPatientByID = async (patientId: string) => {
   return UserModel.findOne({ _id: new mongoose.Types.ObjectId(patientId) });
 };
-
-const addUserFamilyMember = async (patientID: string, userID: string, relation: string) => {
-  const filter = { _id: patientID };
-  const update = {
-    userID: new mongoose.Types.ObjectId(userID),
-    relation: relation
-  };
-
-  const updatedUser = await UserModel.findOneAndUpdate(filter, update, { new: true })
-    .then((user) => user)
-    .catch((e) => {
-      throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member${e}`);
-    });
-  return {
-    result: updatedUser,
-    status: StatusCodes.OK,
-    message: 'family member added successfully'
-  };
+const addFamilyMember = async (body: any) => {
+  console.log(body);
+  if (!(body.patientID && body.relation && body.nationalID)) {
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide patientID, relation and nationalID');
+  }
+  if (body.name && body.birthDate && body.gender) {
+    return await addNonUserFamilyMember(
+      body.patientID,
+      body.name,
+      body.nationalID,
+      body.birthDate,
+      body.gender,
+      body.relation
+    );
+  } else if (body.userID) {
+    return await addUserFamilyMember(body.packageID, body.userID, body.relation, body.nationalID);
+  }
+  throw new HttpError(
+    StatusCodes.BAD_REQUEST,
+    'Either name, nationalID,gender,birthDate, and phone should be provided, or userID and relation should be provided.'
+  );
 };
+const addUserFamilyMember = async (patientID: string, userID: string, relation: string, nationalID: string) => {
+  try {
+    const filter = { _id: new mongoose.Types.ObjectId(patientID) };
+    const update = {
+      $push: {
+        family: {
+          userID: new mongoose.Types.ObjectId(userID),
+          relation: relation,
+          nationalID: nationalID
+        }
+      }
+    };
+
+    const updatedUser = await UserModel.findOneAndUpdate(filter, update, { new: true }).catch((e) => {
+      console.log(e);
+    });
+    return {
+      result: updatedUser,
+      status: StatusCodes.OK,
+      message: 'Family member added successfully'
+    };
+  } catch (error) {
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member: ${error}`);
+  }
+};
+
 const getFamily = async (patientID: string) => {
   try {
     const family = await UserModel.find({
@@ -75,26 +104,32 @@ const addNonUserFamilyMember = async (
   gender: string,
   relation: string
 ) => {
-  const filter = { _id: new mongoose.Types.ObjectId(patientID) };
-  const update = {
-    name: memberName,
-    nationalID: nationalID,
-    birthDate: birthDate,
-    gender: gender,
-    relation: relation
-  };
+  try {
+    const filter = { _id: new mongoose.Types.ObjectId(patientID) };
+    const update = {
+      $push: {
+        family: {
+          name: memberName,
+          nationalID: nationalID,
+          birthDate: birthDate,
+          gender: gender,
+          relation: relation
+        }
+      }
+    };
 
-  const updatedUser = await UserModel.findOneAndUpdate(filter, update, { new: true })
-    .then((user) => user)
-    .catch((e) => {
-      throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member${e}`);
-    });
-  return {
-    result: updatedUser,
-    status: StatusCodes.OK,
-    message: 'family member added successfully'
-  };
+    const updatedUser = await UserModel.findOneAndUpdate(filter, update, { new: true });
+
+    return {
+      result: updatedUser,
+      status: StatusCodes.OK,
+      message: 'Family member added successfully'
+    };
+  } catch (error) {
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member: ${error}`);
+  }
 };
+
 const viewAllDoctorsForPatient = async (patientId: string, doctorName?: string, specialty?: string, date?: Date) => {
   try {
     var sessionDiscount = 0;
@@ -230,5 +265,6 @@ export {
   selectPrescription,
   getFamily,
   hasActivePackage,
-  getPatientHealthRecord
+  getPatientHealthRecord,
+  addFamilyMember
 };
