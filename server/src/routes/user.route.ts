@@ -5,7 +5,7 @@ import { getPatients, selectPatient, getAllDoctor } from '../services/doctor.ser
 import { addFamilyMember, getFamily, getPatient, viewAllDoctorsForPatient } from '../services//patient.service';
 import { filterAppointment } from '../services/appointment.service';
 import { decodeJWTToken } from '../middlewares/authorization';
-import { getUsers, updateInfo } from '../services/user.service';
+import { addAdmin, deleteUser, deleteUsers, getUsers, updateInfo } from '../services/user.service';
 const router = express.Router();
 
 router.get('/me/patient/:id', (req, res) => controller(res)(selectPatient)(req.body.doctorID, req.params.id));
@@ -44,5 +44,13 @@ router.get('/doctors', (req: Request, res: Response) => {
 router.get('/doctors', (req: Request, res: Response) => controller(res)(getUsers)({ role: 'Doctor', ...req.query }));
 
 router.get('/:id', (req: Request, res: Response) => controller(res)(getUsers)({ _id: req.params.id }));
-
+router.post('/', (req: Request, res: Response) => {
+  controller(res)(addAdmin)(req.body);
+});
+router.delete('/', (req: Request, res: Response) => {
+  controller(res)(deleteUsers)();
+});
+router.delete('/:id', (req: Request, res: Response) => {
+  controller(res)(deleteUser)(req.params.id);
+});
 export default router;
