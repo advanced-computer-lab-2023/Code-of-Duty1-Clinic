@@ -5,17 +5,21 @@ import { generateToken } from '../utils';
 import Request from '../models/request.model';
 import User from '../models/user.model';
 const login = async (username: string, password: string) => {
-  console.log(username, password);
+  // console.log(username, password);
   if (!(username && password)) throw new HttpError(StatusCodes.BAD_REQUEST, 'Username and password are required');
   const user = await userModel.findOne({ username: username });
   if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
-  const isCorrect: Boolean = await user!.isCorrectPassword(password);
+  console.log(user.password);
+  console.log(password);
+  console.log(user.password === password);
+  const isCorrect: boolean = await user.isCorrectPassword(password);
+  console.log(isCorrect);
   if (!isCorrect) throw new HttpError(StatusCodes.UNAUTHORIZED, 'Incorrect password');
-  const token = generateToken(user!._id, user!.role);
+  // const token = generateToken(user!._id, user!.role);
   return {
     status: StatusCodes.OK,
-    message: 'Login successful',
-    JWTToken: token
+    message: 'Login successful'
+    // JWTToken: token
   };
 };
 const logout = () => {

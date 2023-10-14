@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(queryParser);
 app.use('/auth', loginRouter);
 app.use('/packages', packageRouter);
-app.use('/user/me', UserMeRouter);
+app.use('/users', UserMeRouter);
 app.use('/', generalRouter);
 app.all('*', (req: Request, res: Response) => res.status(404).send('NOT FOUND'));
 

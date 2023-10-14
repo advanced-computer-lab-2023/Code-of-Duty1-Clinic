@@ -22,15 +22,47 @@ const selectDoctor = async (doctorID: string) => {
     result: doctor
   };
 };
-const getPatients = async (doctorID: string) => {
+
+interface PatientQuery {
+  name:
+    | string
+    | {
+        first: string;
+        middle: string;
+        last: string;
+      };
+}
+//this method takes the doctor id and the req.query
+const getPatients = async (doctorID: string, query: PatientQuery) => {
   //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
-  if (!patients) {
-    return {
-      status: StatusCodes.NOT_FOUND,
-      message: 'No patient',
-      result: null
+  if (query.name && typeof query.name === 'string') {
+    // Convert the string name query into an object with first, middle, and last properties
+    const nameParts = query.name.split(' ');
+    query.name = {
+      first: nameParts[0] || '',
+      middle: nameParts[1] || '',
+      last: nameParts[2] || ''
     };
+    // console.log(query);
+    const patients = await AppointmentModel.find({ doctorID }).select('patientID');
+    const IDs: mongoose.Schema.Types.ObjectId[] = [];
+    patients.forEach((patient) => {
+      IDs.push(patient.patientID);
+    });
+    // console.log(IDs);
+    const filteredPatients = await UserModel.find({ _id: { $in: IDs }, name: query.name });
+    // console.log(filteredPatients);
+    return {
+      status: StatusCodes.OK,
+      message: 'Patients retrieved successfully',
+      result: filteredPatients
+    };
+  }
+
+  const patients = await AppointmentModel.find({ doctorID }).find(query).select('patientID').populate('patientID');
+
+  if (!patients) {
+    return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
   }
   return {
     status: StatusCodes.OK,
@@ -41,39 +73,16 @@ const getPatients = async (doctorID: string) => {
 
 //select a patient from the list of patients
 const selectPatient = async (doctorID: string, patientID: string) => {
-  //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID }).select('patientID').populate('patientID');
-  const patient = patients.find((patient: any) => patient._id.toString() === patientID);
+  //get patient that have appointments with this doctor and matches the patient id
+  const patient = await AppointmentModel.find({ doctorID, patientID }).select('patientID').populate('patientID');
   //check if there is no patient with this id throw an error
   if (!patient) {
-    return {
-      status: StatusCodes.NOT_FOUND,
-      message: 'No patient with this id',
-      result: null
-    };
+    return new HttpError(StatusCodes.NOT_FOUND, 'No patient with this ID');
   }
   return {
     status: StatusCodes.OK,
     message: 'Patient selected successfully',
     result: patient
-  };
-};
-const getPatientsByName = async (doctorID: string, name: string) => {
-  //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
-  const patientsByName = patients.filter((patient: any) => patient.name.includes(name));
-  //check if there is no patient with this name throw an error
-  if (patientsByName.length === 0) {
-    return {
-      status: StatusCodes.NOT_FOUND,
-      message: 'No patient with this name',
-      result: null
-    };
-  }
-  return {
-    status: StatusCodes.OK,
-    message: 'Patients retrieved successfully',
-    result: patientsByName
   };
 };
 

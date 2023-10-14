@@ -156,9 +156,6 @@ const userSchema = new Schema<IUserDocument>(
           }
         }
       ],
-      required: function () {
-        return this.role === 'Patient';
-      },
       validate: {
         validator: function (arr: any) {
           try {
@@ -179,10 +176,7 @@ const userSchema = new Schema<IUserDocument>(
           name: { type: String, required: true },
           medicalRecord: { type: String, required: true }
         }
-      ],
-      required: function () {
-        return this.role === 'Patient';
-      }
+      ]
     },
     package: {
       type: {
@@ -197,8 +191,7 @@ const userSchema = new Schema<IUserDocument>(
           required: true
         },
         endDate: { type: Date, required: true }
-      },
-      required: false
+      }
     },
 
     hourRate: {
@@ -285,12 +278,7 @@ userSchema.methods.isCorrectPassword = function (enteredPassword: string): boole
 // https://docs.mongodb.com/manual/indexes/#default-id-index
 
 const UserModel = mongoose.model<IUserDocument>('User', userSchema);
-userSchema.virtual('contract', {
-  ref: 'Contract',
-  localField: '_id',
-  foreignKey: 'doctorID',
-  justOne: true
-});
+
 export default UserModel;
 export { FamilyMember, IEmergencyContact };
 export { IUser, IUserDocument, IPatient, IDoctor, ICommonUser };
