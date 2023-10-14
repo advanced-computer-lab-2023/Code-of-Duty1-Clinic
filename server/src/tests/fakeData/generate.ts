@@ -207,5 +207,7 @@ const generateContract = () => {
 // generateFakeData().then(() => console.log('Fake data generated successfully.'));
 // console.log(generateFamilyMember());
 // console.log(generateFakeAppointment());
-console.log(generateContract());
+generateFakeWeeklySlots();
+console.log(generateFakeVacations());
+console.log(generateFakeUser());
 // generateContract();
