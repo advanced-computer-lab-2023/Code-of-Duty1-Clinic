@@ -125,7 +125,7 @@ const selectPatient = async (doctorID: string, patientID: string) => {
 const calculateTimeStamp = (slot: { hours: number; minutes: number }) => slot.hours * 60 + slot.minutes;
 const getAllDoctor = async (query?: any) => {
   try {
-    let nameFilter = query?.doctorName ? getNameFilter(query.doctorName) : null;
+    let nameFilter = query?.name ? getNameFilter(query.name) : null;
     let specialtyFilter = query?.specialty ? { specialty: query.specialty.trim().toLowerCase() } : null;
 
     let filter = { role: 'Doctor' };
@@ -172,35 +172,27 @@ const getNameFilter = (doctorName: string): object | null => {
     nameFilter = {
       $or: [
         {
-          $or: [
-            { 'name.first': { $regex: names[0], $options: 'i' } },
-            { 'name.middle': { $regex: names[1], $options: 'i' } }
-          ]
+          'name.first': { $regex: names[0], $options: 'i' },
+          'name.middle': { $regex: names[1], $options: 'i' }
         },
         {
-          $or: [
-            { 'name.first': { $regex: names[0], $options: 'i' } },
-            { 'name.last': { $regex: names[1], $options: 'i' } }
-          ]
+          'name.first': { $regex: names[0], $options: 'i' },
+          'name.last': { $regex: names[1], $options: 'i' }
         },
         {
-          $or: [
-            { 'name.middle': { $regex: names[0], $options: 'i' } },
-            { 'name.last': { $regex: names[1], $options: 'i' } }
-          ]
+          'name.middle': { $regex: names[0], $options: 'i' },
+          'name.last': { $regex: names[1], $options: 'i' }
         }
       ]
     };
   } else if (names.length == 1) {
-    nameFilter = [
-      {
-        $or: [
-          { 'name.first': { $regex: names[0], $options: 'i' } },
-          { 'name.middle': { $regex: names[0], $options: 'i' } },
-          { 'name.last': { $regex: names[0], $options: 'i' } }
-        ]
-      }
-    ];
+    nameFilter = {
+      $or: [
+        { 'name.first': { $regex: names[0], $options: 'i' } },
+        { 'name.middle': { $regex: names[0], $options: 'i' } },
+        { 'name.last': { $regex: names[0], $options: 'i' } }
+      ]
+    };
   }
 
   return nameFilter;
