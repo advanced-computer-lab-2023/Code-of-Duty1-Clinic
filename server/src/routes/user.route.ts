@@ -38,7 +38,10 @@ router.get('/doctors', (req: Request, res: Response) => {
     delete req.body.decodedToken; // no need to keep in the body
     if (role === 'Patient') return controller(res)(viewAllDoctorsForPatient)(id, req.query);
   }
-
+  if (req.body.role === 'Patient' && req.body.id) {
+    console.log('7777777777777777777777');
+    return controller(res)(viewAllDoctorsForPatient)(req.body.id, req.query);
+  }
   controller(res)(getAllDoctor)(req.query);
 });
 router.get('/doctors', (req: Request, res: Response) => controller(res)(getUsers)({ role: 'Doctor', ...req.query }));

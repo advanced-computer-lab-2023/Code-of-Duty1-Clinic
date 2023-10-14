@@ -19,7 +19,6 @@ const getPatientByID = async (patientId: string) => {
   return UserModel.findOne({ _id: new mongoose.Types.ObjectId(patientId) });
 };
 const addFamilyMember = async (body: any) => {
-  console.log(body);
   if (!(body.patientID && body.relation && body.nationalID)) {
     throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide patientID, relation and nationalID');
   }
@@ -138,17 +137,24 @@ const viewAllDoctorsForPatient = async (patientId: string, query?: any) => {
   try {
     var sessionDiscount = 0;
     const patient: IUserDocument | null = await getPatientByID(patientId);
+
     const pkgID = (patient as IPatient)?.package?.packageID;
+
     const pkg: IPackageDocument | null = await getPackageById(pkgID?.toString()!);
+
     sessionDiscount = pkg?.sessionDiscount || 0;
 
     let doctors = (await getAllDoctor(query)).result;
     if (!Array.isArray(doctors)) {
-      doctors = [doctors];
+      doctors = [doctors[0]];
     }
 
     for (let i = 0; i < doctors.length; i++) {
-      doctors[i].hourRate = calculateFinalSessionPrice(doctors[i].hourRate, doctors[i].markUpProfit, sessionDiscount);
+      doctors[i].hourRate = calculateFinalSessionPrice(
+        doctors[i].hourRate,
+        doctors[i].contractID[0]?.markUpProfit,
+        sessionDiscount
+      );
     }
 
     return {
@@ -168,7 +174,8 @@ const calculateFinalSessionPrice = (
   sessionDiscountPercentage: number = 0
 ): number => {
   let price = doctorHourRate + 0.1 * markupProfit;
-  let finalPrice = price - price * sessionDiscountPercentage;
+  let finalPrice = price * (1 - sessionDiscountPercentage / 100);
+  console.log(doctorHourRate, markupProfit, sessionDiscountPercentage, finalPrice);
   return finalPrice;
 };
 

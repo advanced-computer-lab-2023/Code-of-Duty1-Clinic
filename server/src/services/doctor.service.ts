@@ -129,10 +129,26 @@ const getAllDoctor = async (query?: any) => {
     let specialtyFilter = query?.specialty ? { specialty: query.specialty.trim().toLowerCase() } : null;
 
     let filter = { role: 'Doctor' };
-    filter = { ...filter, ...(nameFilter || {}), ...(specialtyFilter || {}) };
+    filter = { ...filter, ...(nameFilter || {}), ...(specialtyFilter || {}), role: 'Doctor' };
 
-    const doctors: IDoctor[] = await UserModel.find(filter).populate('contractID', 'markUpProfit', Contract);
-
+    const doctors: IDoctor[] = await UserModel.find(filter, {
+      contractID: 1,
+      name: 1,
+      specialty: 1,
+      weeklySlots: 1,
+      hourRate: 1,
+      hospital: 1,
+      vacations: 1,
+      gender: 1,
+      phone: 1,
+      addresses: 1,
+      profileImage: 1,
+      _id: 1
+    }).populate({
+      path: 'contractID',
+      model: Contract
+    });
+    console.log(doctors);
     if (query?.date) {
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const day: string = daysOfWeek[query.date.getDay()];
@@ -151,9 +167,16 @@ const getAllDoctor = async (query?: any) => {
       });
     }
     interface markUpProfitType {
-      markUpProfit: number;
+      contractID: { markUpProfit: number };
     }
-    return { result: doctors as (IDoctor & Document & markUpProfitType)[], status: StatusCodes.OK };
+    console.log('-----------------/****/*/*/****************');
+    doctors.forEach((e) => {
+      console.log((e as any).contractID);
+    });
+
+    console.log('-----------------/****/*/*/****************');
+
+    return { result: doctors as any[], status: StatusCodes.OK };
   } catch (error) {
     throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors' + error);
   }
@@ -198,40 +221,4 @@ const getNameFilter = (doctorName: string): object | null => {
   return nameFilter;
 };
 
-const getDateFilter = (date: Date) => {
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const day = daysOfWeek[date.getDay()];
-  const hours = date.getHours();
-  const minutes = date.getMinutes;
-
-  const filter = {
-    $and: [
-      { [`weeklySlots.${day}`]: { $exists: true } },
-      {
-        $or: [
-          { [`weeklySlots.${day}.from.hours`]: { $lt: hours } },
-          {
-            $and: [
-              { [`weeklySlots.${day}.from.hours`]: { $eq: hours } },
-              { [`weeklySlots.${day}.from.minutes`]: { $lte: minutes } }
-            ]
-          }
-        ]
-      },
-      {
-        $or: [
-          { [`weeklySlots.${day}.to.hours`]: { $gt: hours } },
-          {
-            $and: [
-              { [`weeklySlots.${day}.to.hours`]: { $eq: hours } },
-              { [`weeklySlots.${day}.to.minutes`]: { $gte: minutes } }
-            ]
-          }
-        ]
-      }
-    ]
-  };
-
-  return filter;
-};
 export { getAllDoctor, getPatients, selectPatient };
