@@ -1,8 +1,9 @@
-import UserModel, { IPatient, IUserDocument, IDoctor } from '../models/user.model';
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
 import mongoose, { Document } from 'mongoose';
 import AppointmentModel from '../models/appointment.model';
+import Contract from '../models/contract.model';
+import UserModel, { IPatient, IUserDocument, IDoctor, DailySchedule } from '../models/user.model';
 const selectDoctor = async (doctorID: string) => {
   // Use Mongoose to find the doctor by ID
   const doctor = await UserModel.findById(doctorID);
@@ -121,43 +122,43 @@ const selectPatient = async (doctorID: string, patientID: string) => {
 // };
 
 ////////////////////////////////////////////////
-const getAllDoctor = async (doctorName?: string, specialty?: string, date?: Date) => {
+const calculateTimeStamp = (slot: { hours: number; minutes: number }) => slot.hours * 60 + slot.minutes;
+const getAllDoctor = async (query?: any) => {
   try {
-    let nameFilter = doctorName ? getNameFilter(doctorName) : null;
-    let specialtyFilter = specialty ? { specialty: specialty.trim().toLowerCase() } : null;
-    let dateFilter = date ? getDateFilter(date) : null;
+    let nameFilter = query?.doctorName ? getNameFilter(query.doctorName) : null;
+    let specialtyFilter = query?.specialty ? { specialty: query.specialty.trim().toLowerCase() } : null;
+
     let filter = { role: 'Doctor' };
-    if (nameFilter) {
-      filter = { ...filter, ...nameFilter };
+    filter = { ...filter, ...(nameFilter || {}), ...(specialtyFilter || {}) };
+
+    const doctors: IDoctor[] = await UserModel.find(filter).populate('contractID', 'markUpProfit', Contract);
+
+    if (query?.date) {
+      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const day: string = daysOfWeek[query.date.getDay()];
+      const hours = query.date.getHours();
+      const minutes = query.date.getMinutes();
+      const inputTimeStamp = 60 * hours + minutes;
+      doctors.filter((doctor) => {
+        const slots = (doctor!.weeklySlots as Record<string, DailySchedule[]>)[day];
+
+        for (let j = 0; j < slots.length; j++) {
+          const slot = slots[j];
+          const fromTimeStamp = calculateTimeStamp(slot.from);
+          const toTimeStamp = calculateTimeStamp(slot.to);
+          return inputTimeStamp >= fromTimeStamp && inputTimeStamp <= toTimeStamp;
+        }
+      });
     }
-    if (specialty) {
-      filter = { ...filter, ...specialtyFilter };
-    }
-    if (date) {
-      filter = { ...filter, ...dateFilter };
-    }
-    // TODO spread operation (...) uses shallow clone a deep clone may be considered
-    const doctors = await UserModel.find(filter, {
-      name: 1,
-      specialty: 1,
-      weeklySlots: 1,
-      hourRate: 1,
-      hospital: 1,
-      vacations: 1,
-      gender: 1,
-      phone: 1,
-      addresses: 1,
-      profileImage: 1,
-      _id: 1
-    }).populate({ path: 'contract', select: 'markUpProfit' });
-    interface temp {
+    interface markUpProfitType {
       markUpProfit: number;
     }
-    return { result: doctors as (IDoctor & Document & temp)[] };
+    return { result: doctors as (IDoctor & Document & markUpProfitType)[], status: StatusCodes.OK };
   } catch (error) {
-    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors ');
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors' + error);
   }
 };
+
 const getNameFilter = (doctorName: string): object | null => {
   const names = doctorName.trim().toLowerCase()?.split(' ');
   var nameFilter = null;
@@ -206,12 +207,12 @@ const getNameFilter = (doctorName: string): object | null => {
 };
 
 const getDateFilter = (date: Date) => {
-  let filter = null;
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const day = daysOfWeek[date.getDay()];
   const hours = date.getHours();
   const minutes = date.getMinutes;
-  filter = {
+
+  const filter = {
     $and: [
       { [`weeklySlots.${day}`]: { $exists: true } },
       {

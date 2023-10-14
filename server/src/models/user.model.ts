@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import validator from 'validator';
 import mongoose, { Document, Schema } from 'mongoose';
+import Contract from '../models/contract.model';
 
 interface FamilyMemberWithID {
   userID: mongoose.Types.ObjectId;
@@ -19,8 +20,8 @@ interface FamilyMemberWithDetails {
 
 type FamilyMember = FamilyMemberWithID | FamilyMemberWithDetails;
 interface DailySchedule {
-  from: number;
-  to: number;
+  from: { hours: number; minutes: number };
+  to: { hours: number; minutes: number };
   maxPatients: number;
 }
 
@@ -124,9 +125,9 @@ const userSchema = new Schema<IUserDocument>(
       enum: ['Patient', 'Doctor', 'Administrator'],
       required: true
     },
-    profileImage: { type: String, required: true },
-    isEmailVerified: { type: Boolean, required: true },
-    wallet: { type: Number, required: true },
+    profileImage: String,
+    isEmailVerified: { type: Boolean, default: false },
+    wallet: { type: Number, default: 0 },
 
     emergencyContact: {
       type: [
@@ -157,15 +158,18 @@ const userSchema = new Schema<IUserDocument>(
         }
       ],
       validate: {
-        validator: function (arr: any) {
-          try {
-            arr.forEach((elem: any) => {
-              elem as FamilyMember;
-            });
-            return true;
-          } catch (e) {
-            return false;
+        validator: function (arr: FamilyMember[]) {
+          const nationalIDs: string[] = [];
+
+          for (const elem of arr) {
+            if (nationalIDs.includes(elem.nationalID)) {
+              return false; // National ID is not unique
+            }
+
+            nationalIDs.push(elem.nationalID);
           }
+
+          return true;
         },
         message: 'Either name, nationalID, and phone should be provided, or userID and relation should be provided.'
       }
@@ -221,16 +225,10 @@ const userSchema = new Schema<IUserDocument>(
         Thursday: [dailyScheduleSchema],
         Friday: [dailyScheduleSchema],
         Saturday: [dailyScheduleSchema]
-      },
-      required: function () {
-        return this.role === 'Doctor';
       }
     },
     vacations: {
-      type: [{ from: Date, to: Date }],
-      required: function () {
-        return this.role === 'Doctor';
-      }
+      type: [{ from: Date, to: Date }]
     }
   },
   {
@@ -253,12 +251,10 @@ userSchema.virtual('requestID', {
 userSchema.virtual('contractID', {
   ref: 'Contract',
   localField: '_id',
-  foreignField: 'doctorID',
-  justOne: false
+  foreignField: 'doctorID'
 });
 
 userSchema.pre<IUserDocument>('save', function (next) {
-  console.log('bghnjmnbnhjbthnbtvbhnvgbhbyvfgdcuneyud877847477');
   if (!this.isModified('password')) return next();
 
   const Rounds = 10;
@@ -281,4 +277,4 @@ const UserModel = mongoose.model<IUserDocument>('User', userSchema);
 
 export default UserModel;
 export { FamilyMember, IEmergencyContact };
-export { IUser, IUserDocument, IPatient, IDoctor, ICommonUser };
+export { IUser, IUserDocument, IPatient, IDoctor, ICommonUser, DailySchedule };
