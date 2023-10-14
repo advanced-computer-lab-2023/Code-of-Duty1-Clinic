@@ -210,6 +210,18 @@ const selectPrescription = async (prescriptionID: string) => {
     };
   }
 };
+const getPatientHealthRecord = async (patientID: string) => {
+  try {
+    const result = await UserModel.findOne({ _id: new mongoose.Types.ObjectId(patientID) }).select('medicalHistory');
+    return {
+      result: result,
+      status: StatusCodes.OK,
+      message: 'Successfully retrieved health record'
+    };
+  } catch (e) {
+    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Error happened while retrieving health record${e}`);
+  }
+};
 export {
   viewAllDoctorsForPatient,
   calculateFinalSessionPrice,
@@ -217,5 +229,6 @@ export {
   filterPrescriptions,
   selectPrescription,
   getFamily,
-  hasActivePackage
+  hasActivePackage,
+  getPatientHealthRecord
 };
