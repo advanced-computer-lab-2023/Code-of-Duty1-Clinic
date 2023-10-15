@@ -23,11 +23,12 @@ const getUpcomingPatients = async (doctorID: string) => {
 
 const getPatients2 = async (doctorID: string) => {
   //get patients that have appointments with this doctor
-  const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
+  const patients = await AppointmentModel.find({ status: 'Upcoming' }).populate('patientID');
+  console.log(patients + '22222222222222222');
   return {
     status: StatusCodes.OK,
     message: 'User updated successfully',
-    result: patients
+    result: patients.filter((patient) => patient.doctorID.toString() === doctorID)
   };
 };
 

@@ -56,7 +56,10 @@ const DoctorPage = () => {
   };
 
   useEffect(() => {
-    const patients = getPatients()
+    fetch("http://localhost:3000/users/me/doctor/patient")
+      .then((response) => response.json())
+      .then((data) => setAppointments(data.result));
+    getPatients()
       .then((response) => response.json())
       .then((data) => {
         setPatients(data.result);
@@ -68,27 +71,7 @@ const DoctorPage = () => {
 
   const [patients, setPatients] = useState([]);
 
-  const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      patientId: 1,
-      date: "2023-10-15",
-      time: "10:00 AM",
-    },
-    {
-      id: 2,
-      patientId: 2,
-      date: "2023-10-16",
-      time: "2:00 PM",
-    },
-    {
-      id: 3,
-      patientId: 3,
-      date: "2023-10-17",
-      time: "11:00 AM",
-    },
-    // ... Other appointments' data ...
-  ]);
+  const [appointments, setAppointments] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredPatients, setFilteredPatients] = useState([]);
@@ -147,6 +130,21 @@ const DoctorPage = () => {
     console.log("Requesting change:", doctorInfo);
   };
   // }
+  const isUpcomingAppointment = (patientId) => {
+    const date = new Date();
+    console.log("date =========", date);
+    console.log("patientID = ", patientId);
+    console.log("Appointments ========", appointments);
+    for (let i = 0; i < appointments.length; i++) {
+      const appointment = appointments[i];
+      if (
+        new Date(appointment.startTime) > date &&
+        appointment.patientID._id === patientId
+      )
+        return true;
+    }
+    return false;
+  };
 
   const handleFilterAppointments = () => {
     const selectedFilter = document.getElementById("appointmentFilter").value;
@@ -156,11 +154,7 @@ const DoctorPage = () => {
     } else {
       console.log("there is a filter");
       const filtered = patients.filter((patient) =>
-        appointments.some(
-          (appointment) =>
-            appointment.patientId === patient.id &&
-            appointment.date === selectedFilter
-        )
+        isUpcomingAppointment(patient.patientID.id)
       );
       setFilteredPatients(filtered);
     }
@@ -351,7 +345,7 @@ const DoctorPage = () => {
                 <Thead>
                   <Tr>
                     <Th>Name</Th>
-                    <Th>Age</Th>
+                    <Th>email</Th>
                     <Th>Phone</Th>
                     <Th>Appointment Date</Th>
                     <Th>Actions</Th>
@@ -364,8 +358,8 @@ const DoctorPage = () => {
                       <Tr key={patient.patientID.id}>
                         <Td>{patient.patientID.name.first}</Td>
                         <Td>{patient.patientID.email}</Td>
-                        <Td>{patient.startTime}</Td>
                         <Td>{patient.patientID.phone}</Td>
+                        <Td>{patient.startTime}</Td>
                         <Td>
                           {appointments
                             .filter(

@@ -3,7 +3,7 @@ import controller from '../controllers/controller';
 import { isAuthenticated, isAuthorized, queryParser } from '../middlewares';
 import { getPatients, selectPatient, getAllDoctor } from '../services/doctor.service';
 import { addFamilyMember, getFamily, getPatient, viewAllDoctorsForPatient } from '../services//patient.service';
-import { filterAppointment } from '../services/appointment.service';
+import { filterAppointment, getPatients2 } from '../services/appointment.service';
 import { decodeJWTToken } from '../middlewares/authorization';
 import { addAdmin, deleteUser, deleteUsers, getUsers, updateInfo } from '../services/user.service';
 const router = express.Router();
@@ -23,6 +23,9 @@ router.get('/me/family', (req, res) => {
 });
 router.get('/me/appointments', (req, res) => {
   controller(res)(filterAppointment)(req.query);
+});
+router.get('/me/doctor/patient', (req, res) => {
+  controller(res)(getPatients2)('6529b7ad09214ecfa238eb44');
 });
 router.get('/me/patient/:id/info', (req, res) => {
   controller(res)(getPatient)(req.params.id);
