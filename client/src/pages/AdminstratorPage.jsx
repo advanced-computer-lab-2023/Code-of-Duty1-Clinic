@@ -207,12 +207,31 @@ const AdministratorPage = () => {
     // Implement reject request logic here
     console.log(`Reject request for user with ID ${userId}`);
   };
-  const handleDeleteUser = (userId) => {
-    // Implement logic to delete a user
-    // Example: Make an API call to delete the user with the given ID
-    // After deletion, update the users list
-  };
-
+  const handleDeleteUser = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/users/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        // User deletion successful
+        console.log(`User with ID ${userId} deleted successfully`);
+        
+        // Update the state by removing the deleted user
+        const updatedUsers = users.filter((user) => user._id !== userId);
+        setUsers(updatedUsers);
+      } else {
+        // Handle user deletion error
+        console.error(`User deletion failed for ID ${userId}`);
+      }
+    } catch (error) {
+      // Handle network or API error
+      console.error("API call error:", error);
+    }
+  }
   useEffect(() => {
     fetchRequests(); // Fetch requests when the component mounts
     fetchUsers();   // Fetch users when the component mounts
@@ -659,5 +678,6 @@ const AdministratorPage = () => {
     </Grid>
   );
 };
+
 
 export default AdministratorPage;
