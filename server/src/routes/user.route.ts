@@ -31,17 +31,17 @@ router.get('/me/patient/:id/info', (req, res) => {
 router.get('/me/patient/:id/info/medicalhistory', (req, res) => {
   controller(res)(getPatient)(req.params.id, true);
 });
-router.get('/doctors', (req: Request, res: Response) => {
-  if (req.body.decodedToken) {
-    // req.body.decodedToken is added by decodeJWTToken middleware
-    const id = req.body.decodedToken.id;
-    const role = req.body.decodedToken.role;
-    delete req.body.decodedToken; // no need to keep in the body
-    if (role === 'Patient') return controller(res)(viewAllDoctorsForPatient)(id, req.query);
-  }
+// router.get('/doctors', (req: Request, res: Response) => {
+//   if (req.body.decodedToken) {
+//     // req.body.decodedToken is added by decodeJWTToken middleware
+//     const id = req.body.decodedToken.id;
+//     const role = req.body.decodedToken.role;
+//     delete req.body.decodedToken; // no need to keep in the body
+//     if (role === 'Patient') return controller(res)(viewAllDoctorsForPatient)(id, req.query);
+//   }
 
-  controller(res)(getAllDoctor)(req.query);
-});
+//   controller(res)(getAllDoctor)(req.query);
+// });
 router.get('/doctors', (req: Request, res: Response) => controller(res)(getUsers)({ role: 'Doctor', ...req.query }));
 
 router.get('/:id', (req: Request, res: Response) => controller(res)(getUsers)({ _id: req.params.id }));

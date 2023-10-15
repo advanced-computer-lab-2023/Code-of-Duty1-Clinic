@@ -72,7 +72,7 @@ const AdministratorPage = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch("http://localhost:3000/requests", {
+      const response = await fetch("http://localhost:3000/users/doctors", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -363,15 +363,15 @@ const AdministratorPage = () => {
             <Thead>
               <Tr>
                 <Th>User Name</Th>
-                <Th>Request Type</Th>
+                <Th>Email</Th>
                 <Th>Actions</Th>
               </Tr>
             </Thead>
             <Tbody>
               {requests.map((request) => (
                 <Tr key={request._id}>
-                  <Td>{request.userName}</Td>
-                  <Td>{request.requestType}</Td>
+                  <Td>{request.username}</Td>
+                  <Td>{request.email}</Td>
                   <Td>
                     <Button
                       colorScheme="teal"
@@ -383,7 +383,7 @@ const AdministratorPage = () => {
                     <Button
                       colorScheme="red"
                       size="sm"
-                      onClick={() => handleRejectRequest(request.id)}
+                      onClick={() => handleRejectRequest(request._id)}
                     >
                       Reject
                     </Button>
