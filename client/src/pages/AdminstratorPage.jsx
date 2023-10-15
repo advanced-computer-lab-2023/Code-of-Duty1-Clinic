@@ -72,7 +72,7 @@ const AdministratorPage = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch("http://localhost:3000/users/doctors", {
+      const response = await fetch("http://localhost:3000/users/doctors/requests", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
