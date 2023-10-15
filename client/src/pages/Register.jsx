@@ -12,6 +12,7 @@ const PatientRegistrationSchema = Yup.object().shape({
   mobileNumber: Yup.string().required("mobile number is required"),
   emergencyContact_fullName: Yup.string().required("FullName is required"),
   emergencyContact_mobileNumber: Yup.string().required("Emergency mobile number is required"),
+  relation: Yup.string().required("relation is required"),
 
 });
 
@@ -29,15 +30,19 @@ const DoctorRegistrationSchema = Yup.object().shape({
 
 const Register = () => {
   const patientHandleSubmit = async (values, actions) => {
+    console.log(values);
     try {
-      const response = await fetch('your_patient_registration_api_endpoint', {
+      const response = await fetch('http://localhost:3070/auth/register/patient', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          ...values, role: "Patient", birthDate: values.dateOfBirth, phone: values.mobileNumber, name: { first: values.name, last: values.name + " last" }, emergencyContact:
+            [{ name: values.emergencyContact_fullName, phone: values.emergencyContact_mobileNumber, relation: values.relation }]
+        }),
       });
-
+      console.log(response)
       if (response.ok) {
         // Registration successful
         console.log('Patient registration successful');
@@ -53,6 +58,9 @@ const Register = () => {
       actions.setSubmitting(false);
     }
   };
+
+
+
 
   const DoctorHandleSubmit = async (values, actions) => {
     try {
@@ -96,11 +104,12 @@ const Register = () => {
                 name: "",
                 email: "",
                 password: "",
-                dateOfBirth: "",
-                gender: "",
+                birthDate: "",
+                gender: "Male",
                 mobileNumber: "",
                 emergencyContact_fullName: "",
-                emergencyContact_mobileNumber: ""
+                emergencyContact_mobileNumber: "",
+                relation: "Child"
 
               }}
               validationSchema={PatientRegistrationSchema}
@@ -179,6 +188,7 @@ const Register = () => {
                       )}
                     </Field>
 
+
                     <Field name="emergencyContact_fullName">
                       {({ field, form }) => (
                         <FormControl isInvalid={form.errors.emergencyContact_fullName && form.touched.emergencyContact_fullName}>
@@ -198,7 +208,15 @@ const Register = () => {
                         </FormControl>
                       )}
                     </Field>
-
+                    <Field name="relation">
+                      {({ field, form }) => (
+                        <FormControl isInvalid={form.errors.relation && form.touched.relation}>
+                          <FormLabel htmlFor="relation">emergencyContact_relation [ 'Husband' | 'Wife' | 'Child']</FormLabel>
+                          <Input {...field} id="relation" placeholder="Enter Relation " />
+                          <FormErrorMessage>{form.errors.relation}</FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
                     {/* Submit button */}
                     <Button
                       mt={6}
@@ -213,7 +231,6 @@ const Register = () => {
                 </Form>
               )}
             </Formik>
-
             <Formik
               initialValues={{
                 doctorUsername: "",
