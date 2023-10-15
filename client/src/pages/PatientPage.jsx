@@ -133,10 +133,13 @@ const PatientPage = () => {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [familyMembers, setFamilyMembers] = useState([]);
-  const [familyMemberName, setFamilyMemberName] = useState('');
-  const [familyMemberNationalID, setFamilyMemberNationalID] = useState('');
-  const [familyMemberGender, setFamilyMemberGender] = useState('');
-  const [familyMemberAge, setFamilyMemberAge] = useState('');
+const [familyMemberName, setFamilyMemberName] = useState('');
+const [familyMemberNationalID, setFamilyMemberNationalID] = useState('');
+const [familyMemberPhone, setFamilyMemberPhone] = useState('');
+const [familyMemberBirthdate, setFamilyMemberBirthdate] = useState('');
+const [familyMemberGender, setFamilyMemberGender] = useState('');
+const [familyMemberRelation, setFamilyMemberRelation] = useState('');
+
   const [doctorsData, setDoctorsData] = useState(originalDoctorsData);
   const [prescriptionData, setPrescriptionData] = useState(originalPrescriptionData);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
@@ -174,9 +177,9 @@ const PatientPage = () => {
     setFamilyMemberGender(event.target.value);
   };
 
-  const handleFamilyMemberAgeChange = (event) => {
-    setFamilyMemberAge(event.target.value);
-  };
+  // const handleFamilyMemberAgeChange = (event) => {
+  //   setFamilyMemberAge(event.target.value);
+  // };
 
   const handleFilter = () => {
     let filteredDoctors = originalDoctorsData;
@@ -230,16 +233,20 @@ const PatientPage = () => {
     if (
       familyMemberName &&
       familyMemberNationalID &&
+      familyMemberPhone &&
+      familyMemberBirthdate &&
       familyMemberGender &&
-      familyMemberAge
+      familyMemberRelation
     ) {
       const newFamilyMember = {
         name: familyMemberName,
         nationalID: familyMemberNationalID,
-        relation: familyMemberGender,
-        patientID: familyMemberAge,
+        phone: familyMemberPhone,
+        birthdate: familyMemberBirthdate,
+        gender: familyMemberGender,
+        relation: familyMemberRelation,
       };
-
+  
       fetch("http://localhost:3000/users/me/family", {
         method: 'POST',
         headers: {
@@ -255,19 +262,20 @@ const PatientPage = () => {
         })
         .then((addedFamilyMember) => {
           // Update the state with the added family member
-          setFamilyMembers([...familyMembers, newFamilyMember]);
+          setFamilyMembers([...familyMembers, addedFamilyMember]);
           setFamilyMemberName('');
           setFamilyMemberNationalID('');
+          setFamilyMemberPhone('');
+          setFamilyMemberBirthdate('');
           setFamilyMemberGender('');
-          setFamilyMemberAge('');
+          setFamilyMemberRelation('');
         })
         .catch((error) => {
           console.error('Error adding family member:', error);
           // Handle the error as needed (e.g., show an error message)
         });
     }
-  };
-
+  };  
   const handleSelectPrescription = (prescription) => {
     setSelectedPrescription(prescription);
   };
@@ -401,25 +409,30 @@ const PatientPage = () => {
           <TabPanel>
             {/* Family Members Table */}
             <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Name</Th>
-                  <Th>National ID</Th>
-                  <Th>Relation to patient</Th>
-                  <Th>PatientID</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {familyMembers.map((familyMember, index) => (
-                  <Tr key={index}>
-                    <Td>{familyMember.name}</Td>
-                    <Td>{familyMember.nationalID}</Td>
-                    <Td>{familyMember.gender}</Td>
-                    <Td>{familyMember.age}</Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
+  <Thead>
+    <Tr>
+      <Th>Name</Th>
+      <Th>National ID</Th>
+      <Th>Phone</Th>
+      <Th>Birthdate</Th>
+      <Th>Gender</Th>
+      <Th>Relation to patient</Th>
+    </Tr>
+  </Thead>
+  <Tbody>
+    {familyMembers.map((familyMember, index) => (
+      <Tr key={index}>
+        <Td>{familyMember.name}</Td>
+        <Td>{familyMember.nationalID}</Td>
+        <Td>{familyMember.phone}</Td>
+        <Td>{familyMember.birthdate}</Td>
+        <Td>{familyMember.gender}</Td>
+        <Td>{familyMember.relation}</Td>
+      </Tr>
+    ))}
+  </Tbody>
+</Table>
+
             {/* Add Family Member Form */}
             <FormControl mt={4}>
               <FormLabel>Name</FormLabel>
@@ -452,8 +465,8 @@ const PatientPage = () => {
             <FormControl mt={4}>
               <FormLabel>PatientID</FormLabel>
               <Input
-                value={familyMemberAge}
-                onChange={handleFamilyMemberAgeChange}
+                // value={familyMemberAge}
+                // onChange={handleFamilyMemberAgeChange}
                 placeholder="PatientID"
               />
             </FormControl>

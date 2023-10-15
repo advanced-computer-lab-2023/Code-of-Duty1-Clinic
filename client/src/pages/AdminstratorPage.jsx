@@ -163,7 +163,7 @@ const AdministratorPage = () => {
 
   const handleAddAdmin = async () => {
     try {
-      const response = await fetch("http://your-backend-api-url/add-admin", {
+      const response = await fetch("http://localhost:3000/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
