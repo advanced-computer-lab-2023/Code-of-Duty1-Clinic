@@ -50,12 +50,12 @@ const Register = () => {
       } else {
         // Handle registration error
         console.error('Patient registration failed');
-        actions.setSubmitting(false);
+        // actions.setSubmitting(false);
       }
     } catch (error) {
       // Handle network or API error
       console.error('API call error:', error);
-      actions.setSubmitting(false);
+      // actions.setSubmitting(false);
     }
   };
 
@@ -63,28 +63,42 @@ const Register = () => {
 
 
   const DoctorHandleSubmit = async (values, actions) => {
+    console.log(values);
     try {
-      const response = await fetch('your_doctor_registration_api_endpoint', {
+      const response = await fetch('http://localhost:3070/auth/register/doctor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          role: "Doctor", birthDate: values.dateOfBirth,
+          phone: values.mobileNumber, name: {
+            first: values.doctorName, last: values.doctorName + " last"
+          }, email: values.doctorEmail,
+          password: values.doctorPassword, hospital: values.affiliation,
+          educationBackground: values.educationalBackground,
+          hourRate: values.hourRate, username: values.doctorUsername,
+          specialty: "Surgery",
+          gender: 'Male',
+          phone: "01258595",
+          birthDate: values.doctorDateOfBirth
+
+        }),
       });
 
       if (response.ok) {
         // Registration successful
         console.log('Doctor registration successful');
-        actions.setSubmitting(false);
+        // actions.setSubmitting(false);
       } else {
         // Handle registration error
         console.error('Doctor registration failed');
-        actions.setSubmitting(false);
+        // actions.setSubmitting(false);
       }
     } catch (error) {
       // Handle network or API error
       console.error('API call error:', error);
-      actions.setSubmitting(false);
+      // actions.setSubmitting(false);
     }
   };
 
@@ -231,6 +245,7 @@ const Register = () => {
                 </Form>
               )}
             </Formik>
+
             <Formik
               initialValues={{
                 doctorUsername: "",
