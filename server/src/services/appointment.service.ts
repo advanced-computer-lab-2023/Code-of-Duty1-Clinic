@@ -21,7 +21,7 @@ const getUpcomingPatients = async (doctorID: string) => {
   };
 };
 
-const getPatients = async (doctorID: string) => {
+const getPatients2 = async (doctorID: string) => {
   //get patients that have appointments with this doctor
   const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');
   return {
@@ -43,4 +43,4 @@ const filterAppointment = async (query: any) => {
     message: 'Successfully retrieved appointments'
   };
 };
-export { filterAppointment };
+export { filterAppointment, getPatients2 };

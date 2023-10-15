@@ -9,7 +9,7 @@ import { addAdmin, deleteUser, deleteUsers, getUsers, updateInfo } from '../serv
 const router = express.Router();
 
 router.get('/me/patient/:id', (req, res) => controller(res)(selectPatient)(req.body.doctorID, req.params.id));
-router.get('/me/patient/', (req, res) => controller(res)(getPatients)(req.body.doctorID, req.query));
+router.get('/me/patient/', (req, res) => controller(res)(getPatients)('6529b7ad09214ecfa238eb44', req.query));
 router.put('/me/info/', (req, res) => {
   controller(res)(updateInfo)(req.body);
 });
@@ -39,7 +39,6 @@ router.get('/doctors', (req: Request, res: Response) => {
     if (role === 'Patient') return controller(res)(viewAllDoctorsForPatient)(id, req.query);
   }
   if (req.body.role === 'Patient' && req.body.id) {
-   
     return controller(res)(viewAllDoctorsForPatient)(req.body.id, req.query);
   }
   controller(res)(getAllDoctor)(req.query);
