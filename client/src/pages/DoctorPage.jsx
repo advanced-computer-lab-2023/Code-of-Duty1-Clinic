@@ -359,7 +359,7 @@ const DoctorPage = () => {
                         <Td>{patient.patientID.name.first}</Td>
                         <Td>{patient.patientID.email}</Td>
                         <Td>{patient.patientID.phone}</Td>
-                        <Td>{patient.startTime}</Td>
+                        <Td>{patient.patientID.startTime}</Td>
                         <Td>
                           {appointments
                             .filter(
@@ -397,7 +397,29 @@ const DoctorPage = () => {
           <Modal isOpen={openPatientData} onClose={handleCloseModal}>
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>{selectedPatient.patientID.name.first}</ModalHeader>
+              <ModalHeader>
+                {selectedPatient.patientID.name.first}
+                {"\n"}
+                {selectedPatient.patientID.name.middle}
+                {"\n"}
+
+                {selectedPatient.patientID.name.last}
+                {"\n"}
+                {selectedPatient.patientID.phone}
+                {"\n"}
+
+                {selectedPatient.patientID.email}
+                {"\n"}
+
+                {selectedPatient.patientID.gender}
+                {"\n"}
+
+                {selectedPatient.patientID.birthDate}
+                {"\n"}
+
+                {selectedPatient.patientID.emergencyContact[0].name}
+                {"\n"}
+              </ModalHeader>
               <ModalCloseButton />
               <ModalBody></ModalBody>
               <ModalFooter>
