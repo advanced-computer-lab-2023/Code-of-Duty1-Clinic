@@ -398,28 +398,15 @@ const DoctorPage = () => {
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>
-                {selectedPatient.patientID.name.first}
-                {"\n"}
-                {selectedPatient.patientID.name.middle}
-                {"\n"}
-
-                {selectedPatient.patientID.name.last}
-                {"\n"}
-                {selectedPatient.patientID.phone}
-                {"\n"}
-
-                {selectedPatient.patientID.email}
-                {"\n"}
-
-                {selectedPatient.patientID.gender}
-                {"\n"}
-
-                {selectedPatient.patientID.birthDate}
-                {"\n"}
-
-                {selectedPatient.patientID.emergencyContact[0].name}
-                {"\n"}
-              </ModalHeader>
+                <Box>{selectedPatient.patientID.name.first}</Box>
+                <Box>{selectedPatient.patientID.name.middle}</Box>
+                <Box>{selectedPatient.patientID.name.last}</Box>
+                <Box>{selectedPatient.patientID.phone}</Box>
+                <Box>{selectedPatient.patientID.email}</Box>
+                <Box>{selectedPatient.patientID.gender}</Box>
+                <Box>{selectedPatient.patientID.birthDate}</Box>
+                <Box>{selectedPatient.patientID.emergencyContact[0].name}</Box>
+              </ModalHeader>{" "}
               <ModalCloseButton />
               <ModalBody></ModalBody>
               <ModalFooter>
