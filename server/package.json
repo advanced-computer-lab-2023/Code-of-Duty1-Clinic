@@ -36,11 +36,11 @@
     "validator": "^13.9.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.1.0",
     "@types/bcryptjs": "^2.4.4",
     "@types/compression": "^1.7.3",
     "@types/cors": "^2.8.14",
     "@types/express": "^4.17.18",
-    "@faker-js/faker": "^8.1.0",
     "@types/jest": "^29.5.5",
     "@types/jsonwebtoken": "^9.0.3",
     "@types/morgan": "^1.9.6",

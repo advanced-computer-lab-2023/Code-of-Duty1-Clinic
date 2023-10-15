@@ -10,6 +10,7 @@ const router = express.Router();
 
 router.get('/me/patient/:id', (req, res) => controller(res)(selectPatient)(req.body.doctorID, req.params.id));
 router.get('/me/patient/', (req, res) => controller(res)(getPatients)(req.body.doctorID, req.query));
+router.get('/', (req, res) => controller(res)(getUsers)(req.query));
 router.put('/me/info/', (req, res) => {
   controller(res)(updateInfo)(req.body);
 });
