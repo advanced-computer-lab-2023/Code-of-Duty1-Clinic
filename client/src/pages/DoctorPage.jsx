@@ -30,8 +30,8 @@ import {
 const DoctorPage = () => {
   const [doctorInfo, setDoctorInfo] = useState({
     email: 'doctor@example.com',
-    hourlyRate: 200,
-    hospitalAffiliation: 'ABC Hospital',
+    hourRate: 200,
+    hospital: 'ABC Hospital',
   });
 
   const [patients, setPatients] = useState([
@@ -95,17 +95,31 @@ const DoctorPage = () => {
     console.log('Selected patient:', patient);
   };
 
-  const handleUpdateDoctorInfo = (e) => {
+  const handleUpdateDoctorInfo = async (e) => {
     e.preventDefault();
-    // Logic to update doctor's information
-    console.log('Updated doctor info:', doctorInfo);
-  };
+
+    // const body = doctorInfo
+
+    const response = await fetch('http://localhost:3070/users/me/info/', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ...doctorInfo, id: '652b076806c33a8bacfe8086' }),
+    });
+
+    if (response.ok) {
+      // Logic to update doctor's information
+      console.log('Updated doctor info:', doctorInfo);
+    };
+  }
 
   const handleRequestChange = (e) => {
     e.preventDefault();
     // Logic to submit request for change
     console.log('Requesting change:', doctorInfo);
   };
+  // }
 
   const handleFilterAppointments = () => {
     const selectedFilter = document.getElementById('appointmentFilter').value;
@@ -151,15 +165,15 @@ const DoctorPage = () => {
                 <FormLabel>Hourly Rate:</FormLabel>
                 <Input
                   type="number"
-                  value={doctorInfo.hourlyRate}
-                  onChange={(e) => setDoctorInfo({ ...doctorInfo, hourlyRate: e.target.value })}
+                  value={doctorInfo.hourRate}
+                  onChange={(e) => setDoctorInfo({ ...doctorInfo, hourRate: e.target.value })}
                 />
               </FormControl>
 
               <FormControl mb={4}>
                 <FormLabel>Hospital Affiliation:</FormLabel>
                 <Input
-                  value={doctorInfo.hospitalAffiliation}
+                  value={doctorInfo.hospital}
                   onChange={(e) => setDoctorInfo({ ...doctorInfo, hospitalAffiliation: e.target.value })}
                 />
               </FormControl>
@@ -233,8 +247,8 @@ const DoctorPage = () => {
                 <FormLabel>Hourly Rate:</FormLabel>
                 <Input
                   type="number"
-                  value={doctorInfo.hourlyRate}
-                  onChange={(e) => setDoctorInfo({ ...doctorInfo, hourlyRate: e.target.value })}
+                  value={doctorInfo.hourRate}
+                  onChange={(e) => setDoctorInfo({ ...doctorInfo, hourRate: e.target.value })}
                 />
               </FormControl>
 
@@ -253,67 +267,67 @@ const DoctorPage = () => {
           </TabPanel>
 
           <TabPanel>
-  <Box mb={4}>
-    <FormControl display="flex" alignItems="center">
-      <FormLabel htmlFor="appointmentFilter" mb="0" mr={2}>
-        Filter by Appointment Date:
-      </FormLabel>
-      <Input
-        type="date"
-        id="appointmentFilter"
-        value={appointmentDate}
-        onChange={(e) => setAppointmentDate(e.target.value)}
-      />
+            <Box mb={4}>
+              <FormControl display="flex" alignItems="center">
+                <FormLabel htmlFor="appointmentFilter" mb="0" mr={2}>
+                  Filter by Appointment Date:
+                </FormLabel>
+                <Input
+                  type="date"
+                  id="appointmentFilter"
+                  value={appointmentDate}
+                  onChange={(e) => setAppointmentDate(e.target.value)}
+                />
 
-      <Button ml={2} onClick={handleFilterAppointments}>
-        Apply
-      </Button>
-    </FormControl>
-  </Box>
+                <Button ml={2} onClick={handleFilterAppointments}>
+                  Apply
+                </Button>
+              </FormControl>
+            </Box>
 
-  <Table variant="striped" colorScheme="gray">
-    <Thead>
-      <Tr>
-        <Th>Name</Th>
-        <Th>Age</Th>
-        <Th>Phone</Th>
-        <Th>Appointment Date</Th>
-        <Th>Actions</Th>
-      </Tr>
-    </Thead>
-    <Tbody>
-      {filteredPatients.length > 0 ? (
-        filteredPatients.map((patient) => (
-          <Tr key={patient.id}>
-            <Td>{patient.name}</Td>
-            <Td>{patient.age}</Td>
-            <Td>{patient.phone}</Td>
-            <Td>
-              {appointments
-                .filter((appointment) => appointment.patientId === patient.id)
-                .map((appointment) => (
-                  <div key={appointment.id}>
-                    {appointment.date}
-                  </div>
-                ))}
-            </Td>
-            <Td>
-              <Button colorScheme="blue" size="sm" onClick={() => handleSelectPatient(patient)}>
-                View Records
-              </Button>
-            </Td>
-          </Tr>
-        ))
-      ) : (
-        <Tr>
-          <Td colSpan={5}>
-            <Text>No patients found.</Text>
-          </Td>
-        </Tr>
-      )}
-    </Tbody>
-  </Table>
-</TabPanel>
+            <Table variant="striped" colorScheme="gray">
+              <Thead>
+                <Tr>
+                  <Th>Name</Th>
+                  <Th>Age</Th>
+                  <Th>Phone</Th>
+                  <Th>Appointment Date</Th>
+                  <Th>Actions</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {filteredPatients.length > 0 ? (
+                  filteredPatients.map((patient) => (
+                    <Tr key={patient.id}>
+                      <Td>{patient.name}</Td>
+                      <Td>{patient.age}</Td>
+                      <Td>{patient.phone}</Td>
+                      <Td>
+                        {appointments
+                          .filter((appointment) => appointment.patientId === patient.id)
+                          .map((appointment) => (
+                            <div key={appointment.id}>
+                              {appointment.date}
+                            </div>
+                          ))}
+                      </Td>
+                      <Td>
+                        <Button colorScheme="blue" size="sm" onClick={() => handleSelectPatient(patient)}>
+                          View Records
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))
+                ) : (
+                  <Tr>
+                    <Td colSpan={5}>
+                      <Text>No patients found.</Text>
+                    </Td>
+                  </Tr>
+                )}
+              </Tbody>
+            </Table>
+          </TabPanel>
 
         </TabPanels>
       </Tabs>
