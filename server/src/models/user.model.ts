@@ -216,6 +216,7 @@ const userSchema = new Schema<IUserDocument>(
         return this.role === 'Doctor';
       }
     },
+    educationBackground: { type: String },
     weeklySlots: {
       type: {
         Sunday: [dailyScheduleSchema],

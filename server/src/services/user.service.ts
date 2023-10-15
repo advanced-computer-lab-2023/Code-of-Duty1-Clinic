@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
 import User from '../models/user.model';
+import Request from '../models/request.model';
 
 const updateInfo = async (info: any) => {
   console.log(info);
@@ -25,6 +26,21 @@ const getUsers = async (query: Object) => {
     result: users
   };
 };
+const getDoctorsRequests = async (query: Object) => {
+  let users = await User.find(query).select('-password').populate({
+    path: 'requestID',
+    model: Request
+  });
+  users = users as any;
+  users = users.filter((user: any) => user.requestID.length > 0);
+  if (!users) throw new HttpError(StatusCodes.NOT_FOUND, 'no users found');
+
+  return {
+    status: StatusCodes.OK,
+    result: users
+  };
+};
+
 const addAdmin = async (adminInfo: object) => {
   const admin = new User({ ...adminInfo, role: 'Administrator' });
   await admin.save();
@@ -52,4 +68,4 @@ const deleteUser = async (id: String) => {
   };
 };
 
-export { updateInfo, getUsers, addAdmin, deleteUsers, deleteUser };
+export { updateInfo, getUsers, addAdmin, deleteUsers, deleteUser, getDoctorsRequests };

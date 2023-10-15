@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { generateToken } from '../utils';
 import Request from '../models/request.model';
 import User from '../models/user.model';
+import { log } from 'console';
 const login = async (username: string, password: string) => {
   // console.log(username, password);
   if (!(username && password)) throw new HttpError(StatusCodes.BAD_REQUEST, 'Username and password are required');
@@ -26,6 +27,7 @@ const logout = () => {
   return 'Logout';
 };
 const register = async (body: any) => {
+  console.log(body);
   const user = new User(body);
   await user.save();
   if (body.role === 'Doctor') {
