@@ -169,12 +169,9 @@ const getAllDoctor = async (query?: any) => {
     interface markUpProfitType {
       contractID: { markUpProfit: number };
     }
-    console.log('-----------------/****/*/*/****************');
-    doctors.forEach((e) => {
-      console.log((e as any).contractID);
-    });
-
-    console.log('-----------------/****/*/*/****************');
+    // doctors.forEach((e) => {
+    //   console.log((e as any).contractID);
+    // });
 
     return { result: doctors as any[], status: StatusCodes.OK };
   } catch (error) {
