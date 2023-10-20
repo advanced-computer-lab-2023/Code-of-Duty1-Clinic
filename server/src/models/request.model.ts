@@ -5,7 +5,7 @@ interface ILicenses {
 }
 interface IRequest {
   medicID: mongoose.Schema.Types.ObjectId;
-  ID: String;
+  ID: string;
   degree: string[];
   licenses: string[];
   status: 'Pending' | 'Approved' | 'Rejected';
