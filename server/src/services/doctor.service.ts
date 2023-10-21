@@ -45,7 +45,7 @@ const getPatients = async (doctorID: string, query: PatientQuery) => {
       last: nameParts[2] || ''
     };
     // console.log(query);
-    const patients = await AppointmentModel.find({ doctorID }).select('patientID');
+    const patients = await AppointmentModel.find({ doctorID }).select('patientID startTime');
     const IDs: mongoose.Schema.Types.ObjectId[] = [];
     patients.forEach((patient) => {
       IDs.push(patient.patientID);
@@ -55,7 +55,7 @@ const getPatients = async (doctorID: string, query: PatientQuery) => {
     // console.log(filteredPatients);
     return {
       status: StatusCodes.OK,
-      message: 'Patients retrieved successfully',
+      message: 'Patients retrieved successfully4',
       result: filteredPatients
     };
   }

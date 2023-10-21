@@ -236,15 +236,35 @@ const PatientPage = () => {
       const newFamilyMember = {
         name: familyMemberName,
         nationalID: familyMemberNationalID,
-        gender: familyMemberGender,
-        age: familyMemberAge,
+        relation: familyMemberGender,
+        patientID: familyMemberAge,
       };
 
-      setFamilyMembers([...familyMembers, newFamilyMember]);
-      setFamilyMemberName('');
-      setFamilyMemberNationalID('');
-      setFamilyMemberGender('');
-      setFamilyMemberAge('');
+      fetch("http://localhost:3000/users/me/family", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newFamilyMember),
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json(); // Assuming the API returns the added family member data
+          }
+          throw new Error('Failed to add family member');
+        })
+        .then((addedFamilyMember) => {
+          // Update the state with the added family member
+          setFamilyMembers([...familyMembers, newFamilyMember]);
+          setFamilyMemberName('');
+          setFamilyMemberNationalID('');
+          setFamilyMemberGender('');
+          setFamilyMemberAge('');
+        })
+        .catch((error) => {
+          console.error('Error adding family member:', error);
+          // Handle the error as needed (e.g., show an error message)
+        });
     }
   };
 
@@ -385,8 +405,8 @@ const PatientPage = () => {
                 <Tr>
                   <Th>Name</Th>
                   <Th>National ID</Th>
-                  <Th>Gender</Th>
-                  <Th>Age</Th>
+                  <Th>Relation to patient</Th>
+                  <Th>PatientID</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -418,22 +438,23 @@ const PatientPage = () => {
               />
             </FormControl>
             <FormControl mt={4}>
-              <FormLabel>Gender</FormLabel>
+              <FormLabel>Relation to patient</FormLabel>
               <Select
                 value={familyMemberGender}
                 onChange={handleFamilyMemberGenderChange}
-                placeholder="Select Gender"
+                placeholder="Select relation"
               >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
+                <option value="Husband">Husband</option>
+                <option value="Wife">Wife</option>
+                <option value="Child">Child</option>
               </Select>
             </FormControl>
             <FormControl mt={4}>
-              <FormLabel>Age</FormLabel>
+              <FormLabel>PatientID</FormLabel>
               <Input
                 value={familyMemberAge}
                 onChange={handleFamilyMemberAgeChange}
-                placeholder="Age"
+                placeholder="PatientID"
               />
             </FormControl>
             <Button
