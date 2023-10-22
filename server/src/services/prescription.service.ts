@@ -1,10 +1,10 @@
 import StatusCodes from 'http-status-codes';
 
-import PrescriptionModel from '../models/prescription.model';
+import { Prescription } from '../models';
 import { HttpError } from '../utils';
 
 const getPrescriptions = async (query: Object) => {
-  const presecription = await PrescriptionModel.find(query);
+  const presecription = await Prescription.find(query);
   if (!presecription) throw new HttpError(StatusCodes.NOT_FOUND, 'no presecription found');
 
   return {

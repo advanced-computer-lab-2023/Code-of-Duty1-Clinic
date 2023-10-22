@@ -1,19 +1,22 @@
 import authRouter from './auth.route';
-import appointmentRouter from './appointment.route';
 import chatroomRouter from './chatroom.route';
-import contractRouter from './contract.route';
 import notificationRouter from './notification.route';
 import packageRouter from './package.route';
 import prescriptionRouter from './prescription.route';
+import requestRouter from './request.route';
 import userRouter from './user.route';
+import meRouter from './me.route';
+import doctorRouter from './doctor.route';
+import patientRouter from './patient.route';
 
 export {
   authRouter,
-  appointmentRouter,
-  chatroomRouter,
-  contractRouter,
-  notificationRouter,
+  userRouter,
+  doctorRouter,
+  patientRouter,
+  requestRouter,
   packageRouter,
-  prescriptionRouter,
-  userRouter
+  notificationRouter,
+  chatroomRouter,
+  meRouter
 };

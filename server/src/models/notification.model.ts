@@ -5,7 +5,7 @@ interface INotification {
   title: string;
   content: string;
   type: 'Message' | 'Rescheduled' | 'Canceled' | 'Update';
-  date: Date;
+  date?: Date;
 }
 
 const notificationSchema = new Schema<INotification>({
@@ -17,7 +17,7 @@ const notificationSchema = new Schema<INotification>({
   title: { type: String, required: true },
   content: { type: String, required: true },
   type: { type: String, enum: ['Message', 'Rescheduled', 'Canceled', 'Update'], required: true },
-  date: { type: Date, required: true }
+  date: { type: Date, default: Date.now() }
 });
 
 notificationSchema.index({ userID: 1 });
@@ -25,3 +25,4 @@ notificationSchema.index({ userID: 1 });
 const NotificationModel = mongoose.model<INotification>('Notification', notificationSchema);
 
 export default NotificationModel;
+export { INotification };

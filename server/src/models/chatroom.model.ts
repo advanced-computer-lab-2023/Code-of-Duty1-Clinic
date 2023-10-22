@@ -9,9 +9,11 @@ interface IChatRoom {
   patientID: mongoose.Schema.Types.ObjectId;
   medicID: mongoose.Schema.Types.ObjectId;
   messages: ChatMessage[];
-  date: Date;
+  date?: Date;
 }
+
 type IChatRoomDocument = IChatRoom & Document;
+
 const chatRoomSchema = new Schema<IChatRoomDocument>({
   patientID: {
     type: mongoose.Schema.Types.ObjectId,
@@ -26,14 +28,14 @@ const chatRoomSchema = new Schema<IChatRoomDocument>({
   messages: {
     type: [
       {
-        sender: { type: mongoose.Schema.Types.ObjectId, required: true },
+        sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         content: { type: String, required: true }
       }
     ],
     required: true
   },
 
-  date: { type: Date, required: true }
+  date: { type: Date, default: Date.now() }
 });
 
 chatRoomSchema.index({ patientID: 1 });
@@ -42,3 +44,4 @@ chatRoomSchema.index({ medicID: 1 });
 const ChatRoomModel = mongoose.model<IChatRoomDocument>('ChatRoom', chatRoomSchema);
 
 export default ChatRoomModel;
+export { IChatRoom };

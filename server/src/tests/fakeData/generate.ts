@@ -1,13 +1,6 @@
 import mongoose from 'mongoose';
 import { faker } from '@faker-js/faker';
-import UserModel, {
-  IUser,
-  IDoctor,
-  IPatient,
-  FamilyMember,
-  IEmergencyContact,
-  ICommonUser
-} from '../../models/user.model'; // Adjust the path based on your project structure
+import User, { IUser, IDoctor, IPatient, FamilyMember, IEmergencyContact, ICommonUser } from '../../models/user.model'; // Adjust the path based on your project structure
 import { getPackageById } from '../../services/package.service';
 const connectionString = 'mongodb://127.0.0.1:27017/clinic';
 const generateFakeUser = async (): Promise<IUser> => {
@@ -24,7 +17,7 @@ const generateFakeUser = async (): Promise<IUser> => {
     gender: randomArrayElement(['Male', 'Female']),
     phone: faker.phone.number(),
     addresses: [faker.location.secondaryAddress()],
-    role: 'Doctor', //randomArrayElement(['Patient', 'Doctor', 'Administrator']),
+    role: 'Doctor', //randomArrayElement(['Patient', 'Doctor', 'Admin']),
     profileImage: faker.image.avatar(),
     isEmailVerified: faker.number.int() % 2 === 0,
     wallet: faker.number.int(),

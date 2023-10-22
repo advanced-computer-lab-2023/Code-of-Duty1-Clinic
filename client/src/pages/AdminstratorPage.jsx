@@ -32,7 +32,7 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 
-const AdministratorPage = () => {
+const AdminPage = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [newAdminUsername, setNewAdminUsername] = useState("");
   const [newAdminPassword, setNewAdminPassword] = useState("");
@@ -123,7 +123,7 @@ const AdministratorPage = () => {
     birthDate: "",
     gender: "",
     phone: "",
-    role: "Administrator",
+    role: "Admin",
     profileImage: "",
     isEmailVerified: false,
     wallet: 0,
@@ -182,7 +182,7 @@ const AdministratorPage = () => {
           birthDate: "",
           gender: "",
           phone: "",
-          role: "Administrator",
+          role: "Admin",
           profileImage: "LOLO",
           isEmailVerified: false,
           wallet: 0,
@@ -365,7 +365,7 @@ const AdministratorPage = () => {
 
       <Container maxW="auto">
         <Heading size="lg" mb={4}>
-          Administrator Page
+          Admin Page
         </Heading>
 
         <Tabs index={selectedTab} onChange={handleTabChange}>
@@ -680,4 +680,4 @@ const AdministratorPage = () => {
 };
 
 
-export default AdministratorPage;
+export default AdminPage;

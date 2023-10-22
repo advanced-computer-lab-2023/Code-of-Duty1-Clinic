@@ -5,7 +5,9 @@ import '@types/jest';
 
 jest.mock('ioredis', () => require('ioredis-mock'));
 
+import { clearRedis } from '../utils';
 import app from '../server';
+
 const myRequest = supertest(app);
 
 let mongoServer: MongoMemoryServer;

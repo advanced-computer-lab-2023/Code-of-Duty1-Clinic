@@ -1,295 +1,98 @@
-import UserModel, { IPatient, IUserDocument, IUser, IDoctor, FamilyMember } from '../models/user.model';
-import PackageModel, { IPackageDocument } from '../models/package.model';
-import mongoose, { Document } from 'mongoose';
-import { getAllDoctor } from './doctor.service';
-import { getPackageById } from './package.service';
-import { HttpError } from '../utils';
 import { StatusCodes } from 'http-status-codes';
-import PrescriptionModel from '../models/prescription.model';
-import AppointmentModel from '../models/appointment.model';
-const hasActivePackage = (patient: (IPatient & Document) | IPatient): Boolean => {
-  if (patient.package && patient.package.packageID && patient.package.packageStatus) {
-    if (patient.package.endDate && patient.package.endDate.getTime() > Date.now()) {
-      return true;
-    }
-  }
-  return false;
-};
-const getPatientByID = async (patientId: string) => {
-  return UserModel.findOne({ _id: new mongoose.Types.ObjectId(patientId) });
-};
-const addFamilyMember = async (body: any) => {
-  if (!(body.patientID && body.relation && body.nationalID)) {
-    throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide patientID, relation and nationalID');
-  }
-  if (body.name && body.birthDate && body.gender) {
-    return await addNonUserFamilyMember(
-      body.patientID,
-      body.name,
-      body.nationalID,
-      body.birthDate,
-      body.gender,
-      body.relation,
-      body.phone || null
-    );
-  } else if (body.userID) {
-    return await addUserFamilyMember(body.patientID, body.userID, body.relation, body.nationalID);
-  }
-  throw new HttpError(
-    StatusCodes.BAD_REQUEST,
-    'Either name, nationalID,gender,birthDate, and phone should be provided, or userID and relation should be provided.'
-  );
-};
-const addUserFamilyMember = async (patientID: string, userID: string, relation: string, nationalID: string) => {
-  try {
-    const filter = { _id: new mongoose.Types.ObjectId(patientID) };
-    const update = {
-      $push: {
-        family: {
-          userID: new mongoose.Types.ObjectId(userID),
-          relation: relation,
-          nationalID: nationalID
-        }
-      }
-    };
+import { User, Patient, IPatient, IDoctor, Package, IPackage } from '../models';
+import { getAllDoctors } from './doctor.service';
+import { HttpError } from '../utils';
+import { Prescription, Appointment } from '../models';
 
-    const updatedUser = await UserModel.findOneAndUpdate(filter, update, { new: true }).catch((e) => {
-      console.log(e);
-    });
-    return {
-      result: updatedUser,
-      status: StatusCodes.OK,
-      message: 'Family member added successfully'
+const addFamilyMember = async (body: any) => {
+  const { id, relation, userID, name, age, gender, nationalID } = body;
+  if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
+
+  let newFamily;
+  if (userID) {
+    const familyUser = await Patient.findById(userID);
+    if (!familyUser) throw new HttpError(StatusCodes.NOT_FOUND, "User's family member not found");
+
+    newFamily = { relation, userID };
+  } else if (name && age && gender && nationalID) {
+    newFamily = {
+      relation,
+      name,
+      nationalID,
+      age,
+      gender
     };
-  } catch (error) {
-    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member: ${error}`);
+  } else {
+    throw new HttpError(
+      StatusCodes.BAD_REQUEST,
+      'Either name, nationalID, gender, age, and relation should be provided, or userID and relation should be provided.'
+    );
   }
+
+  const update = {
+    $push: {
+      family: newFamily
+    }
+  };
+  const updatedUser = await Patient.findOneAndUpdate({ _id: id }, update, { new: true });
+  if (!updatedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
+
+  return {
+    result: updatedUser,
+    status: StatusCodes.OK,
+    message: 'Family member added successfully'
+  };
 };
 
 const getFamily = async (patientID: string) => {
-  try {
-    const family = await UserModel.find({
-      _id: new mongoose.Types.ObjectId(patientID)
-    }).select({
-      family: 1
-    });
-    let result = [];
-    for (const member of family as unknown as FamilyMember[]) {
-      let memberResult = { ...(member as any).toObject() };
-      if (memberResult.userID) {
-        const memberInfo = await UserModel.findById(memberResult.userID as mongoose.Types.ObjectId).select({
-          name: 1,
-          birthDate: 1,
-          gender: 1,
-          phone: 1
-        });
-        memberResult = { ...memberResult, ...memberInfo!.toObject() };
-        delete memberResult.userID;
-      }
-      result.push(memberResult);
-    }
-    return {
-      result: result,
-      status: StatusCodes.OK,
-      message: 'Family members retrieved successfully'
-    };
-  } catch (e) {
-    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member${e}`);
-  }
-};
-const addNonUserFamilyMember = async (
-  patientID: string,
-  memberName: string,
-  nationalID: string,
-  birthDate: Date,
-  gender: string,
-  relation: string,
-  phone: string
-) => {
-  try {
-    const filter = { _id: new mongoose.Types.ObjectId(patientID) };
-    const update = {
-      $push: {
-        family: {
-          name: memberName,
-          nationalID: nationalID,
-          birthDate: birthDate,
-          gender: gender,
-          relation: relation,
-          phone: phone
-        }
-      }
-    };
+  const user: any = await Patient.findOne({
+    _id: patientID
+  }).select('family');
+  if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'Family not found');
 
-    const updatedUser = await UserModel.findOneAndUpdate(filter, update, { new: true });
+  const family = user.family;
 
-    return {
-      result: updatedUser,
-      status: StatusCodes.OK,
-      message: 'Family member added successfully'
-    };
-  } catch (error) {
-    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Unable to add the family member: ${error}`);
-  }
-};
-
-const viewAllDoctorsForPatient = async (patientId: string, query?: any) => {
-  try {
-    var sessionDiscount = 0;
-    const patient: IUserDocument | null = await getPatientByID(patientId);
-
-    const pkgID = (patient as IPatient)?.package?.packageID;
-
-    const pkg: IPackageDocument | null = await getPackageById(pkgID?.toString()!);
-
-    sessionDiscount = pkg?.sessionDiscount || 0;
-
-    let doctors = (await getAllDoctor(query)).result;
-    if (!Array.isArray(doctors)) {
-      doctors = [doctors[0]];
+  family.forEach(async (member: any) => {
+    let info = { ...member.toObject() };
+    if (member.userID) {
+      const populateInfo = await Patient.findById(member.userID).select('name gender phone');
+      info = { ...info, ...populateInfo?.toObject() };
     }
 
-    for (let i = 0; i < doctors.length; i++) {
-      doctors[i].hourRate = calculateFinalSessionPrice(
-        doctors[i].hourRate,
-        doctors[i].contractID[0]?.markUpProfit,
-        sessionDiscount
-      );
-    }
-
-    return {
-      result: doctors,
-      status: StatusCodes.OK,
-      message: 'Successfully retrieved Doctors'
-    };
-  } catch (error) {
-    console.error('Error retrieving patient or doctors:', error);
-    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Error happened while retrieving Doctors');
-  }
-};
-
-const calculateFinalSessionPrice = (
-  doctorHourRate: number,
-  markupProfit: number,
-  sessionDiscountPercentage: number = 0
-): number => {
-  let price = doctorHourRate + 0.1 * markupProfit;
-  let finalPrice = price * (1 - sessionDiscountPercentage / 100);
-  console.log(doctorHourRate, markupProfit, sessionDiscountPercentage, finalPrice);
-  return finalPrice;
-};
-
-const getAllPrescription = async (patientID: string) => {
-  const presecription = await PrescriptionModel.find({ patientID: patientID });
-  return {
-    status: StatusCodes.OK,
-    message: 'here all presecription',
-    result: presecription
-  };
-};
-
-const filterPrescriptions = async (
-  patientID: string,
-  filterType: 'date' | 'doctor' | 'filled' | 'unfilled',
-  filterValue: Date | string | boolean
-) => {
-  // Get all prescriptions first using getAllPrescription
-  const allPrescriptions = await getAllPrescription(patientID);
-
-  // Filter the prescriptions based on the selected filter type
-  const filteredPrescriptions = allPrescriptions.result.filter((prescription) => {
-    if (filterType === 'date' && prescription.dateIssued === filterValue) {
-      return true;
-    }
-    if (filterType === 'doctor' && prescription.doctorID.toString() === filterValue) {
-      return true;
-    }
-    if (filterType === 'filled' && prescription.isFilled === filterValue) {
-      return true;
-    }
-    if (filterType === 'unfilled' && prescription.isFilled !== filterValue) {
-      return true;
-    }
-    return false;
+    return info;
   });
 
-  // Check if no prescriptions match the filter criteria
-  if (filteredPrescriptions.length === 0) {
-    return {
-      status: StatusCodes.OK,
-      message: `No prescriptions found for the selected ${filterType}`,
-      result: []
-    };
-  }
-
   return {
+    result: family,
     status: StatusCodes.OK,
-    message: `Filtered prescriptions by ${filterType}`,
-    result: filteredPrescriptions
+    message: 'Family members retrieved successfully'
   };
 };
 
-const selectPrescription = async (prescriptionID: string) => {
-  try {
-    // Fetch prescriptions for the given patient and doctor
-    const prescriptions = await PrescriptionModel.find({ prescriptionID });
+const viewAllDoctorsForPatient = async (patientId: string, query: any) => {
+  const patient: IPatient | null = await Patient.findOne({ _id: patientId });
+  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
 
-    if (!prescriptions || prescriptions.length === 0) {
-      return {
-        status: StatusCodes.NOT_FOUND,
-        message: 'No prescriptions found for the given patient and doctor',
-        result: []
-      };
-    }
-
-    // Return the prescriptions
-    return {
-      status: StatusCodes.OK,
-      message: 'Prescriptions for the patient and doctor',
-      result: prescriptions
-    };
-  } catch (error) {
-    return {
-      status: StatusCodes.INTERNAL_SERVER_ERROR,
-      message: 'Error while fetching prescriptions',
-      result: []
-    };
+  let sessionDiscount = 0;
+  if (patient.package) {
+    const pkg = await Package.findOne({ _id: patient.package.packageID });
+    if (pkg && patient.package!.endDate?.getTime() >= Date.now()) sessionDiscount = pkg.sessionDiscount;
   }
-};
-const getPatient = async (patientID: string, wantsMedicalHistory: boolean, doctorID?: string) => {
-  try {
-    const notFoundMessage = {
-      status: StatusCodes.NOT_FOUND,
-      message: 'No patient found with this ID'
-    };
-    if (doctorID) {
-      const commonAppointments = await AppointmentModel.find({ patientID: patientID, doctorID: doctorID });
-      if (!commonAppointments) return notFoundMessage;
-    }
-    let select: any = { password: 0, isEmailVerified: 0, addresses: 0, _id: 0 };
-    if (wantsMedicalHistory) {
-      select = { medicalHistory: 1 };
-    }
-    const result = await UserModel.findOne({ _id: new mongoose.Types.ObjectId(patientID), role: 'Patient' }, select);
-    if (!result) return notFoundMessage;
-    return {
-      result: result,
-      status: StatusCodes.OK,
-      message: 'Successfully retrieved health record'
-    };
-  } catch (e) {
-    throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, `Error happened while retrieving health record${e}`);
+
+  let doctors = (await getAllDoctors(query)).result;
+
+  for (let i = 0; i < doctors.length; i++) {
+    const { hourRate, contract } = doctors[i];
+
+    let price = hourRate * (1 + contract?.markUpProfit!);
+    doctors[i].hourRate = price - price * (sessionDiscount / 100);
   }
+
+  return {
+    result: doctors,
+    status: StatusCodes.OK,
+    message: 'Successfully retrieved Doctors'
+  };
 };
 
-export {
-  viewAllDoctorsForPatient,
-  calculateFinalSessionPrice,
-  getAllPrescription,
-  filterPrescriptions,
-  selectPrescription,
-  getFamily,
-  hasActivePackage,
-  getPatient,
-  addFamilyMember
-};
+export { viewAllDoctorsForPatient, getFamily, addFamilyMember };
