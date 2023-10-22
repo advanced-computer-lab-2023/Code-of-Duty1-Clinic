@@ -1,14 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
-import User from '../models/user.model';
-import Request from '../models/request.model';
+import { User, Request, Admin, Doctor } from '../models';
 
 const updateInfo = async (info: any) => {
-  console.log(info);
-  const id = info.id;
-  if ('password' in info) throw new HttpError(StatusCodes.FORBIDDEN, "you can't modify the password");
-  if ('role' in info) throw new HttpError(StatusCodes.FORBIDDEN, "you can't change the role ");
-  const updatedUser = await User.findByIdAndUpdate({ _id: id }, info);
+  const { id } = info;
+  delete info.id;
+  if (info.password || info.role) throw new HttpError(StatusCodes.FORBIDDEN, "you can't modify these fields");
+
+  const updatedUser = await User.findByIdAndUpdate(id, info);
   if (!updatedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'the user does not exist');
   return {
     status: StatusCodes.OK,
@@ -18,7 +17,7 @@ const updateInfo = async (info: any) => {
 };
 
 const getUsers = async (query: Object) => {
-  const users = await User.find(query).select('-password');
+  const users = await User.find(query);
   if (!users) throw new HttpError(StatusCodes.NOT_FOUND, 'no users found');
 
   return {
@@ -26,13 +25,13 @@ const getUsers = async (query: Object) => {
     result: users
   };
 };
+
 const getDoctorsRequests = async (query: Object) => {
-  let users = await User.find(query).select('-password').populate({
-    path: 'requestID',
+  let users = await Doctor.find(query).populate({
+    path: 'request',
     model: Request
   });
-  users = users as any;
-  users = users.filter((user: any) => user.requestID.length > 0);
+  users = users.filter((user: any) => user.request.length > 0);
   if (!users) throw new HttpError(StatusCodes.NOT_FOUND, 'no users found');
 
   return {
@@ -41,31 +40,25 @@ const getDoctorsRequests = async (query: Object) => {
   };
 };
 
-const addAdmin = async (adminInfo: object) => {
-  const admin = new User({ ...adminInfo, role: 'Administrator' });
+const addAdmin = async (adminInfo: any) => {
+  const admin = new Admin(adminInfo);
   await admin.save();
+
   return {
     message: 'new admin has been created',
     status: StatusCodes.OK,
     result: admin
   };
 };
-const deleteUsers = async () => {
-  await User.deleteMany();
+
+const deleteUsers = async (body: any) => {
+  const users = await User.deleteMany(body);
+
   return {
     message: 'users have been deleted successfully',
     status: StatusCodes.OK,
-    result: null
-  };
-};
-const deleteUser = async (id: String) => {
-  const deletedUser = await User.findByIdAndDelete(id);
-  if (!deletedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'there is no such a user to delete');
-  return {
-    message: `${deletedUser.name} has been been deleted `,
-    status: StatusCodes.OK,
-    result: deletedUser
+    result: users
   };
 };
 
-export { updateInfo, getUsers, addAdmin, deleteUsers, deleteUser, getDoctorsRequests };
+export { updateInfo, getUsers, addAdmin, deleteUsers, getDoctorsRequests };

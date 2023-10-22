@@ -74,7 +74,6 @@ class APIFeatures<T extends Document> {
   }
 
   // txtSearch=value
-  // valid only with product
   private search() {
     const search = this.reqQuery.txtSearch;
 

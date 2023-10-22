@@ -2,6 +2,7 @@ import AppointmentModel from '../models/appointment.model';
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 import { HttpError } from '../utils';
+
 const getUpcomingPatients = async (doctorID: string) => {
   //get patients that have appointments with this doctor
   const patients = await AppointmentModel.find({ doctorID: doctorID }).distinct('patientID').populate('patientID');

@@ -1,85 +1,93 @@
-import userModel, { ICommonUser } from './user';
+import User, { ICommonUser } from './user.model';
 import mongoose, { Schema, Document } from 'mongoose';
+
 const options = { discriminatorKey: 'role' };
 
 interface FamilyMemberWithID {
   userID: mongoose.Types.ObjectId;
-  nationalID: string;
   relation: 'Husband' | 'Wife' | 'Child';
 }
 
 interface FamilyMemberWithDetails {
   name: string;
   nationalID: string;
-  phone: string;
-  birthDate: Date;
-  gender: 'male' | 'female';
-  relation: 'husband' | 'wife' | 'child';
+  age: number;
+  gender: 'Male' | 'Female';
+  relation: 'Husband' | 'Wife' | 'Child';
 }
 
 type FamilyMember = FamilyMemberWithID | FamilyMemberWithDetails;
-interface IEmergencyContact {
-  name: string;
-  phone: string;
-  relation: 'husband' | 'wife' | 'child';
-}
+
 interface IPatient extends ICommonUser {
-  family: FamilyMember[];
-  emergencyContact: IEmergencyContact[];
-  medicalHistory: {
+  addresses?: string[];
+  profileImage?: string;
+  isEmailVerified?: boolean;
+  wallet?: number;
+  family?: FamilyMember[];
+  emergencyContact?: {
+    name: string;
+    phone: string;
+    relation: 'Husband' | 'Wife' | 'Child';
+  };
+  medicalHistory?: {
     name: string;
     medicalRecord: string;
   }[];
-  package: {
+  package?: {
     packageID: mongoose.Types.ObjectId;
-    packageStatus?: 'subscribed' | 'unsubscribed' | 'cancelled';
+    packageStatus?: 'Subscribed' | 'Unsubscribed' | 'Cancelled';
     endDate: Date;
   };
 }
+
 type IPatientDocument = IPatient & Document;
+
 const patientSchema = new Schema<IPatientDocument>(
   {
+    addresses: [String],
+    profileImage: String,
+    isEmailVerified: {
+      type: Boolean,
+      default: false
+    },
+    wallet: {
+      type: Number,
+      default: 0
+    },
     emergencyContact: {
-      type: [
-        {
-          name: { type: String, required: true },
-          phone: { type: String, required: true },
-          relation: { type: String, enum: ['husband', 'wife', 'child'], required: true }
-        }
-      ],
-      required: true
+      name: { type: String, required: true },
+      phone: { type: String, required: true },
+      relation: { type: String, enum: ['Husband', 'Wife', 'Child'], required: true }
     },
     family: {
       type: [
         {
-          userID: mongoose.Types.ObjectId,
+          userID: { type: mongoose.Types.ObjectId, ref: 'User' },
           name: String,
           nationalID: String,
-          phone: String,
-          birthDate: Date,
-          gender: { type: String, enum: ['male', 'female'] },
+          age: Number,
+          gender: { type: String, enum: ['Male', 'Female'] },
           relation: {
             type: String,
-            enum: ['husband', 'wife', 'child'],
+            enum: ['Husband', 'Wife', 'Child'],
             required: true
           }
         }
       ],
+      default: [],
       validate: {
-        validator: function (arr: FamilyMember[]) {
-          const nationalIDs: string[] = [];
+        validator: function (arr: any[]) {
+          arr.forEach((member) => {
+            const { relation, userID, name, nationalID, age, gender } = member;
 
-          for (const elem of arr) {
-            if (nationalIDs.includes(elem.nationalID)) {
-              return false; // National ID is not unique
-            }
-
-            nationalIDs.push(elem.nationalID);
-          }
+            if (!relation) return false;
+            if (!userID || !(name && nationalID && age && gender)) return false;
+          });
 
           return true;
         },
-        message: 'Either name, nationalID, and phone should be provided, or userID and relation should be provided.'
+        message:
+          'Either name, nationalID, age and gender should be provided, or userID and relation should be provided.'
       }
     },
     medicalHistory: {
@@ -88,7 +96,8 @@ const patientSchema = new Schema<IPatientDocument>(
           name: { type: String, required: true },
           medicalRecord: { type: String, required: true }
         }
-      ]
+      ],
+      default: []
     },
     package: {
       type: {
@@ -99,7 +108,7 @@ const patientSchema = new Schema<IPatientDocument>(
         },
         packageStatus: {
           type: String,
-          enum: ['subscribed', 'unsubscribed', 'cancelled'],
+          enum: ['Subscribed', 'Unsubscribed', 'Cancelled'],
           required: true
         },
         endDate: { type: Date, required: true }
@@ -109,5 +118,7 @@ const patientSchema = new Schema<IPatientDocument>(
   options
 );
 
-const patientModel: mongoose.Model<IPatientDocument> = userModel.discriminator('patient', patientSchema);
+const patientModel: mongoose.Model<IPatientDocument> = User.discriminator('Patient', patientSchema);
+
 export default patientModel<IPatientDocument>;
+export { IPatient, FamilyMember };
