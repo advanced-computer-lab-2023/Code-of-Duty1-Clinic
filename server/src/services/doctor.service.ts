@@ -4,7 +4,6 @@ import { User, Contract, Appointment, IPatient, IDoctor, Doctor } from '../model
 
 const getMyPatients = async (query: any) => {
   const appointments = await Appointment.find(query).distinct('patientID').select('patientID').populate('patientID');
-
   if (!appointments) return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
 
   const patients = appointments.map((appointment: any) => appointment.patientID);
@@ -19,12 +18,7 @@ const getMyPatients = async (query: any) => {
 const calculateTimeStamp = (slot: { hours: number; minutes: number }) => slot.hours * 60 + slot.minutes;
 
 const getDoctors = async (query: any) => {
-  let doctors: IDoctor[] = await Doctor.find(query)
-    .populate({
-      path: 'contract',
-      model: Contract
-    })
-    .find({ 'contract.status': 'Accepted' });
+  let doctors: IDoctor[] = await Doctor.find(query); // .find({ isContractAccepted: true });
 
   if (query.date) {
     const daysOfWeek = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];

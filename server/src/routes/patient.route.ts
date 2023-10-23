@@ -9,6 +9,10 @@ const router = express.Router();
 router.use(isAuthenticated);
 router.use(isAuthorized('Doctor'));
 
+router.get('/:id/medicalhistory', (req: Request, res: Response) => {
+  // controller(res)()();
+});
+
 router.get('/:id', (req: Request, res: Response) => {
   controller(res)(getMyPatients)({ doctorID: req.decoded.id, patientID: req.params.id });
 });
@@ -16,9 +20,6 @@ router.get('/', (req: Request, res: Response) => {
   controller(res)(getMyPatients)({ doctorID: req.decoded.id });
 });
 
-router.get('/:id/medicalhistory', (req: Request, res: Response) => {
-  // controller(res)()();
-});
 router.post('/:id/medicalhistory', (req: Request, res: Response) => {
   // Handle medical history update logic here
   // notice that doctors can update patients medical history

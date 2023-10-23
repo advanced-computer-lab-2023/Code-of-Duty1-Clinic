@@ -10,7 +10,7 @@ const isAuthorized =
       const { role } = req.decoded;
       if (authorizedRoles.includes(role)) return next();
 
-      res.status(StatusCodes.FORBIDDEN).json('Unauthorized');
+      res.status(StatusCodes.FORBIDDEN).json({ message: 'Unauthorized' });
     } catch (e: any) {
       console.log(e.message);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e.message);

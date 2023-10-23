@@ -4,6 +4,7 @@ import { getDoctors } from './doctor.service';
 import { HttpError } from '../utils';
 import { Prescription, Appointment } from '../models';
 
+// Maybe we need to validate unique family member by userID or nationalID
 const addFamilyMember = async (id: string, body: any) => {
   const { relation, userID, name, age, gender, nationalID } = body;
   if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
@@ -11,7 +12,7 @@ const addFamilyMember = async (id: string, body: any) => {
   let newFamily;
   if (userID) {
     const familyUser = await Patient.findById(userID);
-    if (!familyUser) throw new HttpError(StatusCodes.NOT_FOUND, "User's family member not found");
+    if (!familyUser) throw new HttpError(StatusCodes.NOT_FOUND, "User's new family member not found");
 
     newFamily = { relation, userID };
   } else if (name && age && gender && nationalID) {
@@ -48,9 +49,10 @@ const getFamily = async (patientID: string) => {
   const user: any = await Patient.findOne({
     _id: patientID
   }).select('family');
-  if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'Family not found');
+  if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'patient not found');
 
   const family = user.family;
+  if (!family) throw new HttpError(StatusCodes.NOT_FOUND, 'family not found');
 
   family.forEach(async (member: any) => {
     let info = { ...member.toObject() };

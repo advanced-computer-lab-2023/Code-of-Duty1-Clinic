@@ -62,9 +62,9 @@ const patientSchema = new Schema<IPatientDocument>(
     family: {
       type: [
         {
-          userID: { type: mongoose.Types.ObjectId, ref: 'User' },
+          userID: { type: mongoose.Types.ObjectId, ref: 'User', unique: true },
           name: String,
-          nationalID: String,
+          nationalID: { type: String, unique: true },
           age: Number,
           gender: { type: String, enum: ['Male', 'Female'] },
           relation: {
@@ -77,17 +77,17 @@ const patientSchema = new Schema<IPatientDocument>(
       default: [],
       validate: {
         validator: function (arr: any[]) {
-          arr.forEach((member) => {
+          for (const member of arr) {
             const { relation, userID, name, nationalID, age, gender } = member;
 
             if (!relation) return false;
-            if (!userID || !(name && nationalID && age && gender)) return false;
-          });
+            if (!userID && !(name && nationalID && age && gender)) return false;
+          }
 
           return true;
         },
         message:
-          'Either name, nationalID, age and gender should be provided, or userID and relation should be provided.'
+          'Either name, nationalID, age and gender, relation should be provided, or userID and relation should be provided.'
       }
     },
     medicalHistory: {

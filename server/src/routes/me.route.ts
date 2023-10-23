@@ -7,7 +7,6 @@ import { getUsers, updateInfo, getAppointments, getPrescriptions, addFamilyMembe
 const router = express.Router();
 
 router.use(isAuthenticated);
-// router.use(isAuthorized('Role', 'Role))
 
 // All Users (Doctor & Patient)
 router.get('/info', (req: Request, res: Response) => {
@@ -17,7 +16,11 @@ router.put('/info', (req: Request, res: Response) => {
   controller(res)(updateInfo)(req.decoded.id, req.body);
 });
 
+router.use(isAuthorized('Doctor', 'Patient'));
+
+// get my appointments
 router.get('/appointments', (req: Request, res: Response) => {
+  // user's id field depends on the role
   const userID = req.decoded.role === 'Patient' ? 'patientID' : 'doctorID';
   controller(res)(getAppointments)({ ...req.query, [userID]: req.decoded.id });
 });

@@ -6,7 +6,7 @@ const login = async (body: any) => {
   const { username, password } = body;
   if (!username || !password) throw new HttpError(StatusCodes.BAD_REQUEST, 'Username and password are required');
 
-  const user = await User.findOne({ username: username });
+  const user = await User.findOne({ username: username }).select('+password');
   if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
 
   const isCorrect: boolean = user.isCorrectPassword(password);
@@ -18,12 +18,13 @@ const login = async (body: any) => {
   return {
     status: StatusCodes.OK,
     message: 'Login successful',
-    token:token
+    token: token
   };
 };
 
 const register = async (body: any) => {
-  if (!['Patient', 'Doctor', 'Admin'].includes(body.role)) throw new Error('Role is not correct');
+  if (!['Patient', 'Doctor'].includes(body.role))
+    throw new Error('Role is not correct or you cannot register as admin');
   const user = new User(body);
   await user.save();
 

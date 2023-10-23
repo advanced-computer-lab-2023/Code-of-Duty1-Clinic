@@ -3,16 +3,12 @@ import { Doctor, Admin, Request, User } from '../models';
 import { HttpError } from '../utils';
 
 const getRequests = async (query: Object) => {
-  let users = await Doctor.find(query).populate({
-    path: 'request',
-    model: Request
-  });
-  users = users.filter((user: any) => user.request.length > 0);
-  if (!users) throw new HttpError(StatusCodes.NOT_FOUND, 'no users found');
+  let requests = await Request.find(query).populate('medicID');
+  if (!requests) throw new HttpError(StatusCodes.NOT_FOUND, 'no requests found');
 
   return {
     status: StatusCodes.OK,
-    result: users
+    result: requests
   };
 };
 
@@ -27,8 +23,8 @@ const addAdmin = async (adminInfo: any) => {
   };
 };
 
-const deleteUser = async (id: string) => {
-  const users = await User.findByIdAndDelete(id);
+const deleteUsers = async (query: any) => {
+  const users = await User.deleteMany(query);
 
   return {
     message: 'user has been deleted successfully',
@@ -37,4 +33,4 @@ const deleteUser = async (id: string) => {
   };
 };
 
-export { getRequests, addAdmin, deleteUser };
+export { getRequests, addAdmin, deleteUsers };

@@ -32,7 +32,7 @@ beforeAll(async () => {
 }, 5000 * 2);
 
 afterAll(async () => {
-  // await clearRedis();
+  await clearRedis();
 
   await mongoose.disconnect();
   await mongoServer.stop();

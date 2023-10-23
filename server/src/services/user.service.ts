@@ -3,9 +3,11 @@ import { HttpError } from '../utils';
 import { User } from '../models';
 
 const updateInfo = async (id: string, info: any) => {
-  if (info.password || info.role) throw new HttpError(StatusCodes.FORBIDDEN, "you can't modify these fields");
+  const canUpdate = ['email', 'hourRate', 'hospital'];
+  for (const field in info)
+    if (!canUpdate.includes(field)) throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot update these fields');
 
-  const updatedUser = await User.findByIdAndUpdate(id, info);
+  const updatedUser = await User.findByIdAndUpdate(id, info, { new: true });
   if (!updatedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'the user does not exist');
   return {
     status: StatusCodes.OK,

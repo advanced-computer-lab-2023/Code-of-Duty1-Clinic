@@ -12,7 +12,7 @@ interface ICommonUser {
   birthDate: Date;
   gender: 'Male' | 'Female';
   phone: string;
-  role?: string;
+  role: string;
   isCorrectPassword(password: string): boolean;
 }
 
@@ -28,8 +28,8 @@ const commonUserSchema = new Schema<ICommonUserDocument>(
     },
     password: {
       type: String,
-      required: true
-      // select: false
+      required: true,
+      select: false
     },
     name: {
       type: String,
@@ -72,7 +72,6 @@ commonUserSchema.pre('save', function (next) {
   next();
 });
 commonUserSchema.methods.isCorrectPassword = function (enteredPassword: string): boolean {
-  
   return bcrypt.compareSync(enteredPassword, this.password);
 };
 
