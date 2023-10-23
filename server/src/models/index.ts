@@ -1,6 +1,6 @@
 import User, { ICommonUser, ICommonUserDocument } from './user.model';
 import Doctor, { IDoctor, DailySchedule } from './doctor.model';
-import Patient, { IPatient } from './patient.model';
+import Patient, { IPatient, FamilyMember } from './patient.model';
 import Admin, { IAdmin } from './admin.model';
 import Request, { IRequest } from './request.model';
 import Contract, { IContract } from './contract.model';
@@ -11,10 +11,11 @@ import Prescription, { IPrescription } from './prescription.model';
 import ChatRoom, { IChatRoom } from './chatroom.model';
 
 export { User, Doctor, Patient, Admin, Request, Contract, Package, Notification, Appointment, Prescription, ChatRoom };
-export type {
+export {
   ICommonUser,
   IDoctor,
   IPatient,
+  FamilyMember,
   IAdmin,
   IRequest,
   IContract,

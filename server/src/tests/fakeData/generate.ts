@@ -1,35 +1,33 @@
 import mongoose from 'mongoose';
 import { faker } from '@faker-js/faker';
-import User, { IUser, IDoctor, IPatient, FamilyMember, IEmergencyContact, ICommonUser } from '../../models/user.model'; // Adjust the path based on your project structure
-import { getPackageById } from '../../services/package.service';
+import { IDoctor, IPatient, ICommonUser, FamilyMember } from '../../models';
+import { getPackages } from '../../services';
+
 const connectionString = 'mongodb://127.0.0.1:27017/clinic';
-const generateFakeUser = async (): Promise<IUser> => {
+
+const generateFakeUser = async () => {
   let user: ICommonUser = {
-    name: {
-      first: faker.internet.displayName(),
-      middle: faker.internet.displayName(),
-      last: faker.internet.displayName()
-    },
+    name: faker.internet.displayName(),
     email: faker.internet.email(),
     username: faker.internet.userName(),
     password: faker.internet.password(),
     birthDate: faker.date.past(),
     gender: randomArrayElement(['Male', 'Female']),
     phone: faker.phone.number(),
-    addresses: [faker.location.secondaryAddress()],
+    // addresses: [faker.location.secondaryAddress()],
     role: 'Doctor', //randomArrayElement(['Patient', 'Doctor', 'Admin']),
-    profileImage: faker.image.avatar(),
-    isEmailVerified: faker.number.int() % 2 === 0,
-    wallet: faker.number.int(),
-    isCorrectPassword: async (password: string) => {
+    // profileImage: faker.image.avatar(),
+    // isEmailVerified: faker.number.int() % 2 === 0,
+    // wallet: faker.number.int(),
+    isCorrectPassword: (password: string) => {
       return true;
     }
   };
-  let restOfAttributes: IPatient | IDoctor | null = null;
+  let restOfAttributes = null;
   if (user.role === 'Patient') {
     restOfAttributes = user as IPatient;
     restOfAttributes.family = generateFakeFamily(1);
-    restOfAttributes.emergencyContact = generateFakeEmergencyContacts();
+    restOfAttributes.emergencyContact = generateFakeEmergencyContacts() as any;
     restOfAttributes.medicalHistory = generateFakeMedicalHistory();
     restOfAttributes.package = await generateFakePackageForUser();
   } else if (user.role === 'Doctor') {
@@ -38,7 +36,7 @@ const generateFakeUser = async (): Promise<IUser> => {
     restOfAttributes.hospital = faker.company.name();
     restOfAttributes.educationBackground = faker.lorem.sentence();
     restOfAttributes.specialty = faker.lorem.word();
-    restOfAttributes.weeklySlots = generateFakeWeeklySlots();
+    // restOfAttributes.weeklySlots = generateFakeWeeklySlots();
     restOfAttributes.vacations = generateFakeVacations();
   }
 
@@ -61,7 +59,7 @@ const generateFamilyMember = () => {
     relation: randomArrayElement(['Husband', 'Wife', 'Child'])
   };
 };
-const generateFakeEmergencyContacts = (): IEmergencyContact[] => {
+const generateFakeEmergencyContacts = () => {
   const emergencyContacts = [];
   for (let i = 0; i < 2; i++) {
     emergencyContacts.push({
@@ -155,7 +153,7 @@ const generateFakeVacations = (): { from: Date; to: Date }[] => {
 const NUM_USERS_TO_GENERATE = 1;
 
 const generateFakeData = async (): Promise<void> => {
-  const fakeUsers: IUser[] = await Promise.all(Array.from({ length: NUM_USERS_TO_GENERATE }, generateFakeUser));
+  const fakeUsers = await Promise.all(Array.from({ length: NUM_USERS_TO_GENERATE }, generateFakeUser));
   console.log(fakeUsers);
 };
 const generateFakeAppointment = () => {
