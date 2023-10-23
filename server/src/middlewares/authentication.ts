@@ -7,12 +7,12 @@ const isAuthenticated = async (req: Request, res: Response, next: NextFunction) 
     const token = req.headers.authorization || req.cookies.token || req.query.token;
 
     // Verify the JWT token
-    // const tokenExist = token ?? await getRedis(token);
-    const decoded = token ?? verifyToken(token);
+    const tokenExist = token ? await getRedis(token) : undefined;
+    const decoded = tokenExist ? verifyToken(token) : undefined;
 
     if (decoded) {
-      (req as any).user = decoded; // Store the decoded user information in the request
-      next();
+      req.decoded = decoded; // Store the decoded user information in the request
+      return next();
     }
 
     res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Invalid token' });

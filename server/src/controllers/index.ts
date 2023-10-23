@@ -1,3 +1,3 @@
-const controller = require('./controller');
+import controller from './controller';
 
-module.exports = controller;
+export default controller;

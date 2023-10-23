@@ -15,6 +15,7 @@ const getPackages = async (query: Object) => {
 const addPackage = async (packageDetails: any) => {
   const newpackage = new Package(packageDetails);
   await newpackage.save();
+
   return {
     status: StatusCodes.OK,
     message: 'package created successfully ',
@@ -29,7 +30,6 @@ const updatePackage = async (id: string, packageDetails: any) => {
       isLatest: false
     }
   );
-
   if (!packageI) throw new HttpError(StatusCodes.NOT_FOUND, 'update the package failed');
 
   const updatedPackageDetails = Object.assign(packageI.toObject(), packageDetails);

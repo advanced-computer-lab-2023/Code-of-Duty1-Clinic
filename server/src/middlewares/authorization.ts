@@ -7,7 +7,7 @@ const isAuthorized =
   (...authorizedRoles: string[]) =>
   (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { role } = (req as any).user;
+      const { role } = req.decoded;
       if (authorizedRoles.includes(role)) return next();
 
       res.status(StatusCodes.FORBIDDEN).json('Unauthorized');

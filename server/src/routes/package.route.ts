@@ -1,25 +1,27 @@
-import express from 'express';
-import controller from '../controllers/controller';
+import express, { Request, Response } from 'express';
+import controller from '../controllers';
 import { isAuthenticated, isAuthorized } from '../middlewares';
 import { getPackages, addPackage, updatePackage, deletePackage } from '../services/package.service';
+
 const router = express.Router();
 
-// packageRouter.use(isAuthenticated)
-// packageRouter.use(isAuthorized("Admin"));
+router.use(isAuthenticated);
 
-router.get('/', (req, res) => {
+router.get('/', (req: Request, res: Response) => {
   controller(res)(getPackages)(req.query);
 });
 
-router.post('/', (req, res) => {
+router.use(isAuthorized('Admin'));
+
+router.post('/', (req: Request, res: Response) => {
   controller(res)(addPackage)(req.body);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', (req: Request, res: Response) => {
   controller(res)(updatePackage)(req.params.id, req.body);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (req: Request, res: Response) => {
   controller(res)(deletePackage)(req.params.id);
 });
 

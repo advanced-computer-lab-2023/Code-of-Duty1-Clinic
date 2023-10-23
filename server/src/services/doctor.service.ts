@@ -2,12 +2,8 @@ import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
 import { User, Contract, Appointment, IPatient, IDoctor, Doctor } from '../models';
 
-const getPatients = async (doctorID: string, query: any) => {
-  const appointments = await Appointment.find({ doctorID })
-    .find(query)
-    .distinct('patientID')
-    .select('patientID')
-    .populate('patientID');
+const getMyPatients = async (query: any) => {
+  const appointments = await Appointment.find(query).distinct('patientID').select('patientID').populate('patientID');
 
   if (!appointments) return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
 
@@ -22,7 +18,7 @@ const getPatients = async (doctorID: string, query: any) => {
 
 const calculateTimeStamp = (slot: { hours: number; minutes: number }) => slot.hours * 60 + slot.minutes;
 
-const getAllDoctors = async (query: any) => {
+const getDoctors = async (query: any) => {
   let doctors: IDoctor[] = await Doctor.find(query)
     .populate({
       path: 'contract',
@@ -54,4 +50,4 @@ const getAllDoctors = async (query: any) => {
   return { result: doctors, status: StatusCodes.OK };
 };
 
-export { getAllDoctors, getPatients };
+export { getDoctors, getMyPatients };

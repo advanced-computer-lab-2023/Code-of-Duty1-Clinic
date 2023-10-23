@@ -5,8 +5,8 @@ interface IAppointment {
   patientID: mongoose.Schema.Types.ObjectId;
   status?: 'Upcoming' | 'Completed' | 'Cancelled' | 'Rescheduled';
   sessionPrice: number;
-  startTime: Date;
-  endTime: Date;
+  startDate: Date;
+  endDate: Date;
   isFollowUp?: boolean;
   previousAppointment?: mongoose.Schema.Types.ObjectId;
 }
@@ -26,8 +26,8 @@ const appointmentSchema = new Schema<IAppointmentDocument>({
   },
   status: { type: String, enum: ['Upcoming', 'Completed', 'Cancelled', 'Rescheduled'], default: 'Upcoming' },
   sessionPrice: { type: Number, required: true },
-  startTime: { type: Date, required: true },
-  endTime: { type: Date, required: true },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
   isFollowUp: { type: Boolean, default: false },
   previousAppointment: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', required: false }
 });

@@ -8,14 +8,14 @@ import cors from 'cors';
 import { queryParser } from './middlewares';
 import {
   authRouter,
+  meRouter,
   userRouter,
   doctorRouter,
   patientRouter,
   requestRouter,
   packageRouter,
-  notificationRouter,
   chatroomRouter,
-  meRouter
+  paymentRouter
 } from './routes';
 
 const app = express();
@@ -37,7 +37,7 @@ app.use('/patients', patientRouter);
 app.use('/requests', requestRouter);
 app.use('/packages', packageRouter);
 app.use('/chatrooms', chatroomRouter);
-app.use('/notifications', notificationRouter);
+app.use('/payment', paymentRouter);
 
 app.all('*', (req: Request, res: Response) => res.status(404).send('Path Not Found'));
 

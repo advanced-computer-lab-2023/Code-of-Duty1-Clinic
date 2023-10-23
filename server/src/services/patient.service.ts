@@ -1,11 +1,11 @@
 import { StatusCodes } from 'http-status-codes';
 import { User, Patient, IPatient, IDoctor, Package, IPackage } from '../models';
-import { getAllDoctors } from './doctor.service';
+import { getDoctors } from './doctor.service';
 import { HttpError } from '../utils';
 import { Prescription, Appointment } from '../models';
 
-const addFamilyMember = async (body: any) => {
-  const { id, relation, userID, name, age, gender, nationalID } = body;
+const addFamilyMember = async (id: string, body: any) => {
+  const { relation, userID, name, age, gender, nationalID } = body;
   if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
 
   let newFamily;
@@ -69,7 +69,7 @@ const getFamily = async (patientID: string) => {
   };
 };
 
-const viewAllDoctorsForPatient = async (patientId: string, query: any) => {
+const viewDoctorsForPatient = async (patientId: string, query: any) => {
   const patient: IPatient | null = await Patient.findOne({ _id: patientId });
   if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
 
@@ -79,7 +79,8 @@ const viewAllDoctorsForPatient = async (patientId: string, query: any) => {
     if (pkg && patient.package!.endDate?.getTime() >= Date.now()) sessionDiscount = pkg.sessionDiscount;
   }
 
-  let doctors = (await getAllDoctors(query)).result;
+  // ToDO: doctors who accepted their contract only should appear
+  let doctors = (await getDoctors(query)).result;
 
   for (let i = 0; i < doctors.length; i++) {
     const { hourRate, contract } = doctors[i];
@@ -95,4 +96,4 @@ const viewAllDoctorsForPatient = async (patientId: string, query: any) => {
   };
 };
 
-export { viewAllDoctorsForPatient, getFamily, addFamilyMember };
+export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember };

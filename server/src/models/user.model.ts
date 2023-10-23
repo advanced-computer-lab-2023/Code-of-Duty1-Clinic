@@ -12,6 +12,7 @@ interface ICommonUser {
   birthDate: Date;
   gender: 'Male' | 'Female';
   phone: string;
+  role?: string;
   isCorrectPassword(password: string): boolean;
 }
 

@@ -4,7 +4,7 @@ import { User, Request, ICommonUser } from '../models';
 
 const login = async (body: ICommonUser) => {
   const { username, password } = body;
-  if (!(username && password)) throw new HttpError(StatusCodes.BAD_REQUEST, 'Username and password are required');
+  if (!username || !password) throw new HttpError(StatusCodes.BAD_REQUEST, 'Username and password are required');
 
   const user = await User.findOne({ username: username });
   if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
@@ -12,13 +12,13 @@ const login = async (body: ICommonUser) => {
   const isCorrect: boolean = user.isCorrectPassword(password);
   if (!isCorrect) throw new HttpError(StatusCodes.UNAUTHORIZED, 'Incorrect password');
 
-  // const token = generateToken(user!._id, user!.role);
-  // putRedis(token, token)
+  const token = generateToken(user._id.toString(), user.role!);
+  putRedis(token, token);
 
   return {
     status: StatusCodes.OK,
-    message: 'Login successful'
-    // token
+    message: 'Login successful',
+    token
   };
 };
 
