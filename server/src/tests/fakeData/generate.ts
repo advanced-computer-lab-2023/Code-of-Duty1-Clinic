@@ -4,8 +4,8 @@ import { IDoctor, IPatient, ICommonUser, FamilyMember } from '../../models';
 import { getPackages } from '../../services';
 
 const connectionString = 'mongodb://127.0.0.1:27017/clinic';
-
-const generateFakeUser = async () => {
+const generateFakeDoctor = async () => {};
+const generateFakeUser = async (role: string) => {
   let user: ICommonUser = {
     name: faker.internet.displayName(),
     email: faker.internet.email(),
@@ -13,9 +13,9 @@ const generateFakeUser = async () => {
     password: faker.internet.password(),
     birthDate: faker.date.past(),
     gender: randomArrayElement(['Male', 'Female']),
-    phone: faker.phone.number(),
+    phone: faker.phone.number().toString(),
     // addresses: [faker.location.secondaryAddress()],
-    role: 'Doctor', //randomArrayElement(['Patient', 'Doctor', 'Admin']),
+    role: role, //randomArrayElement(['Patient', 'Doctor', 'Admin']),
     // profileImage: faker.image.avatar(),
     // isEmailVerified: faker.number.int() % 2 === 0,
     // wallet: faker.number.int(),
@@ -27,7 +27,7 @@ const generateFakeUser = async () => {
   if (user.role === 'Patient') {
     restOfAttributes = user as IPatient;
     restOfAttributes.family = generateFakeFamily(1);
-    restOfAttributes.emergencyContact = generateFakeEmergencyContacts() as any;
+    restOfAttributes.emergencyContact = generateFakeEmergencyContacts()[0] as any;
     restOfAttributes.medicalHistory = generateFakeMedicalHistory();
     restOfAttributes.package = await generateFakePackageForUser();
   } else if (user.role === 'Doctor') {
@@ -40,7 +40,7 @@ const generateFakeUser = async () => {
     restOfAttributes.vacations = generateFakeVacations();
   }
 
-  return { ...user, ...restOfAttributes };
+  return { ...(user as any), ...(restOfAttributes as any) };
 };
 
 const generateFakeFamily = (familyCount: number): FamilyMember[] => {
@@ -94,7 +94,8 @@ const generateFakePackage = async () => {
     familyDiscount: faker.number.int({ min: 0, max: 99 }),
     isLatest: true
   };
-  mongoose.connect(connectionString);
+  //if you want to run this file alone without the test remove the comment on the next line
+  // mongoose.connect(connectionString);
   const newPkg = new PackageModel(pkg);
   await newPkg.save();
   return newPkg;
@@ -111,8 +112,8 @@ const generateFakePackageForUser = async (): Promise<
   const endDate = faker.date.future();
   return { packageID, packageStatus, endDate };
 };
-const randomArrayElement = (arr: any) => {
-  return arr[faker.number.int({ min: 0, max: arr.length })];
+const randomArrayElement = (arr: any[]) => {
+  return arr[faker.number.int({ min: 0, max: arr.length - 1 })];
 };
 const generateFakeWeeklySlots = (): { [day: string]: { from: number; to: number; maxPatients: number }[] } => {
   const weeklySlots: { [day: string]: { from: number; to: number; maxPatients: number }[] } = {};
@@ -198,7 +199,16 @@ const generateContract = () => {
 // generateFakeData().then(() => console.log('Fake data generated successfully.'));
 // console.log(generateFamilyMember());
 // console.log(generateFakeAppointment());
-generateFakeWeeklySlots();
-console.log(generateFakeVacations());
-console.log(generateFakeUser());
+// generateFakeWeeklySlots();
+// console.log(generateFakeVacations());
+// console.log(generateFakeUser("Patient"));
 // generateContract();
+
+export {
+  generateFakeUser,
+  generateFakeAppointment,
+  generateFakeRequest,
+  generateContract,
+  generateFakeData,
+  generateFakePackageForUser
+};

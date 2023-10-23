@@ -28,8 +28,8 @@ const commonUserSchema = new Schema<ICommonUserDocument>(
     },
     password: {
       type: String,
-      required: true,
-      select: false
+      required: true
+      // select: false
     },
     name: {
       type: String,
@@ -49,8 +49,7 @@ const commonUserSchema = new Schema<ICommonUserDocument>(
     gender: {
       type: String,
       enum: ['Male', 'Female'],
-      trim: true,
-      lowercase: true
+      trim: true
     },
     phone: {
       type: String,
@@ -73,6 +72,7 @@ commonUserSchema.pre('save', function (next) {
   next();
 });
 commonUserSchema.methods.isCorrectPassword = function (enteredPassword: string): boolean {
+  
   return bcrypt.compareSync(enteredPassword, this.password);
 };
 

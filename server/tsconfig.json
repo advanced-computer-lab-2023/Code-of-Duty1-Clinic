@@ -11,8 +11,8 @@
     "importHelpers": false /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
     // "jsx": "react"
   },
-  "include": ["src/**/*"  ],
-  "files":["types.d.ts"]
+  "include": ["src/**/*"],
+  "files": ["types.d.ts"]
 }
 // {
 //   "compilerOptions": {
