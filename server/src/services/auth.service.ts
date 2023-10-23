@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { HttpError, generateToken, putRedis } from '../utils';
 import { User, Request, ICommonUser } from '../models';
 
-const login = async (body: ICommonUser) => {
+const login = async (body: any) => {
   const { username, password } = body;
   if (!username || !password) throw new HttpError(StatusCodes.BAD_REQUEST, 'Username and password are required');
 
@@ -18,11 +18,12 @@ const login = async (body: ICommonUser) => {
   return {
     status: StatusCodes.OK,
     message: 'Login successful',
-    token
+    token:token
   };
 };
 
 const register = async (body: any) => {
+  if (!['Patient', 'Doctor', 'Admin'].includes(body.role)) throw new Error('Role is not correct');
   const user = new User(body);
   await user.save();
 
