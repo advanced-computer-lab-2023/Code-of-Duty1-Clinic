@@ -1,14 +1,16 @@
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
-const medicalHistoryStorage = multer.diskStorage({
+
+function generateStorageObject(lastPath:string){ 
+return  multer.diskStorage({
     destination: function (req, file, cb) {
         let relativeFolderPath = "../uploads/";
         let fullFolderPath = path.resolve(__dirname, relativeFolderPath);
         if (!fs.existsSync(fullFolderPath)) { 
             fs.mkdirSync(fullFolderPath);
         }
-        fullFolderPath = path.resolve(fullFolderPath, 'medicalHistory');
+        fullFolderPath = path.resolve(fullFolderPath, lastPath);
         if (!fs.existsSync(fullFolderPath)) {
             fs.mkdirSync(fullFolderPath);
         }
@@ -19,9 +21,13 @@ const medicalHistoryStorage = multer.diskStorage({
         cb(null, filename)
     }
 });
+}
 
-const medicalHistoryUpload = multer({ storage: medicalHistoryStorage });
+const medicalHistoryUpload = multer({ storage: generateStorageObject('medicalHistory') });
+
+const registrationUpload = multer({ storage: generateStorageObject('registration') });
 
 
-export default medicalHistoryUpload;
+
+export  {registrationUpload, medicalHistoryUpload};
 

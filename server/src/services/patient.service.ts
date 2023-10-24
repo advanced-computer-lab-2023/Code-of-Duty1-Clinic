@@ -100,7 +100,6 @@ const viewDoctorsForPatient = async (patientId: string, query: any) => {
 };
 const saveMedicalHistory = async (patientID:string,files:Express.Multer.File[]) => { 
 
-  console.log(files.length + "\n");
   let insertedRecords = [];
   for (let i = 0; i < files.length; i++) {
     const idx = files[i].path.indexOf("uploads");
@@ -134,7 +133,6 @@ const removeMedicalHistory = async (patientID: string, recordName: string) => {
         medicalHistory: { name: recordName }
       }
     }, { new: false });
-  console.log(record,"---------");
   if (!record) throw new HttpError(StatusCodes.NOT_FOUND, 'Record not found');
   let filePath = null;
   for (let i = 0; i < record!.medicalHistory!.length;i++) {
@@ -148,7 +146,6 @@ const removeMedicalHistory = async (patientID: string, recordName: string) => {
   }
   if(!filePath)throw new HttpError(StatusCodes.NOT_FOUND, 'Record not found');
   filePath = path.resolve(__dirname, "../" + filePath);
-  console.log(filePath);
   fs.unlink(filePath,(e)=>e);
   
   return {
