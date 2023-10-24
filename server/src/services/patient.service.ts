@@ -3,7 +3,8 @@ import { User, Patient, IPatient, IDoctor, Package, IPackage } from '../models';
 import { getDoctors } from './doctor.service';
 import { HttpError } from '../utils';
 import { Prescription, Appointment } from '../models';
-
+import path from 'path';
+import fs from 'fs';
 // Maybe we need to validate unique family member by userID or nationalID
 const addFamilyMember = async (id: string, body: any) => {
   const { relation, userID, name, age, gender, nationalID } = body;
@@ -97,5 +98,63 @@ const viewDoctorsForPatient = async (patientId: string, query: any) => {
     message: 'Successfully retrieved Doctors'
   };
 };
+const saveMedicalHistory = async (patientID:string,files:Express.Multer.File[]) => { 
 
-export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember };
+  console.log(files.length + "\n");
+  let insertedRecords = [];
+  for (let i = 0; i < files.length; i++) {
+    const idx = files[i].path.indexOf("uploads");
+    const filePath = files[i].path.slice(idx);
+      // path.join("..",);
+    const name = files[i].filename;
+     const medicalHistory = {
+      name,
+      medicalRecord: filePath, 
+    };
+    const result = await Patient.findOneAndUpdate(
+      { _id: patientID },
+      { $push: { medicalHistory: medicalHistory } },
+      { new: true }
+    );
+    insertedRecords.push(result);
+  }
+  return {
+    result: insertedRecords,
+    status: StatusCodes.OK,
+    message: 'Successfully inserted medical records'
+
+  }
+
+}
+const removeMedicalHistory = async (patientID: string, recordName: string) => { 
+  
+  const record = await Patient.findOneAndUpdate({ _id: patientID },
+    {
+      $pull: {
+        medicalHistory: { name: recordName }
+      }
+    }, { new: false });
+  console.log(record,"---------");
+  if (!record) throw new HttpError(StatusCodes.NOT_FOUND, 'Record not found');
+  let filePath = null;
+  for (let i = 0; i < record!.medicalHistory!.length;i++) {
+    const ele = record!.medicalHistory![i];
+
+    if ((ele).name == recordName) {
+     
+      filePath = (ele).medicalRecord;
+      break;
+    }
+  }
+  if(!filePath)throw new HttpError(StatusCodes.NOT_FOUND, 'Record not found');
+  filePath = path.resolve(__dirname, "../" + filePath);
+  console.log(filePath);
+  fs.unlink(filePath,(e)=>e);
+  
+  return {
+    result: filePath,
+    status: StatusCodes.OK,
+    message: 'Successfully deleted medical record'
+  };
+}
+export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember,saveMedicalHistory,removeMedicalHistory };

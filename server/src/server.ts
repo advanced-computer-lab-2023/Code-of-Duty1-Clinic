@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
-
+import multer from 'multer';
 import { queryParser } from './middlewares';
 import {
   authRouter,
@@ -15,7 +15,8 @@ import {
   requestRouter,
   packageRouter,
   chatroomRouter,
-  paymentRouter
+  paymentRouter,
+  uploadRouter
 } from './routes';
 
 const app = express();
@@ -38,6 +39,7 @@ app.use('/requests', requestRouter);
 app.use('/packages', packageRouter);
 app.use('/chatrooms', chatroomRouter);
 app.use('/payment', paymentRouter);
+app.use('/upload', uploadRouter);
 
 app.all('*', (req: Request, res: Response) => res.status(404).send('Path Not Found'));
 

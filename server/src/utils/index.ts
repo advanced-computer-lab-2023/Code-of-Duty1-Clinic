@@ -15,5 +15,6 @@ export {
   delRedis,
   getRedis,
   clearRedis,
-  keyGenerator
+  keyGenerator,
+  
 };
