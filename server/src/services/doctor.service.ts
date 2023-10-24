@@ -44,4 +44,22 @@ const getDoctors = async (query: any) => {
   return { result: doctors, status: StatusCodes.OK };
 };
 
+
+// view the amount in my wallet req 67
+const viewWallet = async (doctorId: string) => {
+  const doctor = await Doctor.findById(doctorId);
+  if (!doctor) {
+    throw new HttpError(
+      StatusCodes.NOT_FOUND,
+      'Patient not found'
+    );
+  }
+  return {
+    result: doctor.wallet,
+    status: StatusCodes.OK,
+    message: 'Successfully retrieved wallet'
+  };
+
+};
+
 export { getDoctors, getMyPatients };

@@ -97,5 +97,21 @@ const viewDoctorsForPatient = async (patientId: string, query: any) => {
     message: 'Successfully retrieved Doctors'
   };
 };
+// view the amount in my wallet req 67
+const viewWallet = async (patientId: string) => {
+  const patient = await Patient.findById(patientId);
+  if (!patient) {
+    throw new HttpError(
+      StatusCodes.NOT_FOUND,
+      'Patient not found'
+    );
+  }
+  return {
+    result: patient.wallet,
+    status: StatusCodes.OK,
+    message: 'Successfully retrieved wallet'
+  };
+
+};
 
 export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember };
