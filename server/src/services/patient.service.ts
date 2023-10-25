@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { User, Patient, IPatient, IDoctor, Package, IPackage } from '../models';
 import { getDoctors } from './doctor.service';
 import { HttpError } from '../utils';
-import { Prescription, Appointment } from '../models';
+import { Prescription, Appointment , Doctor } from '../models';
 
 // Maybe we need to validate unique family member by userID or nationalID
 const addFamilyMember = async (id: string, body: any) => {
@@ -97,21 +97,39 @@ const viewDoctorsForPatient = async (patientId: string, query: any) => {
     message: 'Successfully retrieved Doctors'
   };
 };
-// view the amount in my wallet req 67
-const viewWallet = async (patientId: string) => {
-  const patient = await Patient.findById(patientId);
-  if (!patient) {
+
+// view the amount in my wallet req 67 for patient and doctor
+const viewWallet = async (userId: string, role: string) => {
+  if (role === 'patient' || role === 'Patient') {
+
+    const patient = await Patient.findById(userId);
+    if (!patient) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        'Patients not found'
+      );
+    }
+    return {
+      result: patient.wallet,
+      status: StatusCodes.OK,
+      message: 'Successfully retrieved wallet'
+    };
+
+  }
+  else if (role === 'doctor' || role === 'Doctor') {
+    const doctor = await Doctor.findById(userId);
+  if (!doctor) {
     throw new HttpError(
       StatusCodes.NOT_FOUND,
-      'Patient not found'
+      'Doctor not found'
     );
   }
   return {
-    result: patient.wallet,
+    result: doctor.wallet,
     status: StatusCodes.OK,
-    message: 'Successfully retrieved wallet'
+    message: 'Successfully retrieved Doctors wallet'
   };
-
+  }
 };
 
-export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember };
+export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember , viewWallet };

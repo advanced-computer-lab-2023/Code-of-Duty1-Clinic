@@ -23,7 +23,7 @@ const getAppointments = async (query: any) => {
 const getUpcomingAppointments = async (userId: string, role: string) => {
   try {
     // Check if the user is a doctor
-    if (role === 'doctor') {
+    if (role === 'doctor' || role === 'Doctor') {
       const isDoctor = await Doctor.exists({ _id: userId });
 
       if (isDoctor) {
@@ -40,7 +40,7 @@ const getUpcomingAppointments = async (userId: string, role: string) => {
           'No doctor with this id'
         );
       }
-    } else if (role === 'patient') {
+    } else if (role === 'patient' || role === 'Patient') {
       // If role not a doctor, so its a patient and check for its existance 
       const isPatient = await Patient.exists({ _id: userId });
 
@@ -81,7 +81,7 @@ const getUpcomingAppointments = async (userId: string, role: string) => {
 const getPastAppointments = async (userId: string, role: string) => {
   try {
     // Check if the user is a doctor
-    if (role === 'doctor') {
+    if (role === 'doctor' || role === 'Doctor') {
       const DoctorExist = await Doctor.exists({ _id: userId });
 
       if (DoctorExist) {
@@ -99,7 +99,7 @@ const getPastAppointments = async (userId: string, role: string) => {
         );
       }
     }
-    else if (role === 'patient') {
+    else if (role === 'patient' || role === 'Patient') {
       // If role not a doctor, so its a patient and check for its existance 
       const PatientExist = await Patient.exists({ _id: userId });
 
