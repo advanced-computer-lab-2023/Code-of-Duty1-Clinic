@@ -98,4 +98,46 @@ const viewDoctorsForPatient = async (patientId: string, query: any) => {
   };
 };
 
-export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember };
+const addHealthRecord = async (patientID: String, body: any) => {
+  const { name, medicalRecord } = body;
+  if (!name || !medicalRecord) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide name, medicalRecord');
+
+  const update = {
+    $push: {
+      medicalHistory: {
+        name,
+        medicalRecord
+      }
+    }
+  };
+  const updatedUser = await Patient.findByIdAndUpdate(patientID, update, { new: true });
+  if (!updatedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
+
+  return {
+    result: updatedUser,
+    status: StatusCodes.OK,
+    message: 'Health record added successfully'
+  };
+};
+
+const getHealthRecords = async (patientID: String) => {
+  const user: any = await Patient.findById(patientID).select('medicalHistory');
+  if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'patient not found');
+
+  const healthRecords = user.medicalHistory;
+  if (!healthRecords) throw new HttpError(StatusCodes.NOT_FOUND, 'health records not found');
+
+  return {
+    result: healthRecords,
+    status: StatusCodes.OK,
+    message: 'Health records retrieved successfully'
+  };
+};
+
+export {
+  viewDoctorsForPatient as viewAllDoctorsForPatient,
+  getFamily,
+  addFamilyMember,
+  addHealthRecord,
+  getHealthRecords
+};
