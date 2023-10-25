@@ -9,7 +9,7 @@ const login = async (body: any) => {
   const user = await User.findOne({ username: username }).select('+password');
   if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
 
-  const isCorrect: boolean = user.isCorrectPassword(password);
+  const isCorrect: boolean = user.isCorrectPassword!(password);
   if (!isCorrect) throw new HttpError(StatusCodes.UNAUTHORIZED, 'Incorrect password');
 
   const token = generateToken(user._id.toString(), user.role!);

@@ -9,16 +9,16 @@ interface ICommonUser {
   password: string;
   name: string;
   email: string;
-  birthDate: Date;
-  gender: 'Male' | 'Female';
+  birthDate?: Date;
+  gender?: 'Male' | 'Female';
   phone: string;
-  role: string;
-  isCorrectPassword(password: string): boolean;
+  role?: string;
+  isCorrectPassword?(password: string): boolean;
 }
 
 type ICommonUserDocument = ICommonUser & Document;
 
-const commonUserSchema = new Schema<ICommonUserDocument>(
+const commonUserSchema = new Schema(
   {
     username: {
       type: String,
@@ -77,6 +77,6 @@ commonUserSchema.methods.isCorrectPassword = function (enteredPassword: string):
 
 const User: mongoose.Model<ICommonUserDocument> = mongoose.model<ICommonUserDocument>('User', commonUserSchema);
 
-export default User<ICommonUserDocument>;
+export default User;
 
 export { ICommonUser, ICommonUserDocument };

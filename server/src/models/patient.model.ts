@@ -42,7 +42,7 @@ interface IPatient extends ICommonUser {
 
 type IPatientDocument = IPatient & Document;
 
-const patientSchema = new Schema<IPatientDocument>(
+const patientSchema = new Schema(
   {
     addresses: [String],
     profileImage: String,
@@ -120,5 +120,5 @@ const patientSchema = new Schema<IPatientDocument>(
 
 const patientModel: mongoose.Model<IPatientDocument> = User.discriminator('Patient', patientSchema);
 
-export default patientModel<IPatientDocument>;
+export default patientModel;
 export { IPatient, FamilyMember };
