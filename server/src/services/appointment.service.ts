@@ -137,49 +137,22 @@ const getPastAppointments = async (userId: string, role: string) => {
 // Function to filter appointments by date or status (upcoming, completed, cancelled, rescheduled) req 46
 const filterAppointments = async (query: any) => {
   try {
+    let appointments: any = [];
+    const startDate = query.startDate ? new Date(query.startDate) : new Date('1000-01-01T00:00:00.000Z');
+    const endDate = query.endDate ? new Date(query.endDate) : new Date('9999-01-01T00:00:00.000Z');
+    const status = query.status ? query.status : { $in: ['upcoming', 'completed', 'cancelled', 'rescheduled'] };
     // Check if the user is a doctor
-    const isDoctor = await Doctor.exists({ _id: query.userId });
-    let finalresult: any[] = [];
-    if (isDoctor) {
+    if (query.role === 'doctor' || query.role === 'Doctor') {
       // If it's a doctor, retrieve the doctor's appointments
-      let appointments: any = getAppointments;
-      if (query.status) {
-        appointments.result.filter((appointment: any) => {
-          if (appointment.status === query.status) {
-            finalresult.push(appointment);
-          }
+      appointments = await Appointment.find({ doctorID: query.doctorID, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status });
 
-        });
-      } else {
-        finalresult = appointments.result;
-      }
-      return {
-        status: StatusCodes.OK,
-        message: 'Appointments retrieved successfully',
-        result: finalresult,
-      };
 
     } else {
       // If not a doctor, check if it's a patient
-      const isPatient = await Patient.exists({ _id: query.userId });
+      if (query.role === 'patient' || query.role === 'Patient') {
+        // If it's a patient, retrieve the patient's appointments
+        appointments = await Appointment.find({ patientID: query.patientID, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status });
 
-      if (isPatient) {
-        let appointments: any = getAppointments;
-        if (query.status) {
-          appointments.result.filter((appointment: any) => {
-            if (appointment.status === query.status) {
-              finalresult.push(appointment);
-            }
-
-          });
-        } else {
-          finalresult = appointments.result;
-        }
-        return {
-          status: StatusCodes.OK,
-          message: 'Appointments retrieved successfully',
-          result: finalresult,
-        };
       } else {
         throw new HttpError(
           StatusCodes.BAD_REQUEST,
@@ -187,6 +160,11 @@ const filterAppointments = async (query: any) => {
         );
       }
     }
+    return {
+      status: StatusCodes.OK,
+      message: 'Appointments retrieved successfully',
+      result: appointments,
+    };
   } catch (error) {
     throw new HttpError(
       StatusCodes.BAD_REQUEST,
@@ -195,4 +173,4 @@ const filterAppointments = async (query: any) => {
   }
 };
 
-export { getAppointments, getUpcomingAppointments, getPastAppointments };
+export { getAppointments, getUpcomingAppointments, getPastAppointments, filterAppointments };
