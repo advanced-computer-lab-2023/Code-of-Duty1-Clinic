@@ -15,7 +15,7 @@ interface IPrescription {
 
 type IPrescriptionDocument = IPrescription & Document;
 
-const prescriptionSchema = new Schema<IPrescriptionDocument>({
+const prescriptionSchema = new Schema({
   doctorID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
