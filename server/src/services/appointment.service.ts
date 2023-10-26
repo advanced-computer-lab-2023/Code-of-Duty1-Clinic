@@ -23,6 +23,7 @@ const getAppointments = async (query: any) => {
 const getUpcomingAppointments = async (userId: string, role: string) => {
   try {
     // Check if the user is a doctor
+    console.log(new Date());
     if (role === 'doctor' || role === 'Doctor') {
       const isDoctor = await Doctor.exists({ _id: userId });
 
@@ -31,7 +32,7 @@ const getUpcomingAppointments = async (userId: string, role: string) => {
         return {
           status: StatusCodes.OK,
           message: 'Appointments retrieved successfully',
-          result: await Appointment.find({ doctorID: userId, startTime: { $gte: new Date() } }),
+          result: await Appointment.find({ doctorID: userId, startDate: { $gte: new Date() } }),
         };
       }
       else {
@@ -43,13 +44,12 @@ const getUpcomingAppointments = async (userId: string, role: string) => {
     } else if (role === 'patient' || role === 'Patient') {
       // If role not a doctor, so its a patient and check for its existance 
       const isPatient = await Patient.exists({ _id: userId });
-
       if (isPatient) {
         // If it's a patient, retrieve the patient's appointments
         return {
           status: StatusCodes.OK,
           message: 'Appointments retrieved successfully',
-          result: await Appointment.find({ patientID: userId, startTime: { $gte: new Date() } }),
+          result: await Appointment.find({ patientID: userId, startDate: { $gte: new Date() } }),
         };
 
 
@@ -89,7 +89,7 @@ const getPastAppointments = async (userId: string, role: string) => {
         return {
           status: StatusCodes.OK,
           message: 'Past appointments retrieved successfully',
-          result: await Appointment.find({ doctorID: userId, endTime: { $lt: new Date() } }),
+          result: await Appointment.find({ doctorID: userId, endDate: { $lt: new Date() } }),
         };
       }
       else {
@@ -108,7 +108,7 @@ const getPastAppointments = async (userId: string, role: string) => {
         return {
           status: StatusCodes.OK,
           message: 'Past appointments retrieved successfully',
-          result: await Appointment.find({ patientID: userId, endTime: { $lt: new Date() } }),
+          result: await Appointment.find({ patientID: userId, endDate: { $lt: new Date() } }),
         };
       } else {
         throw new HttpError(
@@ -140,8 +140,14 @@ const filterAppointments = async (query: any) => {
     let appointments: any = [];
     const startDate = query.startDate ? new Date(query.startDate) : new Date('1000-01-01T00:00:00.000Z');
     const endDate = query.endDate ? new Date(query.endDate) : new Date('9999-01-01T00:00:00.000Z');
-    const status = query.status ? query.status : { $in: ['upcoming', 'completed', 'cancelled', 'rescheduled'] };
+    const status = query.status ? query.status : { $in: ['Upcoming', 'Completed', 'Cancelled', 'Rescheduled'] };
     // Check if the user is a doctor
+    console.log(query.status);
+    console.log(status);
+    console.log(query.startDate);
+    console.log(startDate);
+    console.log(query.endDate);
+    console.log(endDate);
     if (query.role === 'doctor' || query.role === 'Doctor') {
       // If it's a doctor, retrieve the doctor's appointments
       appointments = await Appointment.find({ doctorID: query.doctorID, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status });
