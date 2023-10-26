@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { User, Patient, IPatient, IDoctor, Package, IPackage } from '../models';
 import { getDoctors } from './doctor.service';
 import { HttpError } from '../utils';
-import { Prescription, Appointment , Doctor } from '../models';
+import { Prescription, Appointment, Doctor } from '../models';
 
 // Maybe we need to validate unique family member by userID or nationalID
 const addFamilyMember = async (id: string, body: any) => {
@@ -97,39 +97,30 @@ const viewDoctorsForPatient = async (patientId: string, query: any) => {
     message: 'Successfully retrieved Doctors'
   };
 };
-
-// view the amount in my wallet req 67 for patient and doctor
+// View the amount in my wallet req 67 for patient and doctor
 const viewWallet = async (userId: string, role: string) => {
+  let user = null;
+  let userType = "";
+
   if (role === 'patient' || role === 'Patient') {
-
-    const patient = await Patient.findById(userId);
-    if (!patient) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'Patients not found'
-      );
-    }
-    return {
-      result: patient.wallet,
-      status: StatusCodes.OK,
-      message: 'Successfully retrieved wallet'
-    };
-
+    user = await Patient.findById(userId);
+    userType = 'Patients';
+  } else if (role === 'doctor' || role === 'Doctor') {
+    user = await Doctor.findById(userId);
+    userType = 'Doctor';
   }
-  else if (role === 'doctor' || role === 'Doctor') {
-    const doctor = await Doctor.findById(userId);
-  if (!doctor) {
+  if (!user) {
     throw new HttpError(
       StatusCodes.NOT_FOUND,
-      'Doctor not found'
+      `${userType} not found`
     );
   }
+
   return {
-    result: doctor.wallet,
+    result: user.wallet,
     status: StatusCodes.OK,
-    message: 'Successfully retrieved Doctors wallet'
+    message: `Successfully retrieved ${userType}'s wallet`
   };
-  }
 };
 
-export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember , viewWallet };
+export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember, viewWallet };

@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 
 import controller from '../controllers';
 import { isAuthenticated, isAuthorized } from '../middlewares';
-import { getUsers, updateInfo, getAppointments, getPrescriptions, addFamilyMember, getFamily, viewWallet, getUpcomingAppointments, getPastAppointments , filterAppointments} from '../services';
+import { getUsers, updateInfo, getAppointments, getPrescriptions, addFamilyMember, getFamily, viewWallet, getUpcomingAppointments, getPastAppointments, filterAppointments } from '../services';
 import { el } from '@faker-js/faker';
 
 const router = express.Router();
@@ -21,16 +21,16 @@ router.use(isAuthorized('Doctor', 'Patient'));
 
 // get my appointments
 router.get('/appointments', (req: Request, res: Response) => {
-  if (req.query.s === 'upcoming') {
+  if (req.query.s === 'Upcoming') {
     controller(res)(getUpcomingAppointments)(req.decoded.id, req.decoded.role);
   }
-  else if (req.query.s === 'past') {
+  else if (req.query.s === 'Completed') {
     controller(res)(getPastAppointments)(req.decoded.id, req.decoded.role)
   }
   else if (req.query.s === 'filter') {
     // user's id field depends on the role
     const userId = req.decoded.role === 'Patient' ? 'patientID' : 'doctorID';
-    controller(res)(filterAppointments)({ ...req.query, [userId]: req.decoded.id  , role: req.decoded.role});
+    controller(res)(filterAppointments)({ ...req.query, [userId]: req.decoded.id, role: req.decoded.role });
   }
   else {
     // user's id field depends on the role
@@ -44,7 +44,7 @@ router.post('/appointments', (req: Request, res: Response) => {
 });
 
 router.get('/wallet', (req: Request, res: Response) => {
-  controller(res)(viewWallet)({ userID: req.decoded.id, role: req.decoded.role });
+  controller(res)(viewWallet)(req.decoded.id, req.decoded.role);
 });
 
 // Doctor Routes
