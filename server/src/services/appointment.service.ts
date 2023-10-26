@@ -23,7 +23,6 @@ const getAppointments = async (query: any) => {
 const getUpcomingAppointments = async (userId: string, role: string) => {
   try {
     // Check if the user is a doctor
-    console.log(new Date());
     if (role === 'doctor' || role === 'Doctor') {
       const isDoctor = await Doctor.exists({ _id: userId });
 
@@ -142,12 +141,6 @@ const filterAppointments = async (query: any) => {
     const endDate = query.endDate ? new Date(query.endDate) : new Date('9999-01-01T00:00:00.000Z');
     const status = query.status ? query.status : { $in: ['Upcoming', 'Completed', 'Cancelled', 'Rescheduled'] };
     // Check if the user is a doctor
-    console.log(query.status);
-    console.log(status);
-    console.log(query.startDate);
-    console.log(startDate);
-    console.log(query.endDate);
-    console.log(endDate);
     if (query.role === 'doctor' || query.role === 'Doctor') {
       // If it's a doctor, retrieve the doctor's appointments
       appointments = await Appointment.find({ doctorID: query.doctorID, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status });
