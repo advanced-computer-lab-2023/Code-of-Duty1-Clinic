@@ -22,6 +22,7 @@ const commonUserSchema = new Schema(
   {
     username: {
       type: String,
+      index: true,
       unique: true,
       required: true,
       lowercase: true
@@ -40,6 +41,7 @@ const commonUserSchema = new Schema(
     email: {
       type: String,
       required: true,
+      index: true,
       unique: true,
       lowercase: true,
       trim: true,
@@ -54,6 +56,7 @@ const commonUserSchema = new Schema(
     phone: {
       type: String,
       trim: true,
+      index: true,
       unique: true,
       required: true
     }
