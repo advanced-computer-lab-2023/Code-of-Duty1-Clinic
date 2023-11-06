@@ -1,6 +1,6 @@
 import Redis from 'ioredis';
 import { StatusCodes } from 'http-status-codes';
-import HttpError from './HttpError';
+import { HttpError } from './HttpError';
 import path from 'path';
 import dotenv from 'dotenv';
 
@@ -19,10 +19,9 @@ redisClient.on('error', (error) => {
   throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Redis Error');
 });
 
-const putRedis = async (key: any, data: any): Promise<string> =>
-  redisClient.set(JSON.stringify(key), JSON.stringify(data), 'EX', 3600);
+const putRedis = async (key: string, data: string): Promise<string> => redisClient.set(key, data, 'EX', 3600);
 
-const getRedis = async (key: any): Promise<string | null> => redisClient.get(JSON.stringify(key));
+const getRedis = async (key: string): Promise<string | null> => redisClient.get(key);
 
 const delRedis = async (key: any): Promise<number> => redisClient.del(JSON.stringify(key));
 
