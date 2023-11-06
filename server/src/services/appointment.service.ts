@@ -1,4 +1,4 @@
-import { Appointment } from '../models';
+import { Appointment, Doctor } from '../models';
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 import { HttpError } from '../utils';
@@ -18,12 +18,33 @@ const getAppointments = async (query: any) => {
   };
 };
 
-//I'll edit them later
-/*
 const createAppointment = async (patientID: String, doctorID: String, body: any) => {
+  const doctor = await Doctor.findById(doctorID);
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+
+  const weeklySlots = doctor.weeklySlots;
+  if (!weeklySlots) throw new HttpError(StatusCodes.NOT_FOUND, 'No available appointments for this doctor');
+
   body.patientID = patientID;
   body.doctorID = doctorID;
   const newAppointment = await Appointment.create(body);
+
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dayOfWeek = daysOfWeek[newAppointment.startDate.getDay()];
+  // console.log(dayOfWeek);
+  const dailySlots = weeklySlots[dayOfWeek as keyof typeof weeklySlots];
+  for (let i = 0; i < dailySlots.length; i++) {
+    const slot = dailySlots[i];
+    // console.log(slot.from.hours);
+    // console.log(body.from.hours);
+    // console.log(slot.from.minutes);
+    // console.log(body.from.minutes);
+    if (slot.from.hours === body.from.hours && slot.from.minutes === body.from.minutes) {
+      slot.isReserved = true;
+      await doctor.save();
+      break;
+    }
+  }
 
   return {
     status: StatusCodes.CREATED,
@@ -32,18 +53,4 @@ const createAppointment = async (patientID: String, doctorID: String, body: any)
   };
 };
 
-const getDoctorAppointments = async (patientID: String, doctorID: String) => {
-  const appointments = await Appointment.find({ doctorID });
-
-  if (!appointments) throw new HttpError(StatusCodes.NOT_FOUND, 'No available appointments for this doctor');
-
-  return {
-    status: StatusCodes.OK,
-    message: 'Appointments retrieved successfully',
-    result: appointments
-  };
-};
-export { getAppointments, createAppointment, getDoctorAppointments };
-*/
-
-export { getAppointments };
+export { getAppointments, createAppointment };

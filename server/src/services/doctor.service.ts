@@ -44,4 +44,40 @@ const getDoctors = async (query: any) => {
   return { result: doctors, status: StatusCodes.OK };
 };
 
-export { getDoctors, getMyPatients };
+const viewAvailableAppointments = async (doctorID: string) => {
+  const doctor = await Doctor.findById(doctorID);
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+
+  const weeklySlots = doctor.weeklySlots;
+  if (!weeklySlots) throw new HttpError(StatusCodes.NOT_FOUND, 'No available appointments for this doctor');
+
+  let availableAppointments: any = {};
+
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  for (const dayOfWeek of daysOfWeek) {
+    const dailySlots = weeklySlots[dayOfWeek as keyof typeof weeklySlots];
+    let dailyAppointments = [];
+
+    for (const slot of dailySlots) {
+      if (!slot.isReserved) {
+        dailyAppointments.push({
+          from: `${slot.from.hours}:${slot.from.minutes}`,
+          to: `${slot.to.hours}:${slot.to.minutes}`
+        });
+      }
+    }
+
+    if (dailyAppointments.length > 0) {
+      availableAppointments[dayOfWeek] = dailyAppointments;
+    }
+  }
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Available Appointments retrieved successfully',
+    result: availableAppointments
+  };
+};
+
+export { getDoctors, getMyPatients, viewAvailableAppointments };
