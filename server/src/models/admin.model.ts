@@ -7,9 +7,9 @@ interface IAdmin extends ICommonUser {}
 
 type IAdminDocument = IAdmin & Document;
 
-const adminSchema = new Schema<IAdminDocument>({}, options);
+const adminSchema = new Schema({}, options);
 
 const adminModel: mongoose.Model<IAdminDocument> = User.discriminator('Admin', adminSchema);
 
-export default adminModel<IAdminDocument>;
+export default adminModel;
 export { IAdmin };

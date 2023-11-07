@@ -17,7 +17,7 @@ const updateInfo = async (id: string, info: any) => {
 };
 
 const getUsers = async (query: Object) => {
-  const users = await User.find(query);
+  const users = await User.find({ ...query, role: { $ne: 'Admin' } });
   if (!users) throw new HttpError(StatusCodes.NOT_FOUND, 'no users found');
 
   return {

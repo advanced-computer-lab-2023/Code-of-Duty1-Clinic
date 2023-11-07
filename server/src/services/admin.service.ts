@@ -26,6 +26,19 @@ const addAdmin = async (adminInfo: any) => {
 const deleteUsers = async (query: any) => {
   const users = await User.deleteMany(query);
 
+  // if case of all admins deleted, staticlly add admin to users collection
+  const admin = await Admin.findOne({ username: 'admin' });
+  if (!admin) {
+    const staticAdmin = new Admin({
+      username: 'admin',
+      password: 'password',
+      name: 'admin',
+      email: 'admin@example.com',
+      phone: '01000000000'
+    });
+    await staticAdmin.save();
+  }
+
   return {
     message: 'user has been deleted successfully',
     status: StatusCodes.OK,
