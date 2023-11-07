@@ -6,7 +6,6 @@ const options = { discriminatorKey: 'role' };
 interface DailySchedule {
   from: { hours: number; minutes: number };
   to: { hours: number; minutes: number };
-  isReserved: boolean;
 }
 
 interface IDoctor extends ICommonUser {
@@ -49,8 +48,7 @@ const dailyScheduleSchema = {
       minutes: { type: Number, required: false, default: 0, min: 0, max: 59 }
     },
     required: true
-  },
-  isReserved: { type: Boolean, default: false }
+  }
 };
 
 const doctorSchema = new Schema<IDoctorDocument>(

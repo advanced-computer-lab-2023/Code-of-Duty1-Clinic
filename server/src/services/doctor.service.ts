@@ -51,26 +51,59 @@ const viewAvailableAppointments = async (doctorID: string) => {
   const weeklySlots = doctor.weeklySlots;
   if (!weeklySlots) throw new HttpError(StatusCodes.NOT_FOUND, 'No available appointments for this doctor');
 
-  let availableAppointments: any = {};
+  const availableAppointments = [];
 
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const thisDay = new Date();
+  const currentYear = thisDay.getUTCFullYear();
+  const currentMonth = thisDay.getUTCMonth();
+  const currentDate = thisDay.getUTCDate();
+  const currentDay = thisDay.getUTCDay();
+  const lastDay = currentDay + 6;
 
-  for (const dayOfWeek of daysOfWeek) {
-    const dailySlots = weeklySlots[dayOfWeek as keyof typeof weeklySlots];
-    let dailyAppointments = [];
+  // Get all doctor's appointments
+  const appointments = await Appointment.find({
+    doctorID: doctorID
+  });
 
-    for (const slot of dailySlots) {
-      if (!slot.isReserved) {
-        dailyAppointments.push({
-          from: `${slot.from.hours}:${slot.from.minutes}`,
-          to: `${slot.to.hours}:${slot.to.minutes}`
-        });
+  for (let i = currentDay; i <= lastDay; i++) {
+    const dayOfWeek = i % 7;
+    const day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
+    const dailySlots = weeklySlots[day as keyof typeof weeklySlots];
+    const availableSlots = dailySlots.filter((slot) => {
+      const slotHour = slot.from.hours;
+      const slotMinute = slot.from.minutes;
+      for (let j = 0; j < appointments.length; j++) {
+        const appointment = appointments[j];
+        const appointmentStartDate = appointment.startDate;
+        const appointmentYear = appointmentStartDate.getUTCFullYear();
+        const appointmentMonth = appointmentStartDate.getUTCMonth();
+        const appointmentDate = appointmentStartDate.getUTCDate();
+        const appointmentDay = appointmentStartDate.getUTCDay();
+        const appointmentHour = appointmentStartDate.getUTCHours();
+        const appointmentMinute = appointmentStartDate.getUTCMinutes();
+        // Check if the appointment is between the current date and the next 7 days
+        if (
+          appointmentYear === currentYear &&
+          appointmentMonth === currentMonth &&
+          appointmentDate >= currentDate &&
+          appointmentDate <= currentDate + 6 &&
+          appointmentDay % 7 === dayOfWeek &&
+          slotHour === appointmentHour &&
+          slotMinute === appointmentMinute
+        ) {
+          return false;
+        }
       }
-    }
+      return true;
+    });
 
-    if (dailyAppointments.length > 0) {
-      availableAppointments[dayOfWeek] = dailyAppointments;
-    }
+    const fullDate = new Date(currentYear, currentMonth, currentDate + 1 + i - currentDay);
+
+    availableAppointments.push({
+      day,
+      date: fullDate,
+      slots: availableSlots
+    });
   }
 
   return {
