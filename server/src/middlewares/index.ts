@@ -1,5 +1,4 @@
-import { isAuthenticated } from './authentication';
-import { isAuthorized, isResourceOwner } from './authorization';
-import { queryParser } from './queryParser';
-import {medicalHistoryUpload,registrationUpload} from '../middlewares/upload';
-export { isAuthenticated, isAuthorized, isResourceOwner, queryParser,medicalHistoryUpload,registrationUpload };
+export * from './authentication';
+export * from './authorization';
+export * from './queryParser';
+export * from '../middlewares/upload';

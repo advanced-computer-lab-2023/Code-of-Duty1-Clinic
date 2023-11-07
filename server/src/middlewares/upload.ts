@@ -1,8 +1,8 @@
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
-
-function generateStorageObject(lastPath:string){ 
+import { Request } from 'express';
+const generateStorageObject = (lastPath: string) => { 
 return  multer.diskStorage({
     destination: function (req, file, cb) {
         let relativeFolderPath = "../uploads/";
@@ -22,12 +22,26 @@ return  multer.diskStorage({
     }
 });
 }
+const fileFilter = (req: Request, file: any, cb: any) => {
+    const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'];
+    let isAllowed = false;
+    
+    if (allowedTypes.includes(file.mimetype))
+        isAllowed = true;
 
-const medicalHistoryUpload = multer({ storage: generateStorageObject('medicalHistory') });
+    cb(null, isAllowed);
+};
+const fieldGenerator = (name:string, maxCount:number = 2) =>{
+    return {
+        name: name,
+        maxCount: maxCount
+    }
+}
+const allowedRegistrationFields = [fieldGenerator('ID'),fieldGenerator('medicalLicenses'),fieldGenerator('medicalDegree')];
 
-const registrationUpload = multer({ storage: generateStorageObject('registration') });
+const medicalHistoryUpload = multer({ storage: generateStorageObject('medicalHistory') ,fileFilter:fileFilter });
 
+const registrationUpload = multer({ storage: generateStorageObject('registration') ,fileFilter:fileFilter});
 
-
-export  {registrationUpload, medicalHistoryUpload};
+export  {registrationUpload, medicalHistoryUpload,allowedRegistrationFields};
 
