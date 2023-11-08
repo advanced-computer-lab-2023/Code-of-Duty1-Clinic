@@ -69,11 +69,15 @@ const viewAvailableAppointments = async (doctorID: string) => {
     const dayOfWeek = i % 7;
     const day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
     const dailySlots = weeklySlots[day as keyof typeof weeklySlots];
-    const availableSlots = dailySlots.filter((slot) => {
+
+    for (const slot of dailySlots) {
       const slotHour = slot.from.hours;
       const slotMinute = slot.from.minutes;
-      for (let j = 0; j < appointments.length; j++) {
-        const appointment = appointments[j];
+      const slotHourEnd = slot.to.hours;
+      const slotMinuteEnd = slot.to.minutes;
+      let isSlotAvailable = true;
+
+      for (const appointment of appointments) {
         const appointmentStartDate = appointment.startDate;
         const appointmentYear = appointmentStartDate.getUTCFullYear();
         const appointmentMonth = appointmentStartDate.getUTCMonth();
@@ -81,7 +85,7 @@ const viewAvailableAppointments = async (doctorID: string) => {
         const appointmentDay = appointmentStartDate.getUTCDay();
         const appointmentHour = appointmentStartDate.getUTCHours();
         const appointmentMinute = appointmentStartDate.getUTCMinutes();
-        // Check if the appointment is between the current date and the next 7 days
+
         if (
           appointmentYear === currentYear &&
           appointmentMonth === currentMonth &&
@@ -91,19 +95,40 @@ const viewAvailableAppointments = async (doctorID: string) => {
           slotHour === appointmentHour &&
           slotMinute === appointmentMinute
         ) {
-          return false;
+          isSlotAvailable = false;
+          break;
         }
       }
-      return true;
-    });
 
-    const fullDate = new Date(currentYear, currentMonth, currentDate + 1 + i - currentDay);
+      if (isSlotAvailable) {
+        const startDate = new Date(
+          currentYear,
+          currentMonth,
+          currentDate + i - currentDay,
+          slotHour + 2,
+          slotMinute,
+          0,
+          0
+        );
+        const endDate = new Date(
+          currentYear,
+          currentMonth,
+          currentDate + i - currentDay,
+          slotHourEnd + 2,
+          slotMinuteEnd,
+          0,
+          0
+        );
 
-    availableAppointments.push({
-      day,
-      date: fullDate,
-      slots: availableSlots
-    });
+        availableAppointments.push({
+          status: 'Upcoming',
+          sessionPrice: 50,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          isFollowUp: true
+        });
+      }
+    }
   }
 
   return {
