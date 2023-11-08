@@ -120,9 +120,11 @@ const viewAvailableAppointments = async (doctorID: string) => {
           0
         );
 
+        const price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute) / 60));
+
         availableAppointments.push({
           status: 'Upcoming',
-          sessionPrice: 50,
+          sessionPrice: price,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
           isFollowUp: true
