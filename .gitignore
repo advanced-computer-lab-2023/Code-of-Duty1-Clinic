@@ -130,5 +130,6 @@ dist
 .pnp.*
 #build 
 build/
-.vscode
 server/src/uploads
+*.lock
+client/yarn.lock
