@@ -55,9 +55,11 @@ const patientSchema = new Schema(
       default: 0
     },
     emergencyContact: {
-      name: { type: String, required: true },
-      phone: { type: String, required: true },
-      relation: { type: String, enum: ['Husband', 'Wife', 'Child'], required: true }
+      type: {
+        name: { type: String, required: true },
+        phone: { type: String, required: true },
+        relation: { type: String, enum: ['Husband', 'Wife', 'Child'], required: true }
+      }
     },
     family: {
       type: [
