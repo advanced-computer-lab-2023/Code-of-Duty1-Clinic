@@ -2,7 +2,16 @@ import express, { Request, Response } from 'express';
 
 import controller from '../controllers';
 import { isAuthenticated, isAuthorized } from '../middlewares';
-import { getUsers, updateInfo, getAppointments, getPrescriptions, addFamilyMember, getFamily } from '../services';
+import {
+  getUsers,
+  updateInfo,
+  getAppointments,
+  getPrescriptions,
+  addFamilyMember,
+  getFamily,
+  cancelSubscribtion,
+  getPatientHealthPackage
+} from '../services';
 
 const router = express.Router();
 
@@ -74,16 +83,16 @@ router.get('/family', (req: Request, res: Response) => {
   controller(res)(getFamily)(req.decoded.id);
 });
 router.post('/family', (req: Request, res: Response) => {
-  controller(res)(addFamilyMember)(req.decoded.id, req.body);
+
+    controller(res)(addFamilyMember)(req.decoded.id, req.body);
 });
 
 router.get('/package', (req: Request, res: Response) => {
-  // get package I am subscribed to
-  // controller(res)()();
+  controller(res)(getPatientHealthPackage)(req.decoded.id)
 });
+
 router.post('/package', (req: Request, res: Response) => {
-  // subscribe to a package
-  // controller(res)()();
+
 });
 
 export default router;

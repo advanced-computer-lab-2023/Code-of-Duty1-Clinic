@@ -1,12 +1,21 @@
 import { StatusCodes } from 'http-status-codes';
-import { User, Patient, IPatient, IDoctor, Package, IPackage } from '../models';
+import { User, Patient, IPatient, IDoctor, Package, IPackage, FamilyMember } from '../models';
 import { getDoctors } from './doctor.service';
 import { HttpError } from '../utils';
 import { Prescription, Appointment } from '../models';
 
-// Maybe we need to validate unique family member by userID or nationalID
 const addFamilyMember = async (id: string, body: any) => {
-  const { relation, userID, name, age, gender, nationalID } = body;
+  let userID;
+  if(body.userID)
+    userID = body.userID;
+
+  if(body.email)
+    userID = await Patient.findOne({email:body.email}).select('_id');
+
+  if(body.phone)
+    userID = await Patient.findOne({phone:body.phone}).select('_id');
+
+  const { relation, name, age, gender, nationalID } = body;
   if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
 
   let newFamily;
@@ -98,4 +107,76 @@ const viewDoctorsForPatient = async (patientId: string, query: any) => {
   };
 };
 
-export { viewDoctorsForPatient as viewAllDoctorsForPatient, getFamily, addFamilyMember };
+const getPatientHealthPackage = async (userID: string) => {
+
+  const user = await Patient.findOne({ _id: userID });
+
+  if(user?.package)
+  {
+
+    if(user?.package.packageStatus === 'Subscribed')
+    {
+
+      const userPackage = await Package.findOne({_id:user?.package.packageID}).select('-_id -isLatest');
+  
+      let renewalDate = user?.package.endDate as Date;
+      renewalDate.setDate(renewalDate.getDate() + 1); 
+  
+      return {
+  
+        status: StatusCodes.OK,
+        userPackage: userPackage,
+        packageStatus:"Subscribed",
+        renewalDate: renewalDate
+  
+      }
+
+    }
+
+    if(user?.package.packageStatus === 'Cancelled')
+    {
+
+      return {
+  
+        status: StatusCodes.OK,
+        packageStatus: 'Cancelled',
+        endDate: user?.package.endDate
+  
+      }
+
+    }
+  }
+
+  return {
+
+    status: StatusCodes.OK,
+    message: "You are not subscribed to a health package",
+    packageStatus: "UnSubscribed"
+
+  };
+};
+
+const cancelSubscribtion = async (userID: string) => {
+
+  const user = (await Patient.findOne({ _id: userID }));
+
+  if (!(user?.package) || !(user.package.packageStatus === 'Subscribed')) 
+    throw new HttpError(StatusCodes.BAD_REQUEST, "You're not subscribed to any Health package");
+  
+  Patient.findByIdAndUpdate(userID, { $set: { 'package.packageStatus': 'Cancelled' } });
+
+  return {
+
+    status: StatusCodes.OK,
+    message: 'Cancelled Subscribtion sucessfully'
+
+  };
+};
+
+export {
+  viewDoctorsForPatient as viewAllDoctorsForPatient,
+  getFamily,
+  addFamilyMember,
+  getPatientHealthPackage,
+  cancelSubscribtion
+};
