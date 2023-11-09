@@ -7,7 +7,7 @@ import { isAuthenticated, isAuthorized } from '../middlewares';
 import { medicalHistoryUpload , registrationUpload ,allowedRegistrationFields} from '../middlewares';
 import {saveMedicalHistory,removeMedicalHistory,saveRegistrationFiles} from '../services'
 const uploadRouter = Router();
-uploadRouter.use(isAuthenticated);
+// uploadRouter.use(isAuthenticated);
 
 uploadRouter.post("/patient/medicalHistory", medicalHistoryUpload.array("medicalHistory"),(req, res) => {
     controller(res)(saveMedicalHistory)("652b367ea1c23056f61e2651",req.files);

@@ -3,6 +3,8 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
+import UploadFile from 'src/sections/upload/oneUpload';
+
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
@@ -15,9 +17,10 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export default function Router() {
   const routes = useRoutes([
     {
+      path: "",
       element: (
         <DashboardLayout>
-          <Suspense>
+          <Suspense fallback={<div>Loading...</div>} >
             <Outlet />
           </Suspense>
         </DashboardLayout>
@@ -40,7 +43,10 @@ export default function Router() {
     {
       path: '*',
       element: <Navigate to="/404" replace />,
-    },
+    }, {
+      path: 'up',
+      element: <UploadFile url='http://localhost:3000/upload/patient/medicalHistory' />
+    }
   ]);
 
   return routes;
