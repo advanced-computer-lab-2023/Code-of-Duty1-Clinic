@@ -52,7 +52,7 @@ const viewAvailableAppointments = async (doctorID: string) => {
   const weeklySlots = doctor.weeklySlots;
   if (!weeklySlots) throw new HttpError(StatusCodes.NOT_FOUND, 'No available appointments for this doctor');
 
-  const availableAppointments = [];
+  let availableAppointments = {};
 
   const thisDay = new Date();
   const currentYear = thisDay.getUTCFullYear();
@@ -125,14 +125,19 @@ const viewAvailableAppointments = async (doctorID: string) => {
 
         const id = uuidv4();
 
-        availableAppointments.push({
+        const slot = {
           status: 'Upcoming',
           sessionPrice: price,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
-          isFollowUp: true,
+          isFollowUp: false,
           _id: id
-        });
+        };
+
+        if (!(availableAppointments as any)[day]) {
+          (availableAppointments as any)[day] = []; // Initialize the day as an array if it doesn't exist
+        }
+        (availableAppointments as any)[day].push(slot);
       }
     }
   }
