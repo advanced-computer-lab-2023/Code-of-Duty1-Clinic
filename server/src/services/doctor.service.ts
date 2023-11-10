@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require('uuid');
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
 import { User, Contract, Appointment, IPatient, IDoctor, Doctor } from '../models';
@@ -122,12 +123,15 @@ const viewAvailableAppointments = async (doctorID: string) => {
 
         const price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute) / 60));
 
+        const id = uuidv4();
+
         availableAppointments.push({
           status: 'Upcoming',
           sessionPrice: price,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
-          isFollowUp: true
+          isFollowUp: true,
+          _id: id
         });
       }
     }
