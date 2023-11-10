@@ -10,7 +10,7 @@ import DoctorSlot from './doctor-slot';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 export default function DoctorCard({ doctor }) {
-  const { isLoading, error, data } = useQuery('slots', () => axiosInstance.get(`/doctors/${doctorID}/slots`));
+  const { isLoading, error, data: slots } = useQuery('slots', () => axiosInstance.get(`/doctors/${doctor.id}/slots`));
 
   return (
     <Card type="section">
@@ -27,6 +27,7 @@ export default function DoctorCard({ doctor }) {
             }}
           />
         </Stack>
+
         <Stack spacing={0} alignItems="center" justifyContent="center">
           <Typography variant="h4" color={'Highlight'}>
             Dr.{' '}
@@ -38,7 +39,12 @@ export default function DoctorCard({ doctor }) {
             Hourly Rate:{' '}
           </Typography>
         </Stack>
-        <Stack direction={'row'} spacing={0} alignItems="center" justifyContent="center"></Stack>
+
+        <Stack direction={'row'} spacing={2} alignItems="center" justifyContent="center">
+          {slots.map((slot) => (
+            <DoctorSlot key={slot.id} slot={slot} />
+          ))}
+        </Stack>
       </Stack>
     </Card>
   );
