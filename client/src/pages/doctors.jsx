@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { AppView } from 'src/sections/overview/view';
+import { DoctorsView } from 'src/sections/doctors/view';
 
 // ----------------------------------------------------------------------
 
-export default function AppPage() {
+export default function DoctorsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard </title>
+        <title> Doctors </title>
       </Helmet>
 
-      <AppView />
+      <DoctorsView />
     </>
   );
 }

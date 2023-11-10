@@ -9,9 +9,17 @@ const controller =
       const result = await service(...args);
 
       if (result.token) {
-        res.cookie('token', result.token, {
-          httpOnly: false
-        });
+        const token = result.token;
+        console.log(token);
+        return res
+          .cookie('token', token, {
+            httpOnly: false,
+            sameSite: false,
+            secure: false,
+            maxAge: 1000 * 1000
+          })
+          .status(result.status || StatusCodes.OK)
+          .json(result);
         delete result.token;
       }
 
@@ -19,7 +27,7 @@ const controller =
     } catch (error: any) {
       console.log(error);
 
-      res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
+      res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
   };
 
