@@ -1,70 +1,46 @@
-# Getting Started with Create React App
+## Minimal [(Free version)](https://minimal-kit-react.vercel.app/)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## Available Scripts
+> Free React Admin Dashboard made with Material-UI components and React.
 
-In the project directory, you can run:
+![preview](public/assets/preview.jpg)
 
-### `npm start`
+## Demo
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [Dashboard Page](https://minimal-kit-react.vercel.app/)
+- [Users Page](https://minimal-kit-react.vercel.app/user)
+- [Products Page](https://minimal-kit-react.vercel.app/products)
+- [Blog Page](https://minimal-kit-react.vercel.app/blog)
+- [Login Page](https://minimal-kit-react.vercel.app/login)
+- [Not Found Page](https://minimal-kit-react.vercel.app/404)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Quick start
 
-### `npm test`
+- [Download from Github](https://github.com/minimal-ui-kit/material-kit-react/archive/refs/heads/main.zip) or clone the repo : `git clone https://github.com/minimal-ui-kit/material-kit-react.git`
+- Recommended `Node.js v18.x`.
+- **Install:** `yarn install`
+- **Start:** `yarn dev`
+- **Build:** `yarn build`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Upgrade to PRO Version
 
-### `npm run build`
+| Minimal Free     | [Minimal Pro](https://material-ui.com/store/items/minimal-dashboard/) |
+| :--------------- | :-------------------------------------------------------------------- |
+| **6** Demo Pages | **70+** Demo Pages                                                    |
+| -                | Authentication with **Amplify**, **Auth0**, **JWT** and **Firebase**  |
+| -                | [+More components](https://minimals.cc/components)                    |
+| -                | Dark & light mode                                                     |
+| -                | Next.js version                                                       |
+| -                | TypeScript version (Standard Plus and Extended license)               |
+| -                | Design Figma File (Standard Plus and Extended license)                |
+| -                | Complete Users Flows                                                  |
+| -                | Learn more: [Package & License](https://docs.minimals.cc/package)     |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## License
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Distributed under the MIT License. See [LICENSE](https://github.com/minimal-ui-kit/minimal.free/blob/main/LICENSE.md) for more information.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Contact us
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Email: support@minimals.cc

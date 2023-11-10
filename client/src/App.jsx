@@ -1,27 +1,18 @@
-import {Routes,Route} from 'react-router-dom'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import DoctorPage from './pages/DoctorPage'
-import PatientPage from './pages/PatientPage'
-import AdminPage from './pages/AdminstratorPage'
-import ProfilePage from './pages/ProfilePage'
-import GuestPage from './pages/GuestPage'
+import 'src/global.css';
 
+import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
 
-function App() {
+import Router from 'src/routes/sections';
+import ThemeProvider from 'src/theme';
+
+// ----------------------------------------------------------------------
+
+export default function App() {
+  useScrollToTop();
+
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/Register" element={<Register />} />
-      <Route path="/ProfilePage" element={<ProfilePage />} />
-      <Route path="/AdminstratorPage" element={<AdminPage />} />
-      <Route path="/PatientPage" element={<PatientPage />} />
-      <Route path="/DoctorPage" element={<DoctorPage />} />
-      <Route path="/GuestPage" element={<GuestPage />} />
-
-
-    </Routes>
+    <ThemeProvider>
+      <Router />
+    </ThemeProvider>
   );
 }
-
-export default App;
