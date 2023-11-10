@@ -1,6 +1,6 @@
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
-import { User, Contract, Appointment, IPatient, IDoctor, Doctor } from '../models';
+import { User, Contract, Appointment, IPatient, IDoctor, Doctor, Patient, Package } from '../models';
 
 const getMyPatients = async (query: any) => {
   const appointments = await Appointment.find(query).distinct('patientID').select('patientID').populate('patientID');
@@ -44,4 +44,94 @@ const getDoctors = async (query: any) => {
   return { result: doctors, status: StatusCodes.OK };
 };
 
-export { getDoctors, getMyPatients };
+const viewContract = async (id : String) =>{
+  const contract =  await Contract.find({doctorID: id})
+  const contt = Contract.find();
+  console.log(contt);
+  if (!contract) throw new HttpError(StatusCodes.NOT_FOUND, 'No contract for this doctor')
+
+  return{
+    status : StatusCodes.OK,
+    message : 'contract retrieved successfully',
+    result : contract
+  };
+}
+
+const acceptContract = async (id : String) =>{
+  const contract = await viewContract(id);
+
+  if (contract.result.length > 0 && contract.result[0].status === "Pending") {
+    const doctor: any = await Doctor.findOne({_id: id})
+    doctor.isContractAccepted = true;
+    await doctor.isContractAccepted.save();
+    contract.result[0].status = "Accepted";
+    await contract.result[0].save();
+
+    return {
+      status: StatusCodes.OK,
+      message: 'Contract Accepted successfully',
+      result: ''
+    };
+
+  } else {
+    return {
+      status: StatusCodes.OK,
+      message: 'Contract is already Assigned or there is no contarct for this doctor',
+      result: ''
+    };
+  }
+};
+
+const addSlots = async (id: string, newSlots: any) => {
+  const doctor: any = await Doctor.findOne({_id: id})
+
+    if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+  
+    doctor.weeklySlots[newSlots.day].push(newSlots.timeSlots);
+    await doctor.save();
+
+    return {
+      status: StatusCodes.OK,
+      message: 'Available time slots added successfully',
+      result: ''
+    };
+};
+
+const scheduleFollowUp = async (doctorID: String, appointmentDetails: any) => {
+   const doctor: any = await Doctor.findOne({_id: doctorID})
+   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+   if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor has no contract');
+
+   const patient = await Patient.findOne({email : appointmentDetails.email});
+   if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
+
+   let sessionDiscount = 0;
+   if (patient.package) {
+     const pkg = await Package.findOne({ _id: patient.package.packageID });
+     if (pkg && patient.package!.endDate?.getTime() >= Date.now()) sessionDiscount = pkg.sessionDiscount;
+   }
+
+   const { hourRate, contract } = doctor;
+   let price = hourRate;
+   price -= price * (sessionDiscount / 100)
+
+   const followUpAppointment = new Appointment({
+     doctorID: doctorID,
+     patientID: patient._id,
+     status: 'Upcoming', 
+     sessionPrice: price,
+     startDate: appointmentDetails.startDate,
+     endDate: appointmentDetails.endDate, 
+     isFollowUp: true,
+  });
+
+  await followUpAppointment.save();
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Follow up appointment scheduled successfully',
+    result: followUpAppointment,
+  };
+};
+
+export { getDoctors, getMyPatients, viewContract, acceptContract, addSlots, scheduleFollowUp};

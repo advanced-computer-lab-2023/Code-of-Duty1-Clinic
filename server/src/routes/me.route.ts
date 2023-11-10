@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 
 import controller from '../controllers';
 import { isAuthenticated, isAuthorized } from '../middlewares';
-import { getUsers, updateInfo, getAppointments, getPrescriptions, addFamilyMember, getFamily } from '../services';
+import { getUsers, updateInfo, getAppointments, getPrescriptions, addFamilyMember, getFamily, viewContract, acceptContract, scheduleFollowUp} from '../services';
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ router.get('/appointments', (req: Request, res: Response) => {
   controller(res)(getAppointments)({ ...req.query, [userID]: req.decoded.id });
 });
 router.post('/appointments', (req: Request, res: Response) => {
-  //   controller(res)()();
+    controller(res)(scheduleFollowUp)(req.decoded.id, req.body);
 });
 
 router.get('/wallet', (req: Request, res: Response) => {
@@ -44,10 +44,10 @@ router.delete('/weeklyslots', (req: Request, res: Response) => {
 });
 
 router.get('/contract', (req: Request, res: Response) => {
-  // controller(res)()();
+    controller(res)(viewContract)(req.decoded.id);
 });
 router.put('/contract', (req: Request, res: Response) => {
-  // controller(res)()();
+    controller(res)(acceptContract)(req.decoded.id);
 });
 
 // Patient Routes

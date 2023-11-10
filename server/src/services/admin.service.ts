@@ -46,4 +46,5 @@ const deleteUsers = async (query: any) => {
   };
 };
 
-export { getRequests, addAdmin, deleteUsers };
+
+export { getRequests, addAdmin, deleteUsers};
