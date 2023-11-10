@@ -22,9 +22,11 @@ export default defineConfig({
     ],
   },
   server: {
+    host: 'localhost',
     port: 3030,
   },
   preview: {
+    host: 'localhost',
     port: 3030,
   },
 });

@@ -40,11 +40,11 @@ export default function DoctorCard({ doctor }) {
           </Typography>
         </Stack>
 
-        <Stack direction={'row'} spacing={2} alignItems="center" justifyContent="center">
+        {/* <Stack direction={'row'} spacing={2} alignItems="center" justifyContent="center">
           {slots.map((slot) => (
             <DoctorSlot key={slot.id} slot={slot} />
           ))}
-        </Stack>
+        </Stack> */}
       </Stack>
     </Card>
   );
