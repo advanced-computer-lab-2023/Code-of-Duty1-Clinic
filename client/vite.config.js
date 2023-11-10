@@ -8,11 +8,6 @@ import checker from 'vite-plugin-checker';
 export default defineConfig({
   plugins: [
     react(),
-    checker({
-      eslint: {
-        lintCommand: 'eslint "./src/**/*.{js,jsx,ts,tsx}"',
-      },
-    }),
   ],
   resolve: {
     alias: [
@@ -27,9 +22,11 @@ export default defineConfig({
     ],
   },
   server: {
+    host: 'localhost',
     port: 3030,
   },
   preview: {
+    host: 'localhost',
     port: 3030,
   },
 });

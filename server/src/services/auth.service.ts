@@ -26,6 +26,8 @@ const register = async (body: any) => {
   if (!['Patient', 'Doctor'].includes(body.role))
     throw new Error('Role is not correct or you cannot register as admin');
 
+  // ToDo: Verify Email with OTP
+
   const user = new User(body);
   await user.save();
 
