@@ -83,4 +83,4 @@ class APIFeatures<T extends Document> {
   }
 }
 
-export default APIFeatures;
+export { APIFeatures };

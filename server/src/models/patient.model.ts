@@ -42,7 +42,7 @@ interface IPatient extends ICommonUser {
 
 type IPatientDocument = IPatient & Document;
 
-const patientSchema = new Schema<IPatientDocument>(
+const patientSchema = new Schema(
   {
     addresses: [String],
     profileImage: String,
@@ -55,16 +55,18 @@ const patientSchema = new Schema<IPatientDocument>(
       default: 0
     },
     emergencyContact: {
-      name: { type: String, required: true },
-      phone: { type: String, required: true },
-      relation: { type: String, enum: ['Husband', 'Wife', 'Child'], required: true }
+      type: {
+        name: { type: String, required: true },
+        phone: { type: String, required: true },
+        relation: { type: String, enum: ['Husband', 'Wife', 'Child'], required: true }
+      }
     },
     family: {
       type: [
         {
-          userID: { type: mongoose.Types.ObjectId, ref: 'User', unique: true },
+          userID: { type: mongoose.Types.ObjectId, ref: 'User' },
           name: String,
-          nationalID: { type: String, unique: true },
+          nationalID: { type: String },
           age: Number,
           gender: { type: String, enum: ['Male', 'Female'] },
           relation: {
@@ -120,5 +122,12 @@ const patientSchema = new Schema<IPatientDocument>(
 
 const patientModel: mongoose.Model<IPatientDocument> = User.discriminator('Patient', patientSchema);
 
-export default patientModel<IPatientDocument>;
+patientModel.collection.indexExists('family.userID_1').then((exists) => {
+  if (exists) patientModel.collection.dropIndex('family.userID_1').then();
+});
+patientModel.collection.indexExists('family.nationalID_1').then((exists) => {
+  if (exists) patientModel.collection.dropIndex('family.nationalID_1').then();
+});
+
+export default patientModel;
 export { IPatient, FamilyMember };

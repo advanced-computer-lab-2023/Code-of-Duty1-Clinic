@@ -11,7 +11,7 @@ interface DailySchedule {
 interface IDoctor extends ICommonUser {
   profileImage?: string;
   isEmailVerified?: boolean;
-  isContractAccepted: boolean;
+  isContractAccepted?: boolean;
   wallet?: number;
   hourRate: number;
   hospital: string;
@@ -51,7 +51,7 @@ const dailyScheduleSchema = {
   }
 };
 
-const doctorSchema = new Schema<IDoctorDocument>(
+const doctorSchema = new Schema(
   {
     profileImage: String,
     isEmailVerified: {
@@ -102,5 +102,5 @@ doctorSchema.virtual('contract', {
 
 const doctorModel: mongoose.Model<IDoctorDocument> = User.discriminator('Doctor', doctorSchema);
 
-export default doctorModel<IDoctorDocument>;
+export default doctorModel;
 export { IDoctor, DailySchedule };
