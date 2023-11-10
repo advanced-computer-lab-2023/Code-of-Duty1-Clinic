@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 
 import controller from '../controllers';
 import { isAuthenticated, isAuthorized } from '../middlewares';
-import { getUsers, updateInfo, getAppointments, getPrescriptions, addFamilyMember, getFamily, viewContract, acceptContract, scheduleFollowUp} from '../services';
+import { getUsers, updateInfo, getAppointments, getPrescriptions, addFamilyMember, getFamily, viewContract, acceptContract, scheduleFollowUp, addSlots} from '../services';
 
 const router = express.Router();
 
@@ -37,7 +37,7 @@ router.get('/weeklyslots', (req: Request, res: Response) => {
   // controller(res)()();
 });
 router.put('/weeklyslots', (req: Request, res: Response) => {
-  // controller(res)()();
+  controller(res)(addSlots)(req.decoded.id, req.body);
 });
 router.delete('/weeklyslots', (req: Request, res: Response) => {
   // controller(res)()();

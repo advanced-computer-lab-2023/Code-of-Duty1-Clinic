@@ -23,7 +23,7 @@ const login = async (body: any) => {
 };
 
 const register = async (body: any) => {
-  if (!['Patient', 'Doctor'].includes(body.role))
+  if (!['Patient', 'Doctor', 'Admin'].includes(body.role))
     throw new Error('Role is not correct or you cannot register as admin');
 
   const user = new User(body);

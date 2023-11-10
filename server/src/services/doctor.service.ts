@@ -1,6 +1,6 @@
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
-import { User, Contract, Appointment, IPatient, IDoctor, Doctor, Patient, Package } from '../models';
+import { Contract, Appointment, IDoctor, Doctor, Patient, Package, Request } from '../models';
 
 const getMyPatients = async (query: any) => {
   const appointments = await Appointment.find(query).distinct('patientID').select('patientID').populate('patientID');
@@ -44,10 +44,8 @@ const getDoctors = async (query: any) => {
   return { result: doctors, status: StatusCodes.OK };
 };
 
-const viewContract = async (id : String) =>{
+const viewContract = async (id : String) => {
   const contract =  await Contract.find({doctorID: id})
-  const contt = Contract.find();
-  console.log(contt);
   if (!contract) throw new HttpError(StatusCodes.NOT_FOUND, 'No contract for this doctor')
 
   return{
@@ -57,20 +55,20 @@ const viewContract = async (id : String) =>{
   };
 }
 
-const acceptContract = async (id : String) =>{
+const acceptContract = async (id : String) => {
   const contract = await viewContract(id);
 
   if (contract.result.length > 0 && contract.result[0].status === "Pending") {
     const doctor: any = await Doctor.findOne({_id: id})
     doctor.isContractAccepted = true;
-    await doctor.isContractAccepted.save();
+    await doctor.save();
     contract.result[0].status = "Accepted";
     await contract.result[0].save();
 
     return {
       status: StatusCodes.OK,
       message: 'Contract Accepted successfully',
-      result: ''
+      result: doctor
     };
 
   } else {
@@ -82,25 +80,30 @@ const acceptContract = async (id : String) =>{
   }
 };
 
-const addSlots = async (id: string, newSlots: any) => {
-  const doctor: any = await Doctor.findOne({_id: id})
+const addSlots = async (doctorID: string, newSlots: any) => {
+  const doctor: any = await Doctor.findById(doctorID);
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
-    if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
-  
-    doctor.weeklySlots[newSlots.day].push(newSlots.timeSlots);
-    await doctor.save();
+  const request = await Request.findOne({medicID : doctor._id});
+  if (request?.status !== "Approved") throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor not approved yet');
 
-    return {
-      status: StatusCodes.OK,
-      message: 'Available time slots added successfully',
-      result: ''
-    };
+  const validDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  if (!validDays.includes(newSlots.day)) throw new HttpError(StatusCodes.BAD_REQUEST, 'Invalid day');
+
+  doctor.weeklySlots[newSlots.day].push(...newSlots.slots);
+  await doctor.save();
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Time slots added successfully',
+    result: doctor.weeklySlots
+  };
 };
 
 const scheduleFollowUp = async (doctorID: String, appointmentDetails: any) => {
    const doctor: any = await Doctor.findOne({_id: doctorID})
    if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
-   if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor has no contract');
+   if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no contract');
 
    const patient = await Patient.findOne({email : appointmentDetails.email});
    if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
@@ -111,8 +114,10 @@ const scheduleFollowUp = async (doctorID: String, appointmentDetails: any) => {
      if (pkg && patient.package!.endDate?.getTime() >= Date.now()) sessionDiscount = pkg.sessionDiscount;
    }
 
-   const { hourRate, contract } = doctor;
-   let price = hourRate;
+   const contract: any =  await Contract.findOne({doctorID: doctorID})
+
+   const time = ( new Date(appointmentDetails.endDate).getTime() - new Date(appointmentDetails.startDate).getTime()) / (1000 * 60 * 60)
+   let price = doctor.hourRate * time * (1 + contract.markUpProfit / 100);
    price -= price * (sessionDiscount / 100)
 
    const followUpAppointment = new Appointment({

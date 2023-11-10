@@ -196,12 +196,12 @@ const generateContract = () => {
     markUpProfit: faker.number.int()
   };
 };
-// generateFakeData().then(() => console.log('Fake data generated successfully.'));
+//generateFakeData().then(() => console.log('Fake data generated successfully.'));
 // console.log(generateFamilyMember());
 // console.log(generateFakeAppointment());
 // generateFakeWeeklySlots();
 // console.log(generateFakeVacations());
-// console.log(generateFakeUser("Patient"));
+console.log(generateFakeUser("Patient"));
 // generateContract();
 
 export {
