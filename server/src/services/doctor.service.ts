@@ -84,10 +84,10 @@ const addSlots = async (doctorID: string, newSlots: any) => {
   const doctor: any = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
-  if (doctor.isContractAccepted != true) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no Contract');
-
   const request = await Request.findOne({medicID : doctor._id});
   if (request?.status !== "Approved") throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor not approved yet');
+
+  if (doctor.isContractAccepted != true) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no Contract');
 
   const validDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   if (!validDays.includes(newSlots.day)) throw new HttpError(StatusCodes.BAD_REQUEST, 'Invalid day');
