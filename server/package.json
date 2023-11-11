@@ -37,6 +37,7 @@
     "stripe": "^8.174.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
+    "uuid": "^9.0.1",
     "validator": "^13.9.0"
   },
   "devDependencies": {
