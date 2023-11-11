@@ -116,7 +116,7 @@ export default function UserPage() {
         <Button
           variant="contained"
           color="inherit"
-          sstartIcon={<Iconify icon="eva:plus-fill" />}
+          startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={handleGetAllAppointments}
         >
           Get All Appointments
@@ -125,7 +125,7 @@ export default function UserPage() {
         <Button
           variant="contained"
           color="inherit"
-          sstartIcon={<Iconify icon="eva:plus-fill" />}
+          startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={handleGetPastAppointments}
         >
           Get Past Appointments
@@ -133,7 +133,7 @@ export default function UserPage() {
         <Button
           variant="contained"
           color="inherit"
-          sstartIcon={<Iconify icon="eva:plus-fill" />}
+          startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={handleGetUpcomingAppointments}
         >
           Get Upcoming Appointments
@@ -141,7 +141,7 @@ export default function UserPage() {
       </Stack>
 
       <Card>
-      <Scrollbar>
+        <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
               <UserTableHead
@@ -176,8 +176,8 @@ export default function UserPage() {
                       startDate={row.startDate}
                       endDate={row.endDate}
                       isFollowUp={row.isFollowUp}
-                      selected={selected.indexOf(row.doctorID) !== -1}
-                      handleClick={(event) => handleClick(event, row.doctorID)}
+                      selected={selected.indexOf(row._id) !== -1}
+                      handleClick={(event) => handleClick(event, row._id)}
                     />
                   ))}
 

@@ -10,7 +10,11 @@ const getAppointments = async (query: any) => {
   const appointments = await Appointment.find(query);
 
   if (!appointments || appointments.length === 0) {
-    throw new HttpError(StatusCodes.NOT_FOUND, 'No upcoming appointments');
+    return {
+      status: StatusCodes.OK,
+      message: 'Appointments retrieved successfully',
+      result: [],
+    };
   }
 
   const doctorIds = appointments.map(appointment => appointment.doctorID);
@@ -78,7 +82,11 @@ const getUpcomingAppointments = async (userId: string, role: string) => {
   }
 
   if (!appointments || appointments.length === 0) {
-    throw new HttpError(StatusCodes.NOT_FOUND, 'No upcoming appointments');
+    return {
+      status: StatusCodes.OK,
+      message: 'Appointments retrieved successfully',
+      result: [],
+    };
   }
 
   // Fetch doctors and patients based on the extracted ids
@@ -132,7 +140,11 @@ const getPastAppointments = async (userId: string, role: string) => {
   }
 
   if (!appointments || appointments.length === 0) {
-    throw new HttpError(StatusCodes.NOT_FOUND, 'No past appointments found');
+    return {
+      status: StatusCodes.OK,
+      message: 'Appointments retrieved successfully',
+      result: [],
+    };
   }
 
   // Fetch doctors and patients based on the extracted ids
@@ -193,7 +205,11 @@ const filterAppointments = async (query: any) => {
   }
 
   if (!appointments || appointments.length === 0) {
-    throw new HttpError(StatusCodes.NOT_FOUND, 'No matching appointments found');
+    return {
+      status: StatusCodes.OK,
+      message: 'Appointments retrieved successfully',
+      result: [],
+    };
   }
 
   // Fetch doctors and patients based on the extracted ids
