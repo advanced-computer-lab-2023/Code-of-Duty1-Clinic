@@ -2,7 +2,15 @@ import express, { Request, Response } from 'express';
 
 import controller from '../controllers';
 import { isAuthenticated, isAuthorized } from '../middlewares';
-import { getUsers, updateInfo, getAppointments, getPrescriptions, addFamilyMember, getFamily } from '../services';
+import {
+  getUsers,
+  updateInfo,
+  getAppointments,
+  getPrescriptions,
+  addFamilyMember,
+  getFamily,
+  getHealthRecords
+} from '../services';
 
 const router = express.Router();
 
@@ -58,9 +66,10 @@ router.get('/prescriptions', (req: Request, res: Response) => {
   controller(res)(getPrescriptions)(req.query);
 });
 
-router.get('/medicalhistory', (req: Request, res: Response) => {
-  // controller(res)()();
+router.get('/medicalhistory', isAuthorized('Patient'), (req: Request, res: Response) => {
+  controller(res)(getHealthRecords)(req.decoded.id);
 });
+
 router.post('/medicalhistory', (req: Request, res: Response) => {
   // controller(res)()();
 });
