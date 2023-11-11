@@ -15,7 +15,8 @@ import {
   requestRouter,
   packageRouter,
   chatroomRouter,
-  paymentRouter
+  paymentRouter,
+    uploadRouter
 } from './routes';
 import { StatusCodes } from 'http-status-codes';
 
@@ -69,6 +70,7 @@ app.use('/requests', requestRouter);
 app.use('/packages', packageRouter);
 app.use('/chatrooms', chatroomRouter);
 app.use('/payment', paymentRouter);
+app.use('/upload', uploadRouter);
 
 app.all('*', (req: Request, res: Response) => res.status(404).send('Path Not Found'));
 
