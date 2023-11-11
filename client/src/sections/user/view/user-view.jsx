@@ -16,19 +16,39 @@ import { emptyRows, getComparator } from '../utils';
 import { axiosInstance } from '../../../utils/axiosInstance';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+import Popover from '@mui/material/Popover';
+import Box from '@mui/material/Box';
 
 export default function UserPage() {
   const [appointments, setAppointments] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('doctorID'); // Set default ordering based on doctorID
+  const [orderBy, setOrderBy] = useState('doctorID');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [status, setStatus] = useState('');
+
+  const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await axiosInstance.get('/me/appointments');
+        let endpoint = '/me/appointments';
+
+        if (startDate || endDate || status) {
+          endpoint += '?s=filter';
+
+          if (startDate) endpoint += `&startDate=${new Date(startDate).toISOString()}`;
+          if (endDate) endpoint += `&endDate=${new Date(endDate).toISOString()}`;
+          if (status) endpoint += `&status=${status}`;
+        }
+
+        const response = await axiosInstance.get(endpoint);
         setAppointments(response.data.result);
       } catch (error) {
         console.error('Error fetching appointments:', error);
@@ -36,14 +56,12 @@ export default function UserPage() {
     };
 
     fetchAppointments();
-  }, []); // Fetch appointments on component mount
+  }, [startDate, endDate, status]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    }
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(id);
   };
 
   const handleSelectAllClick = (event) => {
@@ -108,6 +126,20 @@ export default function UserPage() {
       console.error('Error fetching all appointments:', error);
     }
   };
+
+  const handleFilterButtonClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleApplyFilters = () => {
+    fetchAppointments();
+    handleFilterClose();
+  };
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -130,6 +162,7 @@ export default function UserPage() {
         >
           Get Past Appointments
         </Button>
+
         <Button
           variant="contained"
           color="inherit"
@@ -138,75 +171,118 @@ export default function UserPage() {
         >
           Get Upcoming Appointments
         </Button>
+
+        <Button variant="contained" color="primary" onClick={handleFilterButtonClick}>
+          Filter
+        </Button>
+
+        <Popover
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          onClose={handleFilterClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          <Box p={2} style={{ width: '300px' }}>
+            <TextField
+              id="startDate"
+              label="Start Date"
+              type="date"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <TextField
+              id="endDate"
+              label="End Date"
+              type="date"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+            <Autocomplete
+              options={['Upcoming', 'Completed', 'Cancelled', 'Rescheduled']}
+              renderInput={(params) => (
+                <TextField {...params} label="Status" fullWidth margin="normal" />
+              )}
+              onChange={(e, value) => setStatus(value)}
+            />
+            <Button variant="contained" color="primary" onClick={handleApplyFilters}>
+              Apply Filters
+            </Button>
+          </Box>
+        </Popover>
       </Stack>
 
       <Card>
-        {appointments.length === 0 ? (
-          <Typography variant="body1" sx={{ p: 2 }}>
-            No appointments found.
-          </Typography>
-        ) : (
-          <>
-            <Scrollbar>
-              <TableContainer sx={{ overflow: 'unset' }}>
-                <Table sx={{ minWidth: 800 }}>
-                  <UserTableHead
-                    order={order}
-                    orderBy={orderBy}
-                    rowCount={appointments.length}
-                    numSelected={selected.length}
-                    onRequestSort={handleSort}
-                    onSelectAllClick={handleSelectAllClick}
-                    headLabel={[
-                      { id: 'patientName', label: 'Patient Name' },
-                      { id: 'doctorName', label: 'Doctor Name' },
-                      { id: 'status', label: 'Status' },
-                      { id: 'sessionPrice', label: 'Session Price' },
-                      { id: 'startDate', label: 'Start Date' },
-                      { id: 'endDate', label: 'End Date' },
-                      { id: 'isFollowUp', label: 'Follow Up' },
-                      { id: '' },
-                    ]}
-                  />
-                  <TableBody>
-                    {appointments
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row) => (
-                        <UserTableRow
-                          key={row._id}
-                          _id={row._id}
-                          patientName={row.patientName}
-                          doctorName={row.doctorName}
-                          status={row.status}
-                          sessionPrice={row.sessionPrice}
-                          startDate={row.startDate}
-                          endDate={row.endDate}
-                          isFollowUp={row.isFollowUp}
-                          selected={selected.indexOf(row._id) !== -1}
-                          handleClick={(event) => handleClick(event, row._id)}
-                        />
-                      ))}
-
-                    <TableEmptyRows
-                      height={77}
-                      emptyRows={emptyRows(page, rowsPerPage, appointments.length)}
+        <Scrollbar>
+          <TableContainer sx={{ overflow: 'unset' }}>
+            <Table sx={{ minWidth: 800 }}>
+              <UserTableHead
+                order={order}
+                orderBy={orderBy}
+                rowCount={appointments.length}
+                numSelected={selected.length}
+                onRequestSort={handleSort}
+                onSelectAllClick={handleSelectAllClick}
+                headLabel={[
+                  { id: 'patientName', label: 'Patient Name' },
+                  { id: 'doctorName', label: 'Doctor Name' },
+                  { id: 'status', label: 'Status' },
+                  { id: 'sessionPrice', label: 'Session Price' },
+                  { id: 'startDate', label: 'Start Date' },
+                  { id: 'endDate', label: 'End Date' },
+                  { id: 'isFollowUp', label: 'Follow Up' },
+                  { id: '' },
+                ]}
+              />
+              <TableBody>
+                {appointments
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => (
+                    <UserTableRow
+                      key={row._id}
+                      _id={row._id}
+                      patientName={row.patientName}
+                      doctorName={row.doctorName}
+                      status={row.status}
+                      sessionPrice={row.sessionPrice}
+                      startDate={row.startDate}
+                      endDate={row.endDate}
+                      isFollowUp={row.isFollowUp}
+                      selected={selected.indexOf(row._id) !== -1}
+                      handleClick={(event) => handleClick(event, row._id)}
                     />
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Scrollbar>
+                  ))}
 
-            <TablePagination
-              page={page}
-              component="div"
-              count={appointments.length}
-              rowsPerPage={rowsPerPage}
-              onPageChange={handleChangePage}
-              rowsPerPageOptions={[5, 10, 25]}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </>
-        )}
+                <TableEmptyRows
+                  height={77}
+                  emptyRows={emptyRows(page, rowsPerPage, appointments.length)}
+                />
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Scrollbar>
+
+        <TablePagination
+          page={page}
+          component="div"
+          count={appointments.length}
+          rowsPerPage={rowsPerPage}
+          onPageChange={handleChangePage}
+          rowsPerPageOptions={[5, 10, 25]}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Card>
     </Container>
   );
