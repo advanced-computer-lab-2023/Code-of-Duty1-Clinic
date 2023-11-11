@@ -15,8 +15,8 @@ import Iconify from 'src/components/iconify';
 export default function UserTableRow({
   selected,
   _id,
-  doctorID,
-  patientID,
+  patientName,
+  doctorName,
   status,
   sessionPrice,
   startDate,
@@ -43,14 +43,13 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={doctorID} src={doctorID} />
             <Typography variant="subtitle2" noWrap>
-              {doctorID}
+              {doctorName}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{patientID}</TableCell>
+        <TableCell>{patientName}</TableCell>
 
         <TableCell>{status}</TableCell>
 
@@ -61,18 +60,16 @@ export default function UserTableRow({
         <TableCell>{endDate}</TableCell>
 
         <TableCell>{isFollowUp ? 'Yes' : 'No'}</TableCell>
-
-       
       </TableRow>
-
     </>
   );
 }
 
+
 UserTableRow.propTypes = {
   _id: PropTypes.string.isRequired,
-  doctorID: PropTypes.string,
-  patientID: PropTypes.string,
+  doctorName: PropTypes.string, 
+  patientName: PropTypes.string,
   status: PropTypes.string,
   sessionPrice: PropTypes.number,
   startDate: PropTypes.string,

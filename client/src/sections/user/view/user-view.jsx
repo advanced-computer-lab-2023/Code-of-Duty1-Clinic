@@ -99,7 +99,7 @@ export default function UserPage() {
       console.error('Error fetching past appointments:', error);
     }
   };
-  
+
   const handleGetAllAppointments = async () => {
     try {
       const response = await axiosInstance.get('/me/appointments');
@@ -141,7 +141,7 @@ export default function UserPage() {
       </Stack>
 
       <Card>
-        <Scrollbar>
+      <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
               <UserTableHead
@@ -152,14 +152,14 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'doctorID', label: 'Doctor ID' },
-                  { id: 'patientID', label: 'Patient ID' },
+                  { id: 'patientName', label: 'Patient Name' },
+                  { id: 'doctorName', label: 'Doctor Name' },
                   { id: 'status', label: 'Status' },
                   { id: 'sessionPrice', label: 'Session Price' },
                   { id: 'startDate', label: 'Start Date' },
                   { id: 'endDate', label: 'End Date' },
                   { id: 'isFollowUp', label: 'Follow Up' },
-                
+                  { id: '' },
                 ]}
               />
               <TableBody>
@@ -169,8 +169,8 @@ export default function UserPage() {
                     <UserTableRow
                       key={row._id}
                       _id={row._id}
-                      doctorID={row.doctorID}
-                      patientID={row.patientID}
+                      patientName={row.patientName}
+                      doctorName={row.doctorName}
                       status={row.status}
                       sessionPrice={row.sessionPrice}
                       startDate={row.startDate}
