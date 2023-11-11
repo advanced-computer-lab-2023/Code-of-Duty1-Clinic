@@ -29,6 +29,7 @@ export default function UserPage() {
   const [orderBy, setOrderBy] = useState('doctorID');
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  // State for filter values
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [status, setStatus] = useState('');
@@ -198,6 +199,7 @@ export default function UserPage() {
               InputLabelProps={{
                 shrink: true,
               }}
+              value={startDate || ''}
               onChange={(e) => setStartDate(e.target.value)}
             />
             <TextField
@@ -208,6 +210,7 @@ export default function UserPage() {
               InputLabelProps={{
                 shrink: true,
               }}
+              value={endDate || ''}
               onChange={(e) => setEndDate(e.target.value)}
             />
             <Autocomplete
@@ -215,6 +218,7 @@ export default function UserPage() {
               renderInput={(params) => (
                 <TextField {...params} label="Status" fullWidth margin="normal" />
               )}
+              value={status}
               onChange={(e, value) => setStatus(value)}
             />
             <Button variant="contained" color="primary" onClick={handleApplyFilters}>
