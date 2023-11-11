@@ -3,7 +3,8 @@ import { User, Patient, IPatient, IDoctor, Package, IPackage } from '../models';
 import { getDoctors } from './doctor.service';
 import { HttpError } from '../utils';
 import { Prescription, Appointment } from '../models';
-
+import path from 'path';
+import fs from 'fs';
 // Maybe we need to validate unique family member by userID or nationalID
 const addFamilyMember = async (id: string, body: any) => {
   const { relation, userID, name, age, gender, nationalID } = body;
@@ -97,6 +98,96 @@ const viewDoctorsForPatient = async (patientId: string, query: any) => {
     message: 'Successfully retrieved Doctors'
   };
 };
+const getMedicalHistory = async (patientID: String) => { 
+  const result = await Patient.findOne({ _id: patientID }).select("medicalHistory -_id -role").lean();
+  if (!result)
+    throw new HttpError(StatusCodes.NOT_FOUND, "not found");
+  console.log(result);
+  return {
+    result: result["medicalHistory"],
+    status: StatusCodes.OK,
+    message: 'Successfully retrieved medical history'
+  }
+
+}
+const resolveURL = (url: string) => { 
+  const parentURL = path.dirname(__dirname);
+  url = path.join(parentURL, url!);
+  return url;
+}
+const getMedicalHistoryURL = async (body: any) => {
+  let result = await Patient.findOne({ _id: body._id }).select("medicalHistory").lean();
+  if (!result)
+    throw new HttpError(StatusCodes.NOT_FOUND, "not found");
+  let records = result!["medicalHistory"];
+  let url = null;
+  for (let i = 0; i < records!.length; i++) {
+    if (records![i]["name"] == body.recordName) {
+      url = records![i]["medicalRecord"];
+      break;
+    }
+  }
+  
+
+  return resolveURL(url!);
+  
+}
+const saveMedicalHistory = async (patientID:string,files:Express.Multer.File[]) => { 
+
+  let insertedRecords = [];
+  for (let i = 0; i < files.length; i++) {
+    const idx = files[i].path.indexOf("uploads");
+    const filePath = files[i].path.slice(idx);
+      // path.join("..",);
+    const name = files[i].filename;
+     const medicalHistory = {
+      name,
+      medicalRecord: filePath, 
+    };
+    const result = await Patient.findOneAndUpdate(
+      { _id: patientID },
+      { $push: { medicalHistory: medicalHistory } },
+      { new: true }
+    );
+    insertedRecords.push(result);
+  }
+  return {
+    result: insertedRecords,
+    status: StatusCodes.OK,
+    message: 'Successfully inserted medical records'
+
+  }
+
+}
+const removeMedicalHistory = async (patientID: string, recordName: string) => { 
+  
+  const record = await Patient.findOneAndUpdate({ _id: patientID },
+    {
+      $pull: {
+        medicalHistory: { name: recordName }
+      }
+    }, { new: false });
+  if (!record) throw new HttpError(StatusCodes.NOT_FOUND, 'Record not found');
+  let filePath = null;
+  for (let i = 0; i < record!.medicalHistory!.length;i++) {
+    const ele = record!.medicalHistory![i];
+
+    if ((ele).name == recordName) {
+     
+      filePath = (ele).medicalRecord;
+      break;
+    }
+  }
+  if(!filePath)throw new HttpError(StatusCodes.NOT_FOUND, 'Record not found');
+  filePath = path.resolve(__dirname, "../" + filePath);
+  fs.unlink(filePath,(e)=>e);
+  
+  return {
+    result: filePath,
+    status: StatusCodes.OK,
+    message: 'Successfully deleted medical record'
+  };
+}
 
 const addHealthRecord = async (patientID: String, body: any) => {
   const { name, medicalRecord } = body;
@@ -133,11 +224,11 @@ const getHealthRecords = async (patientID: String) => {
     message: 'Health records retrieved successfully'
   };
 };
-
 export {
   viewDoctorsForPatient as viewAllDoctorsForPatient,
   getFamily,
   addFamilyMember,
   addHealthRecord,
-  getHealthRecords
+  getHealthRecords,
+  saveMedicalHistory,removeMedicalHistory,getMedicalHistoryURL,getMedicalHistory
 };
