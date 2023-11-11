@@ -7,9 +7,7 @@ const getAppointments = async (query: any) => {
   if (query.startDate) query.startDate = { $gte: query.startDate };
   if (query.endDate) query.endDate = { $lte: query.endDate };
 
-  const appointments = await Appointment.find(query)
-    .populate('doctorID', 'name') // Populate the doctorID field with the name property
-    .populate('patientID', 'name'); // Populate the patientID field with the name property
+  const appointments = await Appointment.find(query);
 
   if (!appointments) throw new HttpError(StatusCodes.NOT_FOUND, 'No upcoming appointments');
 
@@ -40,29 +38,22 @@ const createAppointment = async (patientID: String, doctorID: String, body: any)
 const getUpcomingAppointments = async (userId: string, role: string) => {
   if (role === 'doctor' || role === 'Doctor') {
     if (await Doctor.exists({ _id: userId })) {
-      const appointments = await Appointment.find({ doctorID: userId, startDate: { $gte: new Date() } })
-        .populate('doctorID', 'name') // Populate the doctorID field with the name property
-        .populate('patientID', 'name'); // Populate the patientID field with the name property
-
       return {
         status: StatusCodes.OK,
         message: 'Appointments retrieved successfully',
-        result: appointments,
+        result: await Appointment.find({ doctorID: userId, startDate: { $gte: new Date() } }),
       };
     }
   } else if (role === 'patient' || role === 'Patient') {
     if (await Patient.exists({ _id: userId })) {
-      const appointments = await Appointment.find({ patientID: userId, startDate: { $gte: new Date() } })
-        .populate('doctorID', 'name') // Populate the doctorID field with the name property
-        .populate('patientID', 'name'); // Populate the patientID field with the name property
-
       return {
         status: StatusCodes.OK,
         message: 'Appointments retrieved successfully',
-        result: appointments,
+        result: await Appointment.find({ patientID: userId, startDate: { $gte: new Date() } }),
       };
     }
-  } else {
+  }
+  else {
     throw new HttpError(
       StatusCodes.BAD_REQUEST,
       'Role is neither a doctor nor a patient or wrong user id'
@@ -78,22 +69,20 @@ const getPastAppointments = async (userId: string, role: string) => {
       return {
         status: StatusCodes.OK,
         message: 'Past appointments retrieved successfully',
-        result: await Appointment.find({ doctorID: userId, endDate: { $lt: new Date() } })
-          .populate('doctorID', 'name') // Populate the doctorID field with the name property
-          .populate('patientID', 'name'), // Populate the patientID field with the name property
+        result: await Appointment.find({ doctorID: userId, endDate: { $lt: new Date() } }),
       };
     }
-  } else if (role === 'patient' || role === 'Patient') {
+  }
+  else if (role === 'patient' || role === 'Patient') {
     if (await Patient.exists({ _id: userId })) {
       return {
         status: StatusCodes.OK,
         message: 'Past appointments retrieved successfully',
-        result: await Appointment.find({ patientID: userId, endDate: { $lt: new Date() } })
-          .populate('doctorID', 'name') // Populate the doctorID field with the name property
-          .populate('patientID', 'name'), // Populate the patientID field with the name property
+        result: await Appointment.find({ patientID: userId, endDate: { $lt: new Date() } }),
       };
     }
-  } else {
+  }
+  else {
     throw new HttpError(
       StatusCodes.BAD_REQUEST,
       'Role is neither a doctor nor a patient or wrong user id'
@@ -107,30 +96,24 @@ const filterAppointments = async (query: any) => {
   const startDate = query.startDate ? new Date(query.startDate) : new Date('1000-01-01T00:00:00.000Z');
   const endDate = query.endDate ? new Date(query.endDate) : new Date('9999-01-01T00:00:00.000Z');
   const status = query.status ? query.status : { $in: ['Upcoming', 'Completed', 'Cancelled', 'Rescheduled'] };
-
-  let result;
-
   if (query.role === 'doctor' || query.role === 'Doctor') {
-    result = await Appointment.find({ doctorID: query.doctorID, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status })
-      .populate('doctorID', 'name') // Populate the doctorID field with the name property
-      .populate('patientID', 'name'); // Populate the patientID field with the name property
+    return {
+      status: StatusCodes.OK,
+      message: 'Appointments retrieved successfully',
+      result: await Appointment.find({ doctorID: query.doctorID, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status }),
+    };
   } else if (query.role === 'patient' || query.role === 'Patient') {
-    result = await Appointment.find({ patientID: query.patientID, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status })
-      .populate('doctorID', 'name') // Populate the doctorID field with the name property
-      .populate('patientID', 'name'); // Populate the patientID field with the name property
+    return {
+      status: StatusCodes.OK,
+      message: 'Appointments retrieved successfully',
+      result: await Appointment.find({ patientID: query.patientID, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status }),
+    };
   } else {
     throw new HttpError(
       StatusCodes.BAD_REQUEST,
       'User is neither a doctor nor a patient'
     );
   }
-
-  return {
-    status: StatusCodes.OK,
-    message: 'Appointments retrieved successfully',
-    result: result,
-  };
 };
-
 
 export { getAppointments, createAppointment , getUpcomingAppointments, getPastAppointments, filterAppointments };
