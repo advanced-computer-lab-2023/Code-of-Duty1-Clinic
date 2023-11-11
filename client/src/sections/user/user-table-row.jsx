@@ -18,12 +18,14 @@ import Iconify from 'src/components/iconify';
 
 export default function UserTableRow({
   selected,
-  name,
-  avatarUrl,
-  company,
-  role,
-  isVerified,
+  _id,
+  doctorID,
+  patientID,
   status,
+  sessionPrice,
+  startDate,
+  endDate,
+  isFollowUp,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -45,22 +47,21 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
+            {/* Adjust the properties based on the appointment data */}
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {_id}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{company}</TableCell>
-
-        <TableCell>{role}</TableCell>
-
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
-
-        <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
-        </TableCell>
+        {/* Adjust the TableCell content based on the appointment data */}
+        <TableCell>{doctorID}</TableCell>
+        <TableCell>{patientID}</TableCell>
+        <TableCell>{status}</TableCell>
+        <TableCell>{sessionPrice}</TableCell>
+        <TableCell>{startDate}</TableCell>
+        <TableCell>{endDate}</TableCell>
+        <TableCell align="center">{isFollowUp ? 'Yes' : 'No'}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -79,6 +80,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
+        {/* Adjust the menu items based on the requirements */}
         <MenuItem onClick={handleCloseMenu}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
@@ -94,12 +96,14 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
-  company: PropTypes.any,
-  handleClick: PropTypes.func,
-  isVerified: PropTypes.any,
-  name: PropTypes.any,
-  role: PropTypes.any,
-  selected: PropTypes.any,
+  _id: PropTypes.string,
+  doctorID: PropTypes.string,
+  patientID: PropTypes.string,
   status: PropTypes.string,
+  sessionPrice: PropTypes.number,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
+  isFollowUp: PropTypes.bool,
+  handleClick: PropTypes.func,
+  selected: PropTypes.bool,
 };
