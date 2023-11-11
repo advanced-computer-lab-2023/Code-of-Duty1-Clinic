@@ -6,15 +6,41 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import PropTypes from 'prop-types';
+import { axiosInstance } from '../../utils/axiosInstance';
+import Label from 'src/components/label';
 
-export default function UploadFile({ url }) {
+function Upload({ url, field, handleUploadSuccess }) {
     const [files, setFiles] = useState([]);
     const [feedback, setFeedback] = useState("");
     const [isFileChanged, setIsFileChanged] = useState(false);
+    const [labelColor, setLabelColor] = useState('green');
 
 
+
+    const isAllowed = (files) => {
+        let len = files.length;
+        // console.log(files, "++++");
+        const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'];
+        if (len > 10) {
+            return false;
+        }
+        while (len > 0) {
+            len -= 1;
+            console.log(files[len], "------", len);
+            if (!allowedTypes.includes(files[len].type))
+                return false;
+        }
+        return true;
+    };
     const handleFileChange = (event) => {
         const selectedFiles = event.target.files;
+        if (!isAllowed(selectedFiles)) {
+            setFeedback("maximum of 10 PDFs or images(png,jpg,jpeg) are allowed ");
+            setLabelColor('red');
+            return;
+        }
+
+        console.log(selectedFiles);
         setFiles(selectedFiles);
         setIsFileChanged(true);
     };
@@ -23,38 +49,45 @@ export default function UploadFile({ url }) {
     const handleUpload = async () => {
         const formData = new FormData();
         let len = files.length;
-        while (len >= 0) {
+        while (len > 0) {
             len -= 1;
-            formData.append('medicalHistory', files[len]);
+            formData.append(field, files[len]);
         }
 
         if (!files) {
             setFeedback("Choose a files");
+            setLabelColor(red);
             return;
         }
 
         if (!isFileChanged) {
             setFeedback("File is already uploaded");
+            setLabelColor(red);
+
             return;
         }
 
         try {
-            const res = await axios.post(url, formData, {
+            const res = await axiosInstance.post(url, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 }
-            });
-
+            })
+            if (res.status == 200) {
+                handleUploadSuccess(field);
+            }
+            setLabelColor(res.status === 200 ? 'green' : 'red');
             setFeedback(res.status === 200 ? "Uploaded successfully" : "Failed to upload");
             setIsFileChanged(false);
 
         } catch (error) {
             setFeedback("Failed to upload");
+            setLabelColor('red');
         }
     };
 
     return (
-        <div>
+        <div style={{ width: '100%' }}>
             <Input
                 type="file"
                 onChange={handleFileChange}
@@ -74,11 +107,17 @@ export default function UploadFile({ url }) {
                     </InputAdornment>
                 }
             />
-            <p>{feedback}</p>
+
+            <Label style={{ color: labelColor }}>{feedback}</Label>
+
+            <p></p>
+
         </div>
     );
 }
-UploadFile.propTypes = {
+Upload.propTypes = {
     url: PropTypes.string.isRequired,
 
 };
+
+export default Upload;

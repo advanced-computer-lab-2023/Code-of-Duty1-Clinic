@@ -45,6 +45,8 @@ const getDoctors = async (query: any) => {
   return { result: doctors, status: StatusCodes.OK };
 };
 const getPath = (files: any) => { 
+  console.log(files)
+ 
   let results = [];
   for (let i = 0; i < files.length; i++) { 
     const idx = files[i].path.indexOf('uploads');
@@ -53,22 +55,32 @@ const getPath = (files: any) => {
 return  results;
 
 }
-const saveRegistrationFiles = (doctorID: string, files: any) => {
+const saveRegistrationFiles = async (doctorID: string, files: any) => {
 
   const IDFiles = files.ID;
   const degreeFiles = files.medicalDegree;
   const licensesFields = files.medicalLicenses;
-  let IDPath = getPath(IDFiles)[0];
-  let degreePath: any[] = getPath(degreeFiles);
-  let licensePath: any[] = getPath(licensesFields);
-  
-  const results = Request.findOneAndUpdate({ medicID: doctorID }, {
+    
+  let IDPath: any = IDFiles ? (getPath(IDFiles)![0]) : undefined;
+  let degreePath: any[] = degreeFiles ? getPath(degreeFiles) : [];
+  let licensePath: any[] = licensesFields ? getPath(licensesFields) : [];
+  // Construct the updates object
+  let updates: any = {
     ID: IDPath,
     $push: {
-      degree: { $each: degreePath },
-      licenses: { $each: licensePath }
+      degree: { $each: degreePath },  // Use $each for pushing multiple elements
+      licenses: { $each: licensePath }  // Use $each for pushing multiple elements
     }
-  });
+  };
+
+  // Remove the 'ID' field if it doesn't exist
+  if (!IDPath) {
+    delete updates.ID;
+  }
+  console.log(updates, "------------");
+  const results = await Request.findOneAndUpdate({ medicID: doctorID }, updates, { new: true });
+  // const results = await Request.findOneAndUpdate({ medicID: doctorID }, updates, {new:true});
+  console.log(results);
   return {
     result: results,
     status: StatusCodes.OK,
@@ -76,7 +88,6 @@ const saveRegistrationFiles = (doctorID: string, files: any) => {
   }
 
 }
-
 const viewAvailableAppointments = async (doctorID: string) => {
   const doctor = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');

@@ -5,12 +5,11 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-
+import { axiosInstance } from '../../utils/axiosInstance';
 const AdditionalContent = ({ ContentInfo }) => {
     let comp = <p>{ContentInfo.url}</p>;
     let urlParts = String(ContentInfo.url).replace(/\\/g, '/').split('/');
     let url = `http://localhost:3000/upload/patient/medicalHistory/` + urlParts[urlParts.length - 1];
-    // console.log(url, "*-*-*-*-*-*-*")
     if (String(ContentInfo.ext) === 'pdf') {
         comp = <PDFViewer pdfURL={url} />;
     } else if (['jpg', 'jpeg', 'png'].includes(String(ContentInfo.ext).toLowerCase())) {
@@ -72,7 +71,7 @@ const Row = ({ text, ContentInfo }) => {
 
     async function generateRows() {
         const rows = [];
-        const res = await axios.get('http://localhost:3000/upload/patient/medicalHistory/');
+        const res = await axiosInstance.get('upload/patient/medicalHistory/');
 
         const data = res.data.result;
         console.log(data + "-------")

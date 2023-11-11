@@ -11,23 +11,23 @@ const uploadRouter = Router();
 // uploadRouter.use(isAuthenticated);
 
 uploadRouter.post("/patient/medicalHistory", medicalHistoryUpload.array("medicalHistory"),(req, res) => {
-    controller(res)(saveMedicalHistory)("652b367ea1c23056f61e2651",req.files);
+    controller(res)(saveMedicalHistory)( req.decoded.id,req.files);
 });
 uploadRouter.get("/patient/medicalHistory/:recordName",async  (req, res) => {
     const recordName: string = req.params["recordName"];
-    const fileUrl: any = await getMedicalHistoryURL({ recordName, _id: "652b367ea1c23056f61e2651" });
+    const fileUrl: any = await getMedicalHistoryURL({ recordName, _id: req.decoded.id });
     res.status(200).sendFile(fileUrl!);
 })
 uploadRouter.get("/patient/medicalHistory/",async  (req, res) => {
-   controller(res)(getMedicalHistory)("652b367ea1c23056f61e2651");
+   controller(res)(getMedicalHistory)(req.decoded.id);
 })
 
 uploadRouter.delete("/patient/medicalHistory/:recordName", (req, res) => {
-    controller(res)(removeMedicalHistory)("652b367ea1c23056f61e2651",req.params.recordName);
+    controller(res)(removeMedicalHistory)(req.decoded.id,req.params.recordName);
 });
 
 uploadRouter.post("/doctor/registration", registrationUpload.fields(allowedRegistrationFields as any[]),(req, res) => {
-    controller(res)(saveRegistrationFiles)("652b367ea1c23056f61e2651", req.files);
+    controller(res)(saveRegistrationFiles)("652b3a615c37bacab1ef288f", req.files);
 });
 uploadRouter.use((err: any, req: Request, res: Response) => { 
     if (err instanceof multer.MulterError) { 
