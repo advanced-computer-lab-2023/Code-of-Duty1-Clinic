@@ -7,7 +7,8 @@ const controller =
   async (...args: any[]) => {
     try {
       const result = await service(...args);
-
+      console.log(result +"------"
+  )
       if (result.token) {
         res.cookie('token', result.token, {
           httpOnly: false

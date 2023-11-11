@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import PropTypes from 'prop-types';
 
-export default function UploadFile(props) {
+export default function UploadFile({ url }) {
     const [files, setFiles] = useState([]);
     const [feedback, setFeedback] = useState("");
     const [isFileChanged, setIsFileChanged] = useState(false);
@@ -39,7 +39,7 @@ export default function UploadFile(props) {
         }
 
         try {
-            const res = await axios.post(props.url, formData, {
+            const res = await axios.post(url, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 }
@@ -80,5 +80,5 @@ export default function UploadFile(props) {
 }
 UploadFile.propTypes = {
     url: PropTypes.string.isRequired,
-    // Add other prop types as needed
+
 };
