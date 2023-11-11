@@ -141,64 +141,72 @@ export default function UserPage() {
       </Stack>
 
       <Card>
-        <Scrollbar>
-          <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                rowCount={appointments.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
-                headLabel={[
-                  { id: 'patientName', label: 'Patient Name' },
-                  { id: 'doctorName', label: 'Doctor Name' },
-                  { id: 'status', label: 'Status' },
-                  { id: 'sessionPrice', label: 'Session Price' },
-                  { id: 'startDate', label: 'Start Date' },
-                  { id: 'endDate', label: 'End Date' },
-                  { id: 'isFollowUp', label: 'Follow Up' },
-                  { id: '' },
-                ]}
-              />
-              <TableBody>
-                {appointments
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row._id}
-                      _id={row._id}
-                      patientName={row.patientName}
-                      doctorName={row.doctorName}
-                      status={row.status}
-                      sessionPrice={row.sessionPrice}
-                      startDate={row.startDate}
-                      endDate={row.endDate}
-                      isFollowUp={row.isFollowUp}
-                      selected={selected.indexOf(row._id) !== -1}
-                      handleClick={(event) => handleClick(event, row._id)}
+        {appointments.length === 0 ? (
+          <Typography variant="body1" sx={{ p: 2 }}>
+            No appointments found.
+          </Typography>
+        ) : (
+          <>
+            <Scrollbar>
+              <TableContainer sx={{ overflow: 'unset' }}>
+                <Table sx={{ minWidth: 800 }}>
+                  <UserTableHead
+                    order={order}
+                    orderBy={orderBy}
+                    rowCount={appointments.length}
+                    numSelected={selected.length}
+                    onRequestSort={handleSort}
+                    onSelectAllClick={handleSelectAllClick}
+                    headLabel={[
+                      { id: 'patientName', label: 'Patient Name' },
+                      { id: 'doctorName', label: 'Doctor Name' },
+                      { id: 'status', label: 'Status' },
+                      { id: 'sessionPrice', label: 'Session Price' },
+                      { id: 'startDate', label: 'Start Date' },
+                      { id: 'endDate', label: 'End Date' },
+                      { id: 'isFollowUp', label: 'Follow Up' },
+                      { id: '' },
+                    ]}
+                  />
+                  <TableBody>
+                    {appointments
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => (
+                        <UserTableRow
+                          key={row._id}
+                          _id={row._id}
+                          patientName={row.patientName}
+                          doctorName={row.doctorName}
+                          status={row.status}
+                          sessionPrice={row.sessionPrice}
+                          startDate={row.startDate}
+                          endDate={row.endDate}
+                          isFollowUp={row.isFollowUp}
+                          selected={selected.indexOf(row._id) !== -1}
+                          handleClick={(event) => handleClick(event, row._id)}
+                        />
+                      ))}
+
+                    <TableEmptyRows
+                      height={77}
+                      emptyRows={emptyRows(page, rowsPerPage, appointments.length)}
                     />
-                  ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Scrollbar>
 
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, appointments.length)}
-                />
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
-
-        <TablePagination
-          page={page}
-          component="div"
-          count={appointments.length}
-          rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+            <TablePagination
+              page={page}
+              component="div"
+              count={appointments.length}
+              rowsPerPage={rowsPerPage}
+              onPageChange={handleChangePage}
+              rowsPerPageOptions={[5, 10, 25]}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </>
+        )}
       </Card>
     </Container>
   );
