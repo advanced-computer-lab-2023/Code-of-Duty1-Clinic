@@ -252,9 +252,7 @@ export default function UserPage() {
               }
               value={filterValues.status || ''}
             />
-            <Button variant="contained" color="primary" onClick={handleApplyFilters}>
-              Apply Filters
-            </Button>
+            
           </Box>
         </Popover>
       </Stack>
