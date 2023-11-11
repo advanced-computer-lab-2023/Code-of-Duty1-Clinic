@@ -3,7 +3,20 @@ import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 import { HttpError } from '../utils';
 import { el } from '@faker-js/faker';
+const createAppointment = async (patientID: String, doctorID: String, body: any) => {
+  const doctor = await Doctor.findById(doctorID);
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
+  body.patientID = patientID;
+  body.doctorID = doctorID;
+  const newAppointment = await Appointment.create(body);
+
+  return {
+    status: StatusCodes.CREATED,
+    message: 'Appointment created successfully',
+    result: newAppointment
+  };
+};
 const getAppointments = async (query: any) => {
   if (query.startDate) query.startDate = { $gte: query.startDate };
   if (query.endDate) query.endDate = { $lte: query.endDate };
@@ -85,7 +98,7 @@ const filterAppointments = async (query: any) => {
       message: 'Appointments retrieved successfully',
       result: await Appointment.find({ doctorID: query.doctorID, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status }),
     };
-  } else if (query.role === 'patient' || query.role === 'Patient') { 
+  } else if (query.role === 'patient' || query.role === 'Patient') {
     return {
       status: StatusCodes.OK,
       message: 'Appointments retrieved successfully',
