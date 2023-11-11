@@ -49,14 +49,7 @@ export default function Router() {
     },
     {
       path: '*',
-<<<<<<< HEAD
-      element: <Navigate to="/404" replace />,
-    }, {
-      path: 'up',
-      element: <UploadFile url='http://localhost:3000/upload/patient/medicalHistory' />
-=======
       element: <Navigate to="/404" replace />
->>>>>>> main
     }
   ]);
 
