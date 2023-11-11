@@ -29,10 +29,11 @@ export default function UserPage() {
   const [orderBy, setOrderBy] = useState('doctorID');
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // State for filter values
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [status, setStatus] = useState('');
+  const [filterValues, setFilterValues] = useState({
+    startDate: null,
+    endDate: null,
+    status: '',
+  });
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -41,12 +42,14 @@ export default function UserPage() {
       try {
         let endpoint = '/me/appointments';
 
-        if (startDate || endDate || status) {
+        if (filterValues.startDate || filterValues.endDate || filterValues.status) {
           endpoint += '?s=filter';
 
-          if (startDate) endpoint += `&startDate=${new Date(startDate).toISOString()}`;
-          if (endDate) endpoint += `&endDate=${new Date(endDate).toISOString()}`;
-          if (status) endpoint += `&status=${status}`;
+          if (filterValues.startDate)
+            endpoint += `&startDate=${new Date(filterValues.startDate).toISOString()}`;
+          if (filterValues.endDate)
+            endpoint += `&endDate=${new Date(filterValues.endDate).toISOString()}`;
+          if (filterValues.status) endpoint += `&status=${filterValues.status}`;
         }
 
         const response = await axiosInstance.get(endpoint);
@@ -57,7 +60,7 @@ export default function UserPage() {
     };
 
     fetchAppointments();
-  }, [startDate, endDate, status]);
+  }, [filterValues]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -199,9 +202,22 @@ export default function UserPage() {
               InputLabelProps={{
                 shrink: true,
               }}
-              value={startDate || ''}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) =>
+                setFilterValues({ ...filterValues, startDate: e.target.value })
+              }
+              value={filterValues.startDate || ''}
             />
+            {filterValues.startDate && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                size="small"
+                onClick={() => setFilterValues({ ...filterValues, startDate: null })}
+                sx={{ mt: 1 }}
+              >
+                Clear Start Date
+              </Button>
+            )}
             <TextField
               id="endDate"
               label="End Date"
@@ -210,16 +226,31 @@ export default function UserPage() {
               InputLabelProps={{
                 shrink: true,
               }}
-              value={endDate || ''}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={(e) =>
+                setFilterValues({ ...filterValues, endDate: e.target.value })
+              }
+              value={filterValues.endDate || ''}
             />
+            {filterValues.endDate && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                size="small"
+                onClick={() => setFilterValues({ ...filterValues, endDate: null })}
+                sx={{ mt: 1 }}
+              >
+                Clear End Date
+              </Button>
+            )}
             <Autocomplete
               options={['Upcoming', 'Completed', 'Cancelled', 'Rescheduled']}
               renderInput={(params) => (
                 <TextField {...params} label="Status" fullWidth margin="normal" />
               )}
-              value={status}
-              onChange={(e, value) => setStatus(value)}
+              onChange={(e, value) =>
+                setFilterValues({ ...filterValues, status: value })
+              }
+              value={filterValues.status || ''}
             />
             <Button variant="contained" color="primary" onClick={handleApplyFilters}>
               Apply Filters
