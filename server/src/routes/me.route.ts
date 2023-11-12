@@ -10,9 +10,8 @@ import {
   addFamilyMember,
   getFamily,
   getHealthRecords,
-  getPastAppointments,
   filterAppointments,
-  getUpcomingAppointments,
+  getUpcoming_Past_Appointments,
   viewWallet
 } from '../services';
 
@@ -33,10 +32,10 @@ router.use(isAuthorized('Doctor', 'Patient'));
 // get my appointments
 router.get('/appointments', (req: Request, res: Response) => {
   if (req.query.s === 'Upcoming') {
-    controller(res)(getUpcomingAppointments)(req.decoded.id, req.decoded.role);
+    controller(res)(getUpcoming_Past_Appointments)(req.decoded.id, req.decoded.role,"Upcoming");
   }
   else if (req.query.s === 'Completed') {
-    controller(res)(getPastAppointments)(req.decoded.id, req.decoded.role)
+    controller(res)(getUpcoming_Past_Appointments)(req.decoded.id, req.decoded.role, "Completed");
   }
   else if (req.query.s === 'filter') {
     // user's id field depends on the role
