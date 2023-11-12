@@ -58,6 +58,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     return res.status(StatusCodes.OK).json({});
   }
   res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+
   next();
 });
 
