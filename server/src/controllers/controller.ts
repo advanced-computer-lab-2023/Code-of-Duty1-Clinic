@@ -7,8 +7,7 @@ const controller =
   async (...args: any[]) => {
     try {
       const result = await service(...args);
-      console.log(result +"------"
-  )
+      console.log(result + '------');
       if (result.token) {
         const token = result.token;
         return res
@@ -16,7 +15,7 @@ const controller =
             httpOnly: false,
             sameSite: false,
             secure: false,
-            maxAge: 1000 * 1000
+            maxAge: 1000 * 60 * 60 * 24
           })
           .status(result.status || StatusCodes.OK)
           .json(result);

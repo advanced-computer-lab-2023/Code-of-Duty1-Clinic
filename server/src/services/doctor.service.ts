@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
-import { User, Contract, Appointment, IPatient, IDoctor, Doctor,Request, Patient } from '../models';
+import { User, Contract, Appointment, IPatient, IDoctor, Doctor,Request } from '../models';
 
 const getMyPatients = async (query: any) => {
   const appointments = await Appointment.find(query).distinct('patientID').select('patientID').populate('patientID');
@@ -44,38 +44,38 @@ const getDoctors = async (query: any) => {
 
   return { result: doctors, status: StatusCodes.OK };
 };
-const getPath = (files: any) => { 
+const getPath = (files: any) => {
   let results = [];
-  for (let i = 0; i < files.length; i++) { 
+  for (let i = 0; i < files.length; i++) {
     const idx = files[i].path.indexOf('uploads');
     results.push(files[i].path.slice(idx));
   }
-return  results;
-
-}
+  return results;
+};
 const saveRegistrationFiles = (doctorID: string, files: any) => {
-
   const IDFiles = files.ID;
   const degreeFiles = files.medicalDegree;
   const licensesFields = files.medicalLicenses;
   let IDPath = getPath(IDFiles)[0];
   let degreePath: any[] = getPath(degreeFiles);
   let licensePath: any[] = getPath(licensesFields);
-  
-  const results = Request.findOneAndUpdate({ medicID: doctorID }, {
-    ID: IDPath,
-    $push: {
-      degree: { $each: degreePath },
-      licenses: { $each: licensePath }
+
+  const results = Request.findOneAndUpdate(
+    { medicID: doctorID },
+    {
+      ID: IDPath,
+      $push: {
+        degree: { $each: degreePath },
+        licenses: { $each: licensePath }
+      }
     }
-  });
+  );
   return {
     result: results,
     status: StatusCodes.OK,
-    message: "Registration Documents uploaded successfully"
-  }
-
-}
+    message: 'Registration Documents uploaded successfully'
+  };
+};
 
 const viewAvailableAppointments = async (doctorID: string) => {
   const doctor = await Doctor.findById(doctorID);
@@ -108,8 +108,9 @@ const viewAvailableAppointments = async (doctorID: string) => {
       const slotMinute = slot.from.minutes;
       const slotHourEnd = slot.to.hours;
       const slotMinuteEnd = slot.to.minutes;
-      let isSlotAvailable = true;
 
+      (availableAppointments as any)[day] = []; // Initialize the day as an array
+      let isSlotAvailable = true;
       for (const appointment of appointments) {
         const appointmentStartDate = appointment.startDate;
         const appointmentYear = appointmentStartDate.getUTCFullYear();
@@ -166,9 +167,6 @@ const viewAvailableAppointments = async (doctorID: string) => {
           _id: id
         };
 
-        if (!(availableAppointments as any)[day]) {
-          (availableAppointments as any)[day] = []; // Initialize the day as an array if it doesn't exist
-        }
         (availableAppointments as any)[day].push(slot);
       }
     }
@@ -181,29 +179,4 @@ const viewAvailableAppointments = async (doctorID: string) => {
   };
 };
 
-// View the amount in my wallet req 67 for patient and doctor
-const viewWallet = async (userId: string, role: string) => {
-  let user = null;
-  let userType = "";
-
-  if (role === 'patient' || role === 'Patient') {
-    user = await Patient.findById(userId);
-    userType = 'Patients';
-  } else if (role === 'doctor' || role === 'Doctor') {
-    user = await Doctor.findById(userId);
-    userType = 'Doctor';
-  }
-  if (!user) {
-    throw new HttpError(
-      StatusCodes.NOT_FOUND,
-      `${userType} not found`
-    );
-  }
-
-  return {
-    result: user.wallet,
-    status: StatusCodes.OK,
-    message: `Successfully retrieved ${userType}'s wallet`
-  };
-};
-export { getDoctors, getMyPatients, viewAvailableAppointments, saveRegistrationFiles , viewWallet};
+export { getDoctors, getMyPatients, viewAvailableAppointments, saveRegistrationFiles };
