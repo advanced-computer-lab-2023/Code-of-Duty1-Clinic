@@ -1,4 +1,4 @@
-import { Appointment } from '../models';
+import { Appointment, Doctor } from '../models';
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 import { HttpError } from '../utils';
@@ -18,4 +18,19 @@ const getAppointments = async (query: any) => {
   };
 };
 
-export { getAppointments };
+const createAppointment = async (patientID: String, doctorID: String, body: any) => {
+  const doctor = await Doctor.findById(doctorID);
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+
+  body.patientID = patientID;
+  body.doctorID = doctorID;
+  const newAppointment = await Appointment.create(body);
+
+  return {
+    status: StatusCodes.CREATED,
+    message: 'Appointment created successfully',
+    result: newAppointment
+  };
+};
+
+export { getAppointments, createAppointment };

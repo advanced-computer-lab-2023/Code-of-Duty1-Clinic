@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 import { fCurrency } from 'src/utils/format-number';
 
@@ -23,7 +25,7 @@ export default function ShopProductCard({ product }) {
         top: 16,
         right: 16,
         position: 'absolute',
-        textTransform: 'uppercase',
+        textTransform: 'uppercase'
       }}
     >
       {product.status}
@@ -40,7 +42,7 @@ export default function ShopProductCard({ product }) {
         width: 1,
         height: 1,
         objectFit: 'cover',
-        position: 'absolute',
+        position: 'absolute'
       }}
     />
   );
@@ -52,7 +54,7 @@ export default function ShopProductCard({ product }) {
         variant="body1"
         sx={{
           color: 'text.disabled',
-          textDecoration: 'line-through',
+          textDecoration: 'line-through'
         }}
       >
         {product.priceSale && fCurrency(product.priceSale)}
@@ -85,5 +87,5 @@ export default function ShopProductCard({ product }) {
 }
 
 ShopProductCard.propTypes = {
-  product: PropTypes.object,
+  product: PropTypes.object
 };

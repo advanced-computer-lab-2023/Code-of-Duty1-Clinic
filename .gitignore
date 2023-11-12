@@ -131,3 +131,5 @@ dist
 #build 
 build/
 server/src/uploads
+*.lock
+client/yarn.lock

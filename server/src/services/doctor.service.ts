@@ -1,6 +1,7 @@
+const { v4: uuidv4 } = require('uuid');
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
-import { User, Contract, Appointment, IPatient, IDoctor, Doctor } from '../models';
+import { User, Contract, Appointment, IPatient, IDoctor, Doctor, Request } from '../models';
 
 const getMyPatients = async (query: any) => {
   const appointments = await Appointment.find(query).distinct('patientID').select('patientID').populate('patientID');
@@ -43,5 +44,139 @@ const getDoctors = async (query: any) => {
 
   return { result: doctors, status: StatusCodes.OK };
 };
+const getPath = (files: any) => {
+  let results = [];
+  for (let i = 0; i < files.length; i++) {
+    const idx = files[i].path.indexOf('uploads');
+    results.push(files[i].path.slice(idx));
+  }
+  return results;
+};
+const saveRegistrationFiles = (doctorID: string, files: any) => {
+  const IDFiles = files.ID;
+  const degreeFiles = files.medicalDegree;
+  const licensesFields = files.medicalLicenses;
+  let IDPath = getPath(IDFiles)[0];
+  let degreePath: any[] = getPath(degreeFiles);
+  let licensePath: any[] = getPath(licensesFields);
 
-export { getDoctors, getMyPatients };
+  const results = Request.findOneAndUpdate(
+    { medicID: doctorID },
+    {
+      ID: IDPath,
+      $push: {
+        degree: { $each: degreePath },
+        licenses: { $each: licensePath }
+      }
+    }
+  );
+  return {
+    result: results,
+    status: StatusCodes.OK,
+    message: 'Registration Documents uploaded successfully'
+  };
+};
+
+const viewAvailableAppointments = async (doctorID: string) => {
+  const doctor = await Doctor.findById(doctorID);
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+
+  const weeklySlots = doctor.weeklySlots;
+  if (!weeklySlots) throw new HttpError(StatusCodes.NOT_FOUND, 'No available appointments for this doctor');
+
+  let availableAppointments = {};
+
+  const thisDay = new Date();
+  const currentYear = thisDay.getUTCFullYear();
+  const currentMonth = thisDay.getUTCMonth();
+  const currentDate = thisDay.getUTCDate();
+  const currentDay = thisDay.getUTCDay();
+  const lastDay = currentDay + 6;
+
+  // Get all doctor's appointments
+  const appointments = await Appointment.find({
+    doctorID: doctorID
+  });
+
+  for (let i = currentDay; i <= lastDay; i++) {
+    const dayOfWeek = i % 7;
+    const day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
+    const dailySlots = weeklySlots[day as keyof typeof weeklySlots];
+
+    for (const slot of dailySlots) {
+      const slotHour = slot.from.hours;
+      const slotMinute = slot.from.minutes;
+      const slotHourEnd = slot.to.hours;
+      const slotMinuteEnd = slot.to.minutes;
+
+      (availableAppointments as any)[day] = []; // Initialize the day as an array
+      let isSlotAvailable = true;
+      for (const appointment of appointments) {
+        const appointmentStartDate = appointment.startDate;
+        const appointmentYear = appointmentStartDate.getUTCFullYear();
+        const appointmentMonth = appointmentStartDate.getUTCMonth();
+        const appointmentDate = appointmentStartDate.getUTCDate();
+        const appointmentDay = appointmentStartDate.getUTCDay();
+        const appointmentHour = appointmentStartDate.getUTCHours();
+        const appointmentMinute = appointmentStartDate.getUTCMinutes();
+
+        if (
+          appointmentYear === currentYear &&
+          appointmentMonth === currentMonth &&
+          appointmentDate >= currentDate &&
+          appointmentDate <= currentDate + 6 &&
+          appointmentDay % 7 === dayOfWeek &&
+          slotHour === appointmentHour &&
+          slotMinute === appointmentMinute
+        ) {
+          isSlotAvailable = false;
+          break;
+        }
+      }
+
+      if (isSlotAvailable) {
+        const startDate = new Date(
+          currentYear,
+          currentMonth,
+          currentDate + i - currentDay,
+          slotHour + 2,
+          slotMinute,
+          0,
+          0
+        );
+        const endDate = new Date(
+          currentYear,
+          currentMonth,
+          currentDate + i - currentDay,
+          slotHourEnd + 2,
+          slotMinuteEnd,
+          0,
+          0
+        );
+
+        const price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute) / 60));
+
+        const id = uuidv4();
+
+        const slot = {
+          status: 'Upcoming',
+          sessionPrice: price,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          isFollowUp: false,
+          _id: id
+        };
+
+        (availableAppointments as any)[day].push(slot);
+      }
+    }
+  }
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Available Appointments retrieved successfully',
+    result: availableAppointments
+  };
+};
+
+export { getDoctors, getMyPatients, viewAvailableAppointments, saveRegistrationFiles };

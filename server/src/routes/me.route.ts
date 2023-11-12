@@ -67,9 +67,10 @@ router.get('/prescriptions', (req: Request, res: Response) => {
   controller(res)(getPrescriptions)(req.query);
 });
 
-router.get('/medicalhistory', (req: Request, res: Response) => {
-  // controller(res)()();
+router.get('/medicalhistory', isAuthorized('Patient'), (req: Request, res: Response) => {
+  controller(res)(getHealthRecords)(req.decoded.id);
 });
+
 router.post('/medicalhistory', (req: Request, res: Response) => {
   // controller(res)()();
 });

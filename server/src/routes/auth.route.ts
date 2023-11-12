@@ -6,8 +6,8 @@ import { login, register, logout, changePassword, resetPassword, forgotPassword,
 
 const router = express.Router();
 
-router.post('/register', (req: Request, res: Response) => {
-  controller(res)(register)(req.body);
+router.post('/register' ,(req: Request, res: Response) => {
+  controller(res)(register)(req.body,req.files);
 });
 
 router.post('/login', (req: Request, res: Response) => {
