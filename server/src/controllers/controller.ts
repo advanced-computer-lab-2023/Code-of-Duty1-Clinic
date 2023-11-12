@@ -11,7 +11,6 @@ const controller =
   )
       if (result.token) {
         const token = result.token;
-        console.log(token);
         return res
           .cookie('token', token, {
             httpOnly: false,
