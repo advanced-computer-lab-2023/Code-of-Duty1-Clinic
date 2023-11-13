@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Outlet, Navigate, useRoutes } from 'react-router-dom';
+import { Outlet, Navigate, useRoutes, useParams } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
@@ -9,6 +9,7 @@ export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const DoctorsPage = lazy(() => import('src/pages/doctors'));
+export const PatientsPage = lazy(() => import('src/pages/patients'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
@@ -34,7 +35,8 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'doctors', element: <DoctorsPage /> },
-        { path: 'health-record', element: <HealthRecordPage /> },
+        { path: 'patients', element: <PatientsPage /> },
+        { path: 'health-record/:patientID', element: <HealthRecordPage /> },
       ],
     },
     {

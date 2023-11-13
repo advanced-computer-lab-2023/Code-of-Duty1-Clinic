@@ -8,7 +8,8 @@ import Button from '@mui/material/Button';
 import HealthRecordSummary from './health-record-summary';
 import { axiosInstance } from '../../utils/axiosInstance';
 
-export default function HealthRecordView() {
+export default function HealthRecordView({ patientID }) {
+  console.log(patientID);
   const [healthRecords, setHealthRecords] = useState([]);
   const [newName, setNewName] = useState('');
   const [newRecord, setNewRecord] = useState('');
@@ -16,7 +17,7 @@ export default function HealthRecordView() {
   useEffect(() => {
     const fetchHealthRecords = async () => {
       try {
-        const res = await axiosInstance.get(`/patients/6548e928d2f717cbd465119a/medicalhistory`);
+        const res = await axiosInstance.get(`/patients/${patientID}/medicalhistory`);
         setHealthRecords(res.data.result);
       } catch (err) {
         console.log(err);
@@ -27,7 +28,7 @@ export default function HealthRecordView() {
 
   const handleSubmit = async () => {
     try {
-      await axiosInstance.post('/patients/6548e928d2f717cbd465119a/medicalhistory', {
+      await axiosInstance.post(`/patients/${patientID}/medicalhistory`, {
         name: newName,
         medicalRecord: newRecord,
       });
