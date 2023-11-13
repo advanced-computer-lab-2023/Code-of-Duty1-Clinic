@@ -12,6 +12,7 @@ export const DoctorsPage = lazy(() => import('src/pages/doctors'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
+export const HealthRecordPage = lazy(() => import('src/pages/health-record'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -19,10 +20,10 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export default function Router() {
   const routes = useRoutes([
     {
-      path: "",
+      path: '',
       element: (
         <DashboardLayout>
-          <Suspense fallback={<div>Loading...</div>} >
+          <Suspense fallback={<div>Loading...</div>}>
             <Outlet />
           </Suspense>
         </DashboardLayout>
@@ -32,25 +33,26 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
-        { path: 'doctors', element: <DoctorsPage /> }
-      ]
+        { path: 'doctors', element: <DoctorsPage /> },
+        { path: 'health-record', element: <HealthRecordPage /> },
+      ],
     },
     {
       path: 'login',
-      element: <LoginPage />
+      element: <LoginPage />,
     },
     {
       path: 'register',
-      element: <RegisterPage />
+      element: <RegisterPage />,
     },
     {
       path: '404',
-      element: <Page404 />
+      element: <Page404 />,
     },
     {
       path: '*',
-      element: <Navigate to="/404" replace />
-    }
+      element: <Navigate to="/404" replace />,
+    },
   ]);
 
   return routes;
