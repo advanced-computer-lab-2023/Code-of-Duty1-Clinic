@@ -3,7 +3,7 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
-import UploadFile from 'src/sections/upload/Upload';
+import { RegistrationUpload, UploadView } from 'src/sections/upload';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -46,6 +46,9 @@ export default function Router() {
     {
       path: '404',
       element: <Page404 />
+    }, {
+      path: '/upload-document',
+      element: <UploadView />
     },
     {
       path: '*',

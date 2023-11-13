@@ -111,12 +111,14 @@ const getMedicalHistory = async (patientID: String) => {
 
 }
 const resolveURL = (url: string) => { 
+  console.log(url, "-----------");
   const parentURL = path.dirname(__dirname);
   url = path.join(parentURL, url!);
   return url;
 }
 const getMedicalHistoryURL = async (body: any) => {
   let result = await Patient.findOne({ _id: body._id }).select("medicalHistory").lean();
+  console.log(body,"++++++***-+-+-+-*****--*-*-*-*-")
   if (!result)
     throw new HttpError(StatusCodes.NOT_FOUND, "not found");
   let records = result!["medicalHistory"];
@@ -132,14 +134,14 @@ const getMedicalHistoryURL = async (body: any) => {
   return resolveURL(url!);
   
 }
-const saveMedicalHistory = async (patientID:string,files:Express.Multer.File[]) => { 
+const saveMedicalHistory = async (patientID:string,files:Express.Multer.File[],fileName?:string) => { 
 
   let insertedRecords = [];
   for (let i = 0; i < files.length; i++) {
     const idx = files[i].path.indexOf("uploads");
     const filePath = files[i].path.slice(idx);
       // path.join("..",);
-    const name = files[i].filename;
+    const name = fileName || files[i].filename;
      const medicalHistory = {
       name,
       medicalRecord: filePath, 

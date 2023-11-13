@@ -6,7 +6,7 @@ export * from './patient.service';
 export * from './prescription.service';
 export * from './user.service';
 export * from './admin.service';
-// export * from './request.service';
+export * from './request.service';
 // export * from './contract.service';
 // export * from './notification.service';
 // export * from './chatroom.service';

@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import { axiosInstance } from '../../utils/axiosInstance';
 import Label from 'src/components/label';
 
-function Upload({ url, field, handleUploadSuccess }) {
+function Upload({ url, field, handleUploadSuccess, fileName }) {
     const [files, setFiles] = useState([]);
     const [feedback, setFeedback] = useState("");
     const [isFileChanged, setIsFileChanged] = useState(false);
@@ -68,6 +68,7 @@ function Upload({ url, field, handleUploadSuccess }) {
         }
 
         try {
+            formData.append("fileName", fileName);
             const res = await axiosInstance.post(url, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",

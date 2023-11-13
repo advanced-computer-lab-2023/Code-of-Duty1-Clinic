@@ -39,6 +39,10 @@ const navConfig = [
     title: 'Doctors',
     path: '/doctors',
     icon: icon('ic_user')
+  }, {
+    title: 'Upload Documents',
+    path: '/upload-document',
+    icon: icon('ic_disabled')
   },
   {
     title: 'Not found',
