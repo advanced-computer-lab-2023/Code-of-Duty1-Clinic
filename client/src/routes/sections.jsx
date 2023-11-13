@@ -37,6 +37,7 @@ export default function Router() {
         { path: 'doctors', element: <DoctorsPage /> },
         { path: 'patients', element: <PatientsPage /> },
         { path: 'health-record/:patientID', element: <HealthRecordPage /> },
+        { path: 'health-record', element: <HealthRecordPage /> },
       ],
     },
     {

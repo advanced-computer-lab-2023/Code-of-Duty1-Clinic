@@ -5,8 +5,10 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-import HealthRecordSummary from './health-record-summary';
+import { useUserContext } from 'src/contexts/userContext';
 import { axiosInstance } from '../../utils/axiosInstance';
+
+import HealthRecordSummary from './health-record-summary';
 
 export default function HealthRecordView({ patientID }) {
   console.log(patientID);
@@ -14,10 +16,21 @@ export default function HealthRecordView({ patientID }) {
   const [newName, setNewName] = useState('');
   const [newRecord, setNewRecord] = useState('');
 
+  // const {
+  //   user: { role },
+  // } = useUserContext();
+  const user = localStorage.getItem('userRole');
+  console.log(user);
+
   useEffect(() => {
     const fetchHealthRecords = async () => {
       try {
-        const res = await axiosInstance.get(`/patients/${patientID}/medicalhistory`);
+        let res;
+        if (user === 'Doctor') {
+          res = await axiosInstance.get(`/patients/${patientID}/medicalhistory`);
+        } else {
+          res = await axiosInstance.get(`/me/medicalhistory`);
+        }
         setHealthRecords(res.data.result);
       } catch (err) {
         console.log(err);
@@ -56,29 +69,33 @@ export default function HealthRecordView({ patientID }) {
         ))}
       </Grid>
 
-      <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
-        Add New Health Record
-      </Typography>
+      {user === 'Doctor' && (
+        <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
+          Add New Health Record
+        </Typography>
+      )}
 
-      <div>
-        <TextField
-          label="Name"
-          value={newName}
-          onChange={(event) => setNewName(event.target.value)}
-          sx={{ mb: 2 }}
-        />
-        <br />
-        <TextField
-          label="Health Record"
-          value={newRecord}
-          onChange={(event) => setNewRecord(event.target.value)}
-          sx={{ mb: 2 }}
-        />
-        <br />
-        <Button variant="contained" onClick={handleSubmit}>
-          Add
-        </Button>
-      </div>
+      {user === 'Doctor' && (
+        <div>
+          <TextField
+            label="Name"
+            value={newName}
+            onChange={(event) => setNewName(event.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <br />
+          <TextField
+            label="Health Record"
+            value={newRecord}
+            onChange={(event) => setNewRecord(event.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <br />
+          <Button variant="contained" onClick={handleSubmit}>
+            Add
+          </Button>
+        </div>
+      )}
     </Container>
   );
 }
