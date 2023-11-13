@@ -63,6 +63,7 @@
     "import/prefer-default-export": 0,
     "react/function-component-definition": 0,
     "jsx-a11y/control-has-associated-label": 0,
+    "import/no-unresolved": 0,
     "react/jsx-no-useless-fragment": [
       1,
       {

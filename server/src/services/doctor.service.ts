@@ -60,6 +60,7 @@ const acceptContract = async (id : String) => {
 
   if (contract.result.length > 0 && contract.result[0].status === "Pending") {
     const doctor: any = await Doctor.findOne({_id: id})
+    console.log(doctor);
     doctor.isContractAccepted = true;
     await doctor.save();
     contract.result[0].status = "Accepted";
@@ -70,13 +71,6 @@ const acceptContract = async (id : String) => {
       message: 'Contract Accepted successfully',
       result: doctor
     };
-
-  } else {
-    return {
-      status: StatusCodes.OK,
-      message: 'Contract is already Assigned or there is no contarct for this doctor',
-      result: ''
-    };
   }
 };
 
@@ -84,23 +78,37 @@ const addSlots = async (doctorID: string, newSlots: any) => {
   const doctor: any = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
-  const request = await Request.findOne({medicID : doctor._id});
+  const request = await Request.findOne({ medicID: doctor._id });
   if (request?.status !== "Approved") throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor not approved yet');
 
-  if (doctor.isContractAccepted != true) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no Contract');
+  if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no Contract');
 
-  const validDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const validDays = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   if (!validDays.includes(newSlots.day)) throw new HttpError(StatusCodes.BAD_REQUEST, 'Invalid day');
+
+  const incomingSlotStart = newSlots.slots[0].from.hours * 60 + newSlots.slots[0].from.minutes;
+  const incomingSlotEnd = newSlots.slots[0].to.hours * 60 + newSlots.slots[0].to.minutes;
+
+  const daySlots = doctor.weeklySlots[newSlots.day] || [];
+  for (const slot of daySlots) {
+    const slotStart = slot.from.hours * 60 + slot.from.minutes;
+    const slotEnd = slot.to.hours * 60 + slot.to.minutes;
+
+    if ((incomingSlotStart < slotEnd && incomingSlotEnd > slotStart)) {
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'Time slot conflict detected');
+    }
+  }
 
   doctor.weeklySlots[newSlots.day].push(...newSlots.slots);
   await doctor.save();
 
   return {
     status: StatusCodes.OK,
-    message: 'Time slots added successfully',
+    message: 'Time slot added successfully',
     result: doctor.weeklySlots
   };
 };
+
 
 const scheduleFollowUp = async (doctorID: String, appointmentDetails: any) => {
    const doctor: any = await Doctor.findOne({_id: doctorID})
