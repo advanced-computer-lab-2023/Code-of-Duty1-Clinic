@@ -2,16 +2,29 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
 
-export default function DoctorDaySlots({ day, slots }) {
+import { axiosInstance } from '../../utils/axiosInstance';
+
+export default function DoctorDaySlots({ day, slots, doctorID }) {
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const today = new Date();
+  const today = daysOfWeek[new Date().getDay()];
 
-  if (today.getDay() == day) day = 'Today';
-  else if (today.getDay() + 1 == day) day = 'Tomorrow';
-  else day = daysOfWeek[day];
+  if (today == day) day = 'Today';
 
-  if (!slots) return null;
+  const reserveSlot = (slot) => {
+    axiosInstance
+      .post(`/doctors/${doctorID}/appointments`, {
+        startDate: slot.startDate,
+        endDate: slot.endDate,
+        sessionPrice: slot.sessionPrice
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <Box sx={{ border: 1, borderColor: 'primary.main' }}>
@@ -21,19 +34,22 @@ export default function DoctorDaySlots({ day, slots }) {
       <Divider sx={{ border: 1, borderColor: 'primary.gray' }}></Divider>
 
       <Stack alignItems="center" justifyContent="center" sx={{}}>
-        {/* {slots.map((slot) => {
-          const from = `${slot.from.getHours()}: ${slot.from.getMinutes()}`;
-          const to = `${slot.to.getHours()}: ${slot.to.getMinutes()}`;
+        {slots.map((slot) => {
+          const startDate = new Date(slot.startDate);
+          const endDate = new Date(slot.endDate);
+
+          const from = `${startDate.getHours()}: ${startDate.getMinutes()}`;
+          const to = `${endDate.getHours()}: ${endDate.getMinutes()}`;
 
           return (
-            <> */}
-        <Typography variant="h6" sx={{ m: 1 }}>
-          {`hbk`}
-        </Typography>
-        <Divider></Divider>
-        {/* </>
+            <Stack>
+              <Button onClick={() => reserveSlot(slot)} color="inherit" underline="hover" variant="subtitle2">
+                {from} - {to}
+              </Button>
+              <Divider></Divider>
+            </Stack>
           );
-        })} */}
+        })}
       </Stack>
     </Box>
   );

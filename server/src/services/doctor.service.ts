@@ -103,13 +103,13 @@ const viewAvailableAppointments = async (doctorID: string) => {
     const day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
     const dailySlots = weeklySlots[day as keyof typeof weeklySlots];
 
+    (availableAppointments as any)[day] = []; // Initialize the day as an array
     for (const slot of dailySlots) {
       const slotHour = slot.from.hours;
       const slotMinute = slot.from.minutes;
       const slotHourEnd = slot.to.hours;
       const slotMinuteEnd = slot.to.minutes;
 
-      (availableAppointments as any)[day] = []; // Initialize the day as an array
       let isSlotAvailable = true;
       for (const appointment of appointments) {
         const appointmentStartDate = appointment.startDate;

@@ -14,9 +14,10 @@ import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
+import { axiosInstance } from '../../utils/axiosInstance';
+import { useUserContext } from 'src/contexts/userContext';
 
 import { bgGradient } from 'src/theme/css';
-import { axiosInstance } from '../../utils/axiosInstance';
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
@@ -41,12 +42,17 @@ export default function LoginView() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const { setUser } = useUserContext();
+
   const onSubmit = async (body) => {
     setLoading(true);
     try {
       const res = await axiosInstance.post('/auth/login', body);
 
       if (res.status == 200) {
+        const user = res.data.user;
+        setUser({ name: user.name, role: user.role });
+
         router.push(destination);
       } else {
         setError(res.data.message);

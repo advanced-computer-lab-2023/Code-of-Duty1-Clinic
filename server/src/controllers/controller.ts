@@ -7,18 +7,15 @@ const controller =
   async (...args: any[]) => {
     try {
       const result = await service(...args);
-      console.log(result + '------');
       if (result.token) {
         const token = result.token;
-        return res
-          .cookie('token', token, {
-            httpOnly: false,
-            sameSite: false,
-            secure: false,
-            maxAge: 1000 * 60 * 60 * 24
-          })
-          .status(result.status || StatusCodes.OK)
-          .json(result);
+        res.cookie('token', token, {
+          httpOnly: false,
+          sameSite: false,
+          secure: false,
+          maxAge: 1000 * 60 * 60 * 24
+        });
+
         delete result.token;
       }
 
