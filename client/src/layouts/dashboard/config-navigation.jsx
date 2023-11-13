@@ -43,6 +43,10 @@ const navConfig = [
     title: 'Upload Documents',
     path: '/upload-document',
     icon: icon('ic_disabled')
+  }, {
+    title: 'Medical History',
+    path: '/medical-history',
+    icon: icon('ic_disabled')
   },
   {
     title: 'Not found',

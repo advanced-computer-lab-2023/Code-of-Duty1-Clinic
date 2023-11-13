@@ -43,6 +43,7 @@ function Upload({ url, field, handleUploadSuccess, fileName }) {
         console.log(selectedFiles);
         setFiles(selectedFiles);
         setIsFileChanged(true);
+        setFeedback("");
     };
 
 

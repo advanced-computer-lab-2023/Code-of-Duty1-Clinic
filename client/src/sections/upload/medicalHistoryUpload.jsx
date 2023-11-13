@@ -1,19 +1,13 @@
 import React, { Suspense, useState } from 'react';
 import Button from '@mui/material/Button';
-import Upload from "./Upload";
-import Label from "src/components/label";
 import TextField from '@mui/material/TextField';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Upload from './Upload';
+import Label from 'src/components/label';
 
 const modalStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-};
-
-const modalContentStyle = {
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -33,7 +27,6 @@ const closeButtonStyle = {
     cursor: 'pointer',
 };
 
-
 const MedicalHistoryUploadComponent = ({ onClose }) => {
     const [isUploaded, setIsUploaded] = useState([0, 0, 0]);
     const [fileName, setFileName] = useState('');
@@ -51,43 +44,31 @@ const MedicalHistoryUploadComponent = ({ onClose }) => {
         setFileName(event.target.value);
     };
 
-    const style = { fontSize: '16px' };
-
     return (
-        <div style={{ width: '100%' }}>
-            <Label style={style}>Medical History</Label>
+        <Box sx={{ width: '100%' }}>
+            <Label sx={{ fontSize: '16px' }}>Medical History</Label>
             <TextField
                 label="File Name"
                 variant="outlined"
                 value={fileName}
                 onChange={handleFileNameChange}
-                style={{ marginBottom: '10px' }}
+                sx={{ marginBottom: '10px', width: '100%' }}
             />
             <Upload
                 url={url}
                 labelName="Medical History"
                 field="medicalHistory"
-                fileName={fileName} // Pass the file name to the Upload component
+                fileName={fileName}
                 handleUploadSuccess={handleUploadSuccess}
             />
-            <Button style={{ fontSize: '16px', padding: '10px', cursor: 'pointer' }} onClick={onClose}>
+            <Button
+                variant="contained"
+                sx={{ fontSize: '16px', padding: '10px', cursor: 'pointer', marginTop: '10px' }}
+                onClick={onClose}
+            >
                 Close
             </Button>
-        </div>
-    );
-};
-
-const Modal = ({ isOpen, onClose, children }) => {
-    if (!isOpen) {
-        return null;
-    }
-
-    return (
-        <div style={modalStyle}>
-            <div style={modalContentStyle}>
-                {children}
-            </div>
-        </div>
+        </Box>
     );
 };
 
@@ -95,25 +76,30 @@ const MedicalHistoryUpload = () => {
     const [isModalOpen, setModalOpen] = useState(false);
 
     const openModal = () => {
-        setTimeout(() => {
-            setModalOpen(true);
-        }, 50);
+        setModalOpen(true);
     };
 
     const closeModal = () => {
-        setTimeout(() => {
-            setModalOpen(false);
-        }, 50);
+        setModalOpen(false);
     };
 
     return (
-        <Suspense fallback={<div>Loading...</div>} >
+        <Suspense fallback={<div>Loading...</div>}>
             <div>
-                <Button style={{ fontSize: '16px', padding: '10px', cursor: 'pointer' }} variant="contained" onClick={openModal}>
+                <Button
+                    variant="contained"
+                    sx={{ fontSize: '16px', padding: '10px', cursor: 'pointer', marginTop: '20px' }}
+                    onClick={openModal}
+                >
                     Upload to Medical History
                 </Button>
-                <Modal isOpen={isModalOpen} onClose={closeModal}>
-                    <MedicalHistoryUploadComponent onClose={closeModal} />
+                <Modal open={isModalOpen} onClose={closeModal}>
+                    <Box sx={modalStyle}>
+                        <Typography variant="h6" sx={{ marginBottom: '20px' }}>
+                            Medical History Upload
+                        </Typography>
+                        <MedicalHistoryUploadComponent onClose={closeModal} />
+                    </Box>
                 </Modal>
             </div>
         </Suspense>

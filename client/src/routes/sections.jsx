@@ -13,7 +13,9 @@ export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
 
+export const MedicalHistoryPage = lazy(() => import('src/pages/medical-history'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -32,7 +34,14 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
-        { path: 'doctors', element: <DoctorsPage /> }
+        { path: 'doctors', element: <DoctorsPage /> },
+        {
+          path: '/upload-document',
+          element: <DoctorDocumentUploadPage />
+        }, {
+          path: '/medical-history',
+          element: <MedicalHistoryPage />
+        }
       ]
     },
     {
@@ -46,9 +55,6 @@ export default function Router() {
     {
       path: '404',
       element: <Page404 />
-    }, {
-      path: '/upload-document',
-      element: <UploadView />
     },
     {
       path: '*',

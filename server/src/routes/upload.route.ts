@@ -32,7 +32,7 @@ uploadRouter.post("/patient/medicalHistory", medicalHistoryUpload.array("medical
 
 
 //-------------------------------------------------------------------------------------------------------------------
-uploadRouter.use(isAuthorized("doctor"));
+uploadRouter.use(isAuthorized("Doctor"));
 uploadRouter.post("/doctor/registration", registrationUpload.fields(allowedRegistrationFields as any[]),(req, res) => {
     controller(res)(saveRegistrationFiles)(req.decoded.id, req.files);
 });

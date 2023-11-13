@@ -3,22 +3,17 @@ import PDFViewer from './viewPDF';
 import ImageViewer from './viewImage.jsx';
 import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { axiosInstance } from '../../utils/axiosInstance';
-import Snackbar from '@mui/material/Snackbar';
 
 const AdditionalContent = ({ ContentInfo, name }) => {
+    const url = `http://localhost:3000/upload/patient/medicalHistory/${name}`;
     let comp = <p>{ContentInfo.url}</p>;
-    // let urlParts = String(ContentInfo.url).replace(/\\/g, '/').split('/');
-    let url = `http://localhost:3000/upload/patient/medicalHistory/` + name;
-    url = String(url).replace(/\\/g, '/');
-    if (String(ContentInfo.ext) === 'pdf') {
-        comp = <PDFViewer pdfURL={url} />;
-    } else if (['jpg', 'jpeg', 'png'].includes(String(ContentInfo.ext).toLowerCase())) {
-        comp = <ImageViewer url={url} />;
+
+    if (['pdf', 'jpg', 'jpeg', 'png'].includes(String(ContentInfo.ext).toLowerCase())) {
+        comp = ContentInfo.ext === 'pdf' ? <PDFViewer pdfURL={url} /> : <ImageViewer url={url} />;
     }
 
     return (
@@ -41,7 +36,7 @@ const Row = ({ text, ContentInfo, onDelete }) => {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '10px',
-        backgroundColor: isExpanded ? '#e0f7fa' : isHovered ? '#e0f7fa' : 'transparent',
+        backgroundColor: isExpanded || isHovered ? '#e0f7fa' : 'transparent',
         transition: 'background-color 0.3s',
         cursor: 'pointer',
         border: '1px solid #b2ebf2',
@@ -73,57 +68,56 @@ const Row = ({ text, ContentInfo, onDelete }) => {
 
 const RecordsList = () => {
     const [rows, setRows] = useState([]);
-    const [isOpen, setIsOpen] = React.useState(false);
+
     useEffect(() => {
         const fetchData = async () => {
-            const data = await generateRows();
-            setRows(data);
+            try {
+                const data = await generateRows();
+                setRows(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         };
 
         fetchData();
     }, []);
 
     const handleDelete = async (text) => {
-        const res = await axiosInstance.delete('upload/patient/medicalHistory/' + text);
-        if (res.status != 200) { return; }
-        const temp = rows.filter((row) => row.text != text);
-        setRows(temp);
-        console.log(`Delete row with text: ${text}`);
+        try {
+            const res = await axiosInstance.delete(`upload/patient/medicalHistory/${text}`);
+            if (res.status === 200) {
+                const temp = rows.filter((row) => row.text !== text);
+                setRows(temp);
+                console.log(`Deleted row with text: ${text}`);
+            }
+        } catch (error) {
+            console.error('Error deleting row:', error);
+        }
     };
 
     async function generateRows() {
-        const rows = [];
         const res = await axiosInstance.get('upload/patient/medicalHistory/');
-
         const data = res.data.result;
-        console.log(data + "-------")
 
-        for (let i = 0; i < data.length; i++) {
-            console.log(data[i].medicalRecord)
-            let url, ext;
-            if (data[i].medicalRecord) {
-                url = data[i].medicalRecord.split('.');
-                ext = url.length > 0 ? url[url.length - 1] : undefined;
-            }
-            rows.push({
-                text: data[i].name,
+        return data.map((item) => {
+            const urlParts = item.medicalRecord?.split('.');
+            const ext = urlParts?.length > 0 ? urlParts[urlParts.length - 1].toLowerCase() : undefined;
+
+            return {
+                text: item.name,
                 additionalContent: {
-                    url: data[i].medicalRecord,
+                    url: item.medicalRecord,
                     ext: ext,
                 },
-            });
-        }
-
-        return rows;
+            };
+        });
     }
-
 
     return (
         <div style={{ border: '1px solid #ccc', padding: '10px' }}>
             {rows.map((row, index) => (
                 <Row key={index} text={row.text} ContentInfo={row.additionalContent} onDelete={handleDelete} />
             ))}
-
         </div>
     );
 };
