@@ -1,16 +1,27 @@
+import axios from 'axios';
 const SubscriptionCard = (Package) => {
     const [subscribed, setSubscribed] = useState(false);
   
     const handleSubscription = () => {
-      // Implement your subscription logic here
+      
       if (subscribed) {
-        // Additional functionality for managing subscription
+        // Additional functionality for managing subscription e.g. UNsubscribe
         console.log('Manage Subscription logic');
       } else {
-        // Logic for initial subscription
+        axios.post('http://localhost:3000/payment/session/${Package.price}/${Package.name}', {})
+          .then(response => {
+            // Handle the success response
+            window.location.href = response.url;
+            setSubscribed(true);
+            console.log('Subscribe logic - Axios success:', response.data);
+          })
+          .catch(error => {
+            // Handle errors
+            console.error('Subscribe logic - Axios error:', error);
+          });
         console.log('Subscribe logic');
       }
-      setSubscribed(!subscribed);
+      //setSubscribed(!subscribed);
     };
   
     return (

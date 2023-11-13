@@ -35,13 +35,9 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'doctors', element: <DoctorsPage /> },
-<<<<<<< Updated upstream
+        { path: 'patients', element: <PatientsPage /> },
         { path: 'health-record', element: <HealthRecordPage /> },
       ],
-=======
-        { path: 'patients', element: <PatientsPage /> }
-      ]
->>>>>>> Stashed changes
     },
     {
       path: 'login',
