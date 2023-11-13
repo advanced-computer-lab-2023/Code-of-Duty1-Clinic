@@ -16,7 +16,7 @@ import {
   packageRouter,
   chatroomRouter,
   paymentRouter,
-    uploadRouter
+  uploadRouter,
 } from './routes';
 import { StatusCodes } from 'http-status-codes';
 
