@@ -100,6 +100,11 @@ const addSlots = async (doctorID: string, newSlots: any) => {
   }
 
   doctor.weeklySlots[newSlots.day].push(...newSlots.slots);
+
+  doctor.weeklySlots[newSlots.day].sort((a : any, b : any) => {
+    return (a.from.hours * 60 + a.from.minutes) - (b.from.hours * 60 + b.from.minutes);
+  });
+
   await doctor.save();
 
   return {
