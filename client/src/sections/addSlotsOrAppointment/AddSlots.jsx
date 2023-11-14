@@ -9,6 +9,7 @@ const AddSlotsForm = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [open, setOpen] = useState(false);
+  
 
   const onSubmit = async (data) => {
 
@@ -39,7 +40,7 @@ const AddSlotsForm = () => {
         setMessage(response.data.message || 'An error occurred');
       }
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Failed to add slots');
+      setMessage(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
       setOpen(true);

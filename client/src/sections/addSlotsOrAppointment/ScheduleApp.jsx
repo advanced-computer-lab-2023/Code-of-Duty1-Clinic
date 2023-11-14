@@ -26,7 +26,7 @@ const ScheduleFollowUpForm = () => {
         setMessage(response.data.message || 'An error occurred');
       }
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Failed to schedule appointment');
+      setMessage(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
       setOpen(true);

@@ -9,6 +9,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { axiosInstance } from '../../utils/axiosInstance';
 
@@ -17,9 +20,23 @@ const DoctorContract = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
+
   useEffect(() => {
     fetchContracts();
   }, []);
+
+  useEffect(() => {
+    if (error) {
+      setMessage(error.response?.data?.message || error.message);
+      setOpen(true);
+    }
+    else if (loading) {
+      setMessage('Loading...');
+      setOpen(true);
+    }
+  }, [loading, error]);
 
   const fetchContracts = () => {
     axiosInstance.get('/me/contract')
@@ -28,24 +45,29 @@ const DoctorContract = () => {
         setLoading(false);
       })
       .catch(error => {
-        console.error('Error fetching contract data:', error);
         setError(error);
-        setLoading(false);
       });
   };
 
   const handleAcceptContract = () => {
     axiosInstance.put('/me/contract')
       .then(response => {
+        setMessage(response.data.message);
+        setOpen(true);
         fetchContracts();
       })
       .catch(error => {
-        console.error('Error accepting contract:', error);
+        setError(error);
       });
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading contracts: {error.message}</p>;
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  };
+
 
   return (
     <Container>
@@ -86,6 +108,17 @@ const DoctorContract = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message={message}
+        action={
+          <IconButton size="small" aria-label="close" color="inherit" onClick={handleSnackbarClose}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
+      />
     </Container>
   );
 };

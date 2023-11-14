@@ -1,14 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
+import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
+import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
+import { users } from 'src/_mock/user';
+
+import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { axiosInstance } from '../../../utils/axiosInstance';
 
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
@@ -17,39 +22,27 @@ import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
-const UserPage= () => {
+// ----------------------------------------------------------------------
+
+export default function UserPage() {
   const [page, setPage] = useState(0);
+
   const [order, setOrder] = useState('asc');
+
+  const [selected, setSelected] = useState([]);
+
   const [orderBy, setOrderBy] = useState('name');
+
   const [filterName, setFilterName] = useState('');
+
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = () => {
-    axiosInstance.get('/requests')
-      .then(response => {
-        console.log('Fetched data:', response.data.result);
-        setRequests(response.data.result || []); 
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setError(error);
-        setLoading(false);
-      });
-  };
-
-  // Function to handle sorting
-  const handleSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
+  const handleSort = (event, id) => {
+    const isAsc = orderBy === id && order === 'asc';
+    if (id !== '') {
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(id);
+    }
   };
 
   const handleSelectAllClick = (event) => {
@@ -93,78 +86,88 @@ const UserPage= () => {
     setFilterName(event.target.value);
   };
 
-  const comparator = getComparator(order, orderBy);
+  const dataFiltered = applyFilter({
+    inputData: users,
+    comparator: getComparator(order, orderBy),
+    filterName,
+  });
 
-  const dataSorted = applyFilter({ 
-    inputData: requests, 
-    comparator: comparator, 
-    filterName: filterName 
-  }); 
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  const notFound = !dataFiltered.length && !!filterName;
 
   return (
     <Container>
-      <Stack direction="column" spacing={2}>
-        <Card>
-          <UserTableToolbar filterName={filterName} onFilterName={handleFilterByName} />
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserTableHead
-                  order={order}
-                  orderBy={orderBy}
-                  onRequestSort={handleSort}
-                  onSelectAllClick={handleSelectAllClick}
-                  headLabel={[
-                    { id: 'medicID', label: 'Med ID', align: 'left' },
-                    { id: 'date', label: 'Date', align: 'left' },
-                    { id: 'licenses', label: 'Licence', align: 'left' },
-                    { id: 'status', label: 'Status', align: 'left' }
-                  ]}
-                />
-                <TableBody>
-                  {dataSorted
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => (
-                      <UserTableRow
-                      key={row._id}
-                      medicID={row.medicID}
-                      date={new Date(row.date).toLocaleDateString()}
-                      licenses={row.licenses}
-                      status={row.status}
-                      handleClick={(event) => handleClick(event, row.name)}
-                      />
-                    ))
-                  }
-                  <TableEmptyRows
-                    height={77}
-                    emptyRows={emptyRows(page, rowsPerPage, requests.length)}
-                  />
-                  {dataSorted.length === 0 && <TableNoData query={filterName} />}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-          <TablePagination
-            page={page}
-            component="div"
-            count={requests.length}
-            rowsPerPage={rowsPerPage}
-            onPageChange={handleChangePage}
-            rowsPerPageOptions={[5, 10, 25]}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Typography variant="h4">Users</Typography>
+
+        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          New User
+        </Button>
       </Stack>
+
+      <Card>
+        <UserTableToolbar
+          numSelected={selected.length}
+          filterName={filterName}
+          onFilterName={handleFilterByName}
+        />
+
+        <Scrollbar>
+          <TableContainer sx={{ overflow: 'unset' }}>
+            <Table sx={{ minWidth: 800 }}>
+              <UserTableHead
+                order={order}
+                orderBy={orderBy}
+                rowCount={users.length}
+                numSelected={selected.length}
+                onRequestSort={handleSort}
+                onSelectAllClick={handleSelectAllClick}
+                headLabel={[
+                  { id: 'name', label: 'Name' },
+                  { id: 'company', label: 'Company' },
+                  { id: 'role', label: 'Role' },
+                  { id: 'isVerified', label: 'Verified', align: 'center' },
+                  { id: 'status', label: 'Status' },
+                  { id: '' },
+                ]}
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => (
+                    <UserTableRow
+                      key={row.id}
+                      name={row.name}
+                      role={row.role}
+                      status={row.status}
+                      company={row.company}
+                      avatarUrl={row.avatarUrl}
+                      isVerified={row.isVerified}
+                      selected={selected.indexOf(row.name) !== -1}
+                      handleClick={(event) => handleClick(event, row.name)}
+                    />
+                  ))}
+
+                <TableEmptyRows
+                  height={77}
+                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
+                />
+
+                {notFound && <TableNoData query={filterName} />}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Scrollbar>
+
+        <TablePagination
+          page={page}
+          component="div"
+          count={users.length}
+          rowsPerPage={rowsPerPage}
+          onPageChange={handleChangePage}
+          rowsPerPageOptions={[5, 10, 25]}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Card>
     </Container>
   );
 }
-
-export default UserPage;
