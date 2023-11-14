@@ -28,12 +28,12 @@ const navConfig = [
   {
     title: 'contract',
     path: '/contract',
-    icon: icon('ic_blog')
+    icon: icon('ic_contract')
   },
   {
     title: 'add Slots Or Appointment',
     path: '/addSlotsOrAppointment',
-    icon: icon('ic_blog')
+    icon: icon('ic_add')
   },
   {
     title: 'login',
