@@ -48,6 +48,11 @@ const navConfig = [
     icon: icon('ic_user'),
   },
   {
+    title: 'My Health Records',
+    path: '/health-record',
+    icon: icon('ic_analytics'),
+  },
+  {
     title: 'Not found',
     path: '/404',
     icon: icon('ic_disabled'),
