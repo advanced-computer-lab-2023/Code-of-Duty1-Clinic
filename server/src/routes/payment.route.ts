@@ -100,10 +100,10 @@ router.post('/session/oneTimePayment', async (req, res) => {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      payment_method_types: ['card'],
+      payment_method_types: ['card','alipay'],
       line_items: lineItems,
-      success_url: 'http://localhost:3030/success', // replace with your success URL
-      cancel_url: 'http://localhost:3030/cancel', // replace with your cancel URL
+      success_url: 'http://localhost:3030',
+      cancel_url: 'http://localhost:3030',
     });
 
     return res.json(session);
