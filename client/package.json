@@ -1,7 +1,7 @@
 {
   "name": "@minimal/material-kit-react",
   "author": "minimals.cc",
-  "license": "MIT",
+  "licence": "MIT",
   "version": "1.8.0",
   "private": false,
   "scripts": {
@@ -29,7 +29,7 @@
     "@mui/material": "^5.14.17",
     "@mui/utils": "^5.14.17",
     "@pdftron/webviewer": "^10.5.1",
-    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf-viewer/core": "^3.17.0",
     "apexcharts": "^3.43.0",
     "axios": "^1.6.1",
     "date-fns": "^2.30.0",
@@ -45,6 +45,7 @@
     "react-hook-form": "^7.48.2",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.16.0",
+    "react-stripe-checkout": "^2.6.3",
     "simplebar-react": "^3.2.4"
   },
   "devDependencies": {
