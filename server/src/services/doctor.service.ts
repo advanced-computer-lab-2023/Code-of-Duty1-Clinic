@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 import { HttpError } from '../utils';
 
-
 import StatusCodes from 'http-status-codes';
 import { User, Contract, Appointment, IPatient, IDoctor, Doctor, Request, Patient } from '../models';
 
@@ -148,6 +147,26 @@ const viewAvailableAppointments = async (doctorID: string) => {
     result: availableAppointments
   };
 };
+// View the amount in my wallet req 67 for patient and doctor
+const viewWallet = async (userId: string, role: string) => {
+  let user = null;
+  let userType = '';
 
-export { getDoctors, getMyPatients, viewAvailableAppointments, };
+  if (role === 'patient' || role === 'Patient') {
+    user = await Patient.findById(userId);
+    userType = 'Patients';
+  } else if (role === 'doctor' || role === 'Doctor') {
+    user = await Doctor.findById(userId);
+    userType = 'Doctor';
+  }
+  if (!user) {
+    throw new HttpError(StatusCodes.NOT_FOUND, `${userType} not found`);
+  }
 
+  return {
+    result: user.wallet,
+    status: StatusCodes.OK,
+    message: `Successfully retrieved ${userType}'s wallet`
+  };
+};
+export { getDoctors, getMyPatients, viewAvailableAppointments, saveRegistrationFiles, viewWallet };
