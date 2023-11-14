@@ -46,4 +46,39 @@ const deleteUsers = async (query: any) => {
   };
 };
 
-export { getRequests, addAdmin, deleteUsers };
+const acceptRequest = async (email: string) => {
+  const doctor : any = await Doctor.findOne({email : email});
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+
+  const request = await Request.findOne({medicID : doctor._id});
+  if (!request) throw new HttpError(StatusCodes.NOT_FOUND, 'Request not found');
+  if (request.status !== "Pending") throw new HttpError(StatusCodes.BAD_REQUEST, 'Request is handled before'); 
+  request.status = "Approved"
+  await request.save();
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Doctor approved successfully',
+    result: request
+  };
+};
+
+const rejectRequest = async (email: string) => {
+  const doctor : any = await Doctor.findOne({email : email});
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+
+  const request = await Request.findOne({medicID : doctor._id});
+  if (!request) throw new HttpError(StatusCodes.NOT_FOUND, 'Request not found');
+  if (request.status !== "Pending") throw new HttpError(StatusCodes.BAD_REQUEST, 'Request is handled before'); 
+  request.status = "Rejected"
+  await request.save();
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Doctor rejected successfully',
+    result: request
+  };
+};
+
+
+export { getRequests, addAdmin, deleteUsers,acceptRequest, rejectRequest};

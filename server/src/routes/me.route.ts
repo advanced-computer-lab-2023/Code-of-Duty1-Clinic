@@ -49,7 +49,7 @@ router.get('/appointments', (req: Request, res: Response) => {
   }
 });
 router.post('/appointments', (req: Request, res: Response) => {
-  //   controller(res)()();
+  controller(res)(scheduleFollowUp)(req.decoded.id, req.body);
 });
 
 router.get('/wallet', (req: Request, res: Response) => {
@@ -61,17 +61,17 @@ router.get('/weeklyslots', (req: Request, res: Response) => {
   // controller(res)()();
 });
 router.put('/weeklyslots', (req: Request, res: Response) => {
-  // controller(res)()();
+  controller(res)(addSlots)(req.decoded.id, req.body);
 });
 router.delete('/weeklyslots', (req: Request, res: Response) => {
   // controller(res)()();
 });
 
 router.get('/contract', (req: Request, res: Response) => {
-  // controller(res)()();
+  controller(res)(viewContract)(req.decoded.id);
 });
 router.put('/contract', (req: Request, res: Response) => {
-  // controller(res)()();
+  controller(res)(acceptContract)(req.decoded.id);
 });
 
 // Patient Routes

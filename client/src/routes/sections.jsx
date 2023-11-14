@@ -10,6 +10,8 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const DoctorsPage = lazy(() => import('src/pages/doctors'));
 export const PatientsPage = lazy(() => import('src/pages/patients'));
+export const ContractPage = lazy(() => import('src/pages/contract'));
+export const AddSlotsOrAppointmentPage = lazy(() => import('src/pages/addSlotsOrAppointment'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
@@ -52,7 +54,9 @@ export default function Router() {
         { path: 'doctors', element: <DoctorsPage /> },
         { path: 'packages', element: <PackagePage /> },
         { path: 'addFamily', element: <AddFamilyPage /> },
-        { path: 'viewPackage', element: <ViewPackagePage /> }
+        { path: 'viewPackage', element: <ViewPackagePage /> },
+        { path: 'contract', element: <ContractPage /> },
+        { path: 'addSlotsOrAppointment', element: <AddSlotsOrAppointmentPage /> }
       ]
     },
     {

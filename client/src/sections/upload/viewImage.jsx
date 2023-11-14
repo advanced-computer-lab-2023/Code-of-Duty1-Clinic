@@ -1,16 +1,13 @@
-
 function ImageViewer({ url }) {
-    console.log('Image URL:', url); // Log the URL
-    return (
-        <div>
-            <img crossOrigin="use-credentials" src={url} alt="Health record " />
-        </div>
-    );
-};
+  console.log('Image URL:', url); // Log the URL
+  return (
+    <div>
+      <img crossOrigin="use-credentials" src={url} alt="Health record " />
+    </div>
+  );
+}
 
 export default ImageViewer;
-
-
 
 // import React, { useState, useEffect } from 'react';
 // import axios from 'axios';

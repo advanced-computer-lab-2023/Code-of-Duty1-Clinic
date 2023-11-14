@@ -31,6 +31,16 @@ const navConfig = [
     icon: icon('ic_blog')
   },
   {
+    title: 'contract',
+    path: '/contract',
+    icon: icon('ic_contract')
+  },
+  {
+    title: 'add Slots Or Appointment',
+    path: '/addSlotsOrAppointment',
+    icon: icon('ic_add')
+  },
+  {
     title: 'login',
     path: '/login',
     icon: icon('ic_lock')
