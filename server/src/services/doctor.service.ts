@@ -1,13 +1,15 @@
 const { v4: uuidv4 } = require('uuid');
 import { HttpError } from '../utils';
+
+
 import StatusCodes from 'http-status-codes';
-import { User, Contract, Appointment, IPatient, IDoctor, Doctor, Request } from '../models';
+import { User, Contract, Appointment, IPatient, IDoctor, Doctor, Request, Patient } from '../models';
 
 const getMyPatients = async (query: any) => {
-  const appointments = await Appointment.find(query).distinct('patientID').select('patientID').populate('patientID');
-  if (!appointments) return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
+  const patientIDs = await Appointment.find(query).distinct('patientID');
+  if (!patientIDs) return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
 
-  const patients = appointments.map((appointment: any) => appointment.patientID);
+  const patients = await Patient.find({ _id: { $in: patientIDs } });
 
   return {
     status: StatusCodes.OK,
@@ -44,38 +46,6 @@ const getDoctors = async (query: any) => {
 
   return { result: doctors, status: StatusCodes.OK };
 };
-const getPath = (files: any) => {
-  let results = [];
-  for (let i = 0; i < files.length; i++) {
-    const idx = files[i].path.indexOf('uploads');
-    results.push(files[i].path.slice(idx));
-  }
-  return results;
-};
-const saveRegistrationFiles = (doctorID: string, files: any) => {
-  const IDFiles = files.ID;
-  const degreeFiles = files.medicalDegree;
-  const licensesFields = files.medicalLicenses;
-  let IDPath = getPath(IDFiles)[0];
-  let degreePath: any[] = getPath(degreeFiles);
-  let licensePath: any[] = getPath(licensesFields);
-
-  const results = Request.findOneAndUpdate(
-    { medicID: doctorID },
-    {
-      ID: IDPath,
-      $push: {
-        degree: { $each: degreePath },
-        licenses: { $each: licensePath }
-      }
-    }
-  );
-  return {
-    result: results,
-    status: StatusCodes.OK,
-    message: 'Registration Documents uploaded successfully'
-  };
-};
 
 const viewAvailableAppointments = async (doctorID: string) => {
   const doctor = await Doctor.findById(doctorID);
@@ -103,13 +73,13 @@ const viewAvailableAppointments = async (doctorID: string) => {
     const day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
     const dailySlots = weeklySlots[day as keyof typeof weeklySlots];
 
+    (availableAppointments as any)[day] = []; // Initialize the day as an array
     for (const slot of dailySlots) {
       const slotHour = slot.from.hours;
       const slotMinute = slot.from.minutes;
       const slotHourEnd = slot.to.hours;
       const slotMinuteEnd = slot.to.minutes;
 
-      (availableAppointments as any)[day] = []; // Initialize the day as an array
       let isSlotAvailable = true;
       for (const appointment of appointments) {
         const appointmentStartDate = appointment.startDate;
@@ -179,4 +149,5 @@ const viewAvailableAppointments = async (doctorID: string) => {
   };
 };
 
-export { getDoctors, getMyPatients, viewAvailableAppointments, saveRegistrationFiles };
+export { getDoctors, getMyPatients, viewAvailableAppointments, };
+
