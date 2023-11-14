@@ -98,15 +98,15 @@ const viewDoctorsForPatient = async (patientId: string, query: any) => {
     message: 'Successfully retrieved Doctors'
   };
 };
-const getMedicalHistory = async (patientID: String) => { 
-  const result = await Patient.findOne({ _id: patientID }).select("medicalHistory -_id -role").lean();
-  if (!result)
-    throw new HttpError(StatusCodes.NOT_FOUND, "not found");
+const getMedicalHistory = async (patientID: String) => {
+  const result = await Patient.findOne({ _id: patientID }).select('medicalHistory -_id -role').lean();
+  if (!result) throw new HttpError(StatusCodes.NOT_FOUND, 'not found');
   console.log(result);
   return {
-    result: result["medicalHistory"],
+    result: result['medicalHistory'],
     status: StatusCodes.OK,
     message: 'Successfully retrieved medical history'
+
   }
 
 }
@@ -117,22 +117,20 @@ const resolveURL = (url: string) => {
   url = path.join(parentURL, url!);
   return url;
 }
+
 const getMedicalHistoryURL = async (body: any) => {
-  let result = await Patient.findOne({ _id: body._id }).select("medicalHistory").lean();
-  if (!result)
-    throw new HttpError(StatusCodes.NOT_FOUND, "not found");
-  let records = result!["medicalHistory"];
+  let result = await Patient.findOne({ _id: body._id }).select('medicalHistory').lean();
+  if (!result) throw new HttpError(StatusCodes.NOT_FOUND, 'not found');
+  let records = result!['medicalHistory'];
   let url = null;
   for (let i = 0; i < records!.length; i++) {
-    if (records![i]["name"] == body.recordName) {
-      url = records![i]["medicalRecord"];
+    if (records![i]['name'] == body.recordName) {
+      url = records![i]['medicalRecord'];
       break;
     }
   }
-  
 
-  return resolveURL(url!);
-  
+  return resolveURL(url!);  
 }
 const saveMedicalHistory = async (patientID:string,files:Express.Multer.File[],fileName?:string) => { 
 
@@ -161,35 +159,36 @@ const saveMedicalHistory = async (patientID:string,files:Express.Multer.File[],f
   }
 
 }
-const removeMedicalHistory = async (patientID: string, recordName: string) => { 
-  
-  const record = await Patient.findOneAndUpdate({ _id: patientID },
+const removeMedicalHistory = async (patientID: string, recordName: string) => {
+  const record = await Patient.findOneAndUpdate(
+    { _id: patientID },
     {
       $pull: {
         medicalHistory: { name: recordName }
       }
-    }, { new: false });
+    },
+    { new: false }
+  );
   if (!record) throw new HttpError(StatusCodes.NOT_FOUND, 'Record not found');
   let filePath = null;
-  for (let i = 0; i < record!.medicalHistory!.length;i++) {
+  for (let i = 0; i < record!.medicalHistory!.length; i++) {
     const ele = record!.medicalHistory![i];
 
-    if ((ele).name == recordName) {
-     
-      filePath = (ele).medicalRecord;
+    if (ele.name == recordName) {
+      filePath = ele.medicalRecord;
       break;
     }
   }
-  if(!filePath)throw new HttpError(StatusCodes.NOT_FOUND, 'Record not found');
-  filePath = path.resolve(__dirname, "../" + filePath);
-  fs.unlink(filePath,(e)=>e);
-  
+  if (!filePath) throw new HttpError(StatusCodes.NOT_FOUND, 'Record not found');
+  filePath = path.resolve(__dirname, '../' + filePath);
+  fs.unlink(filePath, (e) => e);
+
   return {
     result: filePath,
     status: StatusCodes.OK,
     message: 'Successfully deleted medical record'
   };
-}
+};
 
 const addHealthRecord = async (patientID: String, body: any) => {
   const { name, medicalRecord } = body;
@@ -232,5 +231,8 @@ export {
   addFamilyMember,
   addHealthRecord,
   getHealthRecords,
-  saveMedicalHistory,removeMedicalHistory,getMedicalHistoryURL,getMedicalHistory
+  saveMedicalHistory,
+  removeMedicalHistory,
+  getMedicalHistoryURL,
+  getMedicalHistory
 };

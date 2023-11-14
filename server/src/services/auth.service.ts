@@ -18,11 +18,12 @@ const login = async (body: any) => {
   return {
     status: StatusCodes.OK,
     message: 'Login successful',
+    user,
     token
   };
 };
 
-const register = async (body: any,files?:Express.Multer.File[]) => {
+const register = async (body: any, files?: Express.Multer.File[]) => {
   if (!['Patient', 'Doctor'].includes(body.role))
     throw new Error('Role is not correct or you cannot register as admin');
 

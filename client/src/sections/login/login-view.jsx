@@ -14,9 +14,10 @@ import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
+import { axiosInstance } from '../../utils/axiosInstance';
+import { useUserContext } from 'src/contexts/userContext';
 
 import { bgGradient } from 'src/theme/css';
-import { axiosInstance } from '../../utils/axiosInstance';
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
@@ -35,11 +36,13 @@ export default function LoginView() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const { setUser } = useUserContext();
 
   const onSubmit = async (body) => {
     setLoading(true);
@@ -47,6 +50,11 @@ export default function LoginView() {
       const res = await axiosInstance.post('/auth/login', body);
 
       if (res.status == 200) {
+        const user = res.data.user;
+        // setUser({ name: user.name, role: user.role });
+        localStorage.setItem('userRole', user.role);
+        localStorage.setItem('userName', user.name);
+
         router.push(destination);
       } else {
         setError(res.data.message);
@@ -63,16 +71,16 @@ export default function LoginView() {
       sx={{
         ...bgGradient({
           color: alpha(theme.palette.background.default, 0.9),
-          imgUrl: '/assets/background/overlay_4.jpg'
+          imgUrl: '/assets/background/overlay_4.jpg',
         }),
-        height: 1
+        height: 1,
       }}
     >
       <Logo
         sx={{
           position: 'fixed',
           top: { xs: 16, md: 24 },
-          left: { xs: 16, md: 24 }
+          left: { xs: 16, md: 24 },
         }}
       />
 
@@ -81,7 +89,7 @@ export default function LoginView() {
           sx={{
             p: 5,
             width: 1,
-            maxWidth: 420
+            maxWidth: 420,
           }}
         >
           <Typography variant="h4">Sign in to Minimal</Typography>
@@ -104,7 +112,7 @@ export default function LoginView() {
               <TextField
                 label="Username"
                 {...register('username', {
-                  required: true
+                  required: true,
                 })}
                 error={!!errors?.username}
                 helperText={errors?.username ? 'Required' : null}
@@ -114,7 +122,7 @@ export default function LoginView() {
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
                 {...register('password', {
-                  required: true
+                  required: true,
                 })}
                 error={!!errors?.password}
                 helperText={errors?.password ? 'Required' : null}
@@ -125,7 +133,7 @@ export default function LoginView() {
                         <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
                       </IconButton>
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Stack>
