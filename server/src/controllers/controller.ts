@@ -8,14 +8,12 @@ const controller =
     try {
       const result = await service(...args);
       if (result.token) {
-        const token = result.token;
-        res.cookie('token', token, {
+        res.cookie('token', result.token, {
           httpOnly: false,
           sameSite: false,
           secure: false,
           maxAge: 1000 * 60 * 60 * 24
         });
-
         delete result.token;
       }
 

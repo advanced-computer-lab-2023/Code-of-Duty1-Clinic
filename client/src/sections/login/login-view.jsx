@@ -92,7 +92,7 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4">Sign in to Minimal</Typography>
+          <Typography variant="h4">Sign in to your account</Typography>
 
           <Typography variant="body2" sx={{ mt: 2, mb: 2 }}>
             Don’t have an account?
@@ -139,7 +139,7 @@ export default function LoginView() {
             </Stack>
 
             <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-              <Link href="/" variant="subtitle2" underline="hover">
+              <Link href="/forgot-password" variant="subtitle2" underline="hover">
                 Forgot password?
               </Link>
             </Stack>

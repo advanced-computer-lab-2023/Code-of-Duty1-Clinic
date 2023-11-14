@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { User, Patient, IPatient, IDoctor, Package, IPackage } from '../models';
+import { User, Patient, IPatient, IDoctor, Package, IPackage, FamilyMember } from '../models';
 import { getDoctors } from './doctor.service';
 import { HttpError } from '../utils';
 import { Prescription, Appointment } from '../models';
@@ -7,7 +7,26 @@ import path from 'path';
 import fs from 'fs';
 // Maybe we need to validate unique family member by userID or nationalID
 const addFamilyMember = async (id: string, body: any) => {
-  const { relation, userID, name, age, gender, nationalID } = body;
+  let userID;
+  if (body.userID) userID = body.userID;
+
+  if (body.email) {
+    userID = await Patient.findOne({ email: body.email }).select('_id');
+    let userID2 = userID?._id.toString();
+    if (userID2 === id) {
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'Please enter an Email other than your Email');
+    }
+  }
+
+  if (body.phone) {
+    userID = await Patient.findOne({ phone: body.phone }).select('_id');
+    let userID2 = userID?._id.toString();
+    if (userID2 === id) {
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'Please enter a Phone Number other than your Phone Number');
+    }
+  }
+
+  const { relation, name, age, gender, nationalID } = body;
   if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
 
   let newFamily;
@@ -27,7 +46,7 @@ const addFamilyMember = async (id: string, body: any) => {
   } else {
     throw new HttpError(
       StatusCodes.BAD_REQUEST,
-      'Either name, nationalID, gender, age, and relation should be provided, or userID and relation should be provided.'
+      'Either name, nationalID, gender, age, and relation should be provided, or userID or email or phone and relation should be provided.'
     );
   }
 
@@ -109,10 +128,12 @@ const getMedicalHistory = async (patientID: String) => {
   };
 };
 const resolveURL = (url: string) => {
+  if (!url) return null;
   const parentURL = path.dirname(__dirname);
   url = path.join(parentURL, url!);
   return url;
 };
+
 const getMedicalHistoryURL = async (body: any) => {
   let result = await Patient.findOne({ _id: body._id }).select('medicalHistory').lean();
   if (!result) throw new HttpError(StatusCodes.NOT_FOUND, 'not found');
@@ -127,13 +148,13 @@ const getMedicalHistoryURL = async (body: any) => {
 
   return resolveURL(url!);
 };
-const saveMedicalHistory = async (patientID: string, files: Express.Multer.File[]) => {
+const saveMedicalHistory = async (patientID: string, files: Express.Multer.File[], fileName?: string) => {
   let insertedRecords = [];
   for (let i = 0; i < files.length; i++) {
     const idx = files[i].path.indexOf('uploads');
     const filePath = files[i].path.slice(idx);
     // path.join("..",);
-    const name = files[i].filename;
+    const name = fileName || files[i].filename;
     const medicalHistory = {
       name,
       medicalRecord: filePath
@@ -227,6 +248,73 @@ const isNotURL = (str: String) => {
   return !str.endsWith('.pdf') && !str.endsWith('.jpeg') && !str.endsWith('.jpg') && !str.endsWith('.png');
 };
 
+const getHealthPackage = async (userID: string) => {
+  const user = await Patient.findOne({ _id: userID });
+
+  if (user?.package) {
+    if (user?.package.packageStatus === 'Subscribed') {
+      const userPackage = await Package.findOne({ _id: user?.package.packageID }).select('-_id -isLatest');
+
+      let renewalDate = user?.package.endDate as Date;
+      renewalDate.setDate(renewalDate.getDate() + 1);
+
+      return {
+        status: StatusCodes.OK,
+        userPackage: userPackage,
+        packageStatus: 'Subscribed',
+        renewalDate: renewalDate
+      };
+    }
+
+    if (user?.package.packageStatus === 'Cancelled') {
+      return {
+        status: StatusCodes.OK,
+        packageStatus: 'Cancelled',
+        endDate: user?.package.endDate
+      };
+    }
+  }
+
+  return {
+    status: StatusCodes.OK,
+    message: 'You are not subscribed to a health package',
+    packageStatus: 'UnSubscribed'
+  };
+};
+
+const cancelSubscribtion = async (userID: string) => {
+  const user = await Patient.findById(userID);
+
+  if (!user?.package) {
+    throw new HttpError(StatusCodes.BAD_REQUEST, "You're not subscribed to any packages");
+  }
+
+  await Patient.findByIdAndUpdate(userID, { $set: { 'package.packageStatus': 'Cancelled' } });
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Cancelled Subscribtion sucessfully'
+  };
+};
+
+const subscribe = async (userID: string, packageID: string) => {
+  let date = new Date();
+  date.setFullYear(date.getFullYear() + 1);
+
+  const userPackage = {
+    packageID: packageID,
+    packageStatus: 'Subscribed',
+    endDate: date
+  };
+
+  await Patient.findByIdAndUpdate(userID, { $set: { package: userPackage } });
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Subscribed sucessfully'
+  };
+};
+
 export {
   viewDoctorsForPatient as viewAllDoctorsForPatient,
   getFamily,
@@ -236,5 +324,8 @@ export {
   saveMedicalHistory,
   removeMedicalHistory,
   getMedicalHistoryURL,
-  getMedicalHistory
+  getMedicalHistory,
+  getHealthPackage,
+  cancelSubscribtion,
+  subscribe
 };
