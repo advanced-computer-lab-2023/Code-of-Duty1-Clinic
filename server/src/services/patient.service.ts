@@ -111,14 +111,14 @@ const getMedicalHistory = async (patientID: String) => {
 
 }
 const resolveURL = (url: string) => { 
-  console.log(url, "-----------");
+  if (!url)
+    return null;
   const parentURL = path.dirname(__dirname);
   url = path.join(parentURL, url!);
   return url;
 }
 const getMedicalHistoryURL = async (body: any) => {
   let result = await Patient.findOne({ _id: body._id }).select("medicalHistory").lean();
-  console.log(body,"++++++***-+-+-+-*****--*-*-*-*-")
   if (!result)
     throw new HttpError(StatusCodes.NOT_FOUND, "not found");
   let records = result!["medicalHistory"];

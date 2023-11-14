@@ -1,5 +1,6 @@
 
 function ImageViewer({ url }) {
+    console.log('Image URL:', url); // Log the URL
     return (
         <div>
             <img crossOrigin="use-credentials" src={url} alt="Health record " />
