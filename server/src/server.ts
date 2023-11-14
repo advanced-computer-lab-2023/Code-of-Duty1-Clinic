@@ -15,7 +15,8 @@ import {
   requestRouter,
   packageRouter,
   chatroomRouter,
-  paymentRouter
+  paymentRouter,
+  uploadRouter
 } from './routes';
 import { StatusCodes } from 'http-status-codes';
 
@@ -35,20 +36,6 @@ app.use(
 
 app.use(queryParser);
 
-// app.use((req, res, next) => {
-//   // Website you wish to allow to connect, localhost:3001 is the frontend
-//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3030');
-//   res.header('Access-Control-Allow-Headers', '*');
-//   res.header('Access-Control-Allow-Credentials', 'true');
-
-//   if (req.method == 'OPTIONS') {
-//     res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-//     return res.status(StatusCodes.OK).json({});
-//   }
-
-//   next();
-// });
-
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Origin', req.headers.origin as string);
@@ -57,6 +44,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     return res.status(StatusCodes.OK).json({});
   }
   res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+
   next();
 });
 
@@ -69,6 +57,7 @@ app.use('/requests', requestRouter);
 app.use('/packages', packageRouter);
 app.use('/chatrooms', chatroomRouter);
 app.use('/payment', paymentRouter);
+app.use('/upload', uploadRouter);
 
 app.all('*', (req: Request, res: Response) => res.status(404).send('Path Not Found'));
 

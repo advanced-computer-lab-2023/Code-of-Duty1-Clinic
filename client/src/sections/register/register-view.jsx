@@ -20,6 +20,8 @@ import { useRouter } from 'src/routes/hooks';
 import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
+import { axiosInstance } from '../../utils/axiosInstance';
+import { RegistrationUpload } from 'src/sections/upload';
 
 // ----------------------------------------------------------------------
 
@@ -56,7 +58,7 @@ export default function RegisterView() {
 
       const data = await res.json();
       if (res.ok) {
-        router.push('/');
+        router.push('/upload-document');
       } else {
         setError(data.message);
       }
@@ -229,6 +231,7 @@ export default function RegisterView() {
                       error={!!errors?.specialty}
                       helperText={errors?.specialty ? 'Required' : null}
                     />
+                    <RegistrationUpload />
                   </Stack>
                 )}
 

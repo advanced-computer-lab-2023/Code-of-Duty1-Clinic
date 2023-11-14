@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
@@ -6,13 +7,35 @@ import AppCurrentVisits from '../app-current-visits';
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
 
+import { axiosInstance } from '../../../utils/axiosInstance';
+
 // ----------------------------------------------------------------------
 
 export default function AppView() {
+  const [wallet, setWallet] = useState('');
+
+  useEffect(() => {
+    const fetchWallet = async () => {
+      try {
+        const res = await axiosInstance.get(`/me/wallet`);
+        setWallet(res.data.result);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchWallet();
+  }, []);
+
+  console.log(wallet);
+
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
         Hi, Welcome back 👋
+      </Typography>
+
+      <Typography variant="h4" sx={{ mb: 5 }}>
+        My Wallet: {wallet}
       </Typography>
 
       <Grid container spacing={3}>

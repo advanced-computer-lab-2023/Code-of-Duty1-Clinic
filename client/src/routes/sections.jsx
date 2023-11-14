@@ -1,30 +1,39 @@
 import { lazy, Suspense } from 'react';
-import { Outlet, Navigate, useRoutes } from 'react-router-dom';
+import { Outlet, Navigate, useRoutes, useParams } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
-import UploadFile from 'src/sections/upload/oneUpload';
+import { RegistrationUpload, UploadView } from 'src/sections/upload';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const DoctorsPage = lazy(() => import('src/pages/doctors'));
+export const PatientsPage = lazy(() => import('src/pages/patients'));
 export const ContractPage = lazy(() => import('src/pages/contract'));
 export const AddSlotsOrAppointmentPage = lazy(() => import('src/pages/addSlotsOrAppointment'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
+export const HealthRecordPage = lazy(() => import('src/pages/health-record'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
-
+export const ForgotPage = lazy(() => import('src/pages/forgot-password'));
+export const ResetPage = lazy(() => import('src/pages/reset-password'));
+export const PackagePage = lazy(() => import('src/pages/packages'));
+export const AddFamilyPage = lazy(() => import('src/pages/addFamily'));
+export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
+export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
+export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
+export const MedicalHistoryPage = lazy(() => import('src/pages/medical-history'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
   const routes = useRoutes([
     {
-      path: "",
+      path: '',
       element: (
         <DashboardLayout>
-          <Suspense fallback={<div>Loading...</div>} >
+          <Suspense fallback={<div>Loading...</div>}>
             <Outlet />
           </Suspense>
         </DashboardLayout>
@@ -34,9 +43,20 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
-        { path: 'doctors', element: < DoctorsPage/> },
-        { path: 'contract', element: < ContractPage/>},
-        { path: 'addSlotsOrAppointment', element: < AddSlotsOrAppointmentPage/>}
+        { path: 'doctors', element: <DoctorsPage /> },
+        { path: 'reset-password', element: <ResetPage /> },
+        { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
+        { path: '/medical-history', element: <MedicalHistoryPage /> },
+        { path: 'requests-list', element: <RequestsListPage /> },
+        { path: 'patients', element: <PatientsPage /> },
+        { path: 'health-record/:patientID', element: <HealthRecordPage /> },
+        { path: 'health-record', element: <HealthRecordPage /> },
+        { path: 'doctors', element: <DoctorsPage /> },
+        { path: 'packages', element: <PackagePage /> },
+        { path: 'addFamily', element: <AddFamilyPage /> },
+        { path: 'viewPackage', element: <ViewPackagePage /> },
+        { path: 'contract', element: <ContractPage /> },
+        { path: 'addSlotsOrAppointment', element: <AddSlotsOrAppointmentPage /> }
       ]
     },
     {
@@ -46,6 +66,10 @@ export default function Router() {
     {
       path: 'register',
       element: <RegisterPage />
+    },
+    {
+      path: 'forgot-password',
+      element: <ForgotPage />
     },
     {
       path: '404',

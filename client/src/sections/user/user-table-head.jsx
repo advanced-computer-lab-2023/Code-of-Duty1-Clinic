@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
 import TableRow from '@mui/material/TableRow';
 import TableHead from '@mui/material/TableHead';
 import TableCell from '@mui/material/TableCell';
@@ -39,6 +40,17 @@ export default function UserTableHead({ order, orderBy, headLabel, onRequestSort
 UserTableHead.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']),
   orderBy: PropTypes.string,
-  headLabel: PropTypes.array.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
+  rowCount: PropTypes.number,
+  headLabel: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      align: PropTypes.string,
+      width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      minWidth: PropTypes.number
+    })
+  ),
+  numSelected: PropTypes.number,
+  onRequestSort: PropTypes.func,
+  onSelectAllClick: PropTypes.func
 };

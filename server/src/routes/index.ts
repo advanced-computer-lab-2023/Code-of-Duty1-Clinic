@@ -7,7 +7,7 @@ import meRouter from './me.route';
 import doctorRouter from './doctor.route';
 import patientRouter from './patient.route';
 import paymentRouter from './payment.route';
-
+import uploadRouter from "./upload.route";
 export {
   authRouter,
   meRouter,
@@ -17,5 +17,7 @@ export {
   requestRouter,
   packageRouter,
   chatroomRouter,
-  paymentRouter
+  paymentRouter,
+  uploadRouter,
+  
 };

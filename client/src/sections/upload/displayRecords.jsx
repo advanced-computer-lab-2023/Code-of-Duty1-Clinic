@@ -5,104 +5,114 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { axiosInstance } from '../../utils/axiosInstance';
 
-const AdditionalContent = ({ ContentInfo }) => {
-    let comp = <p>{ContentInfo.url}</p>;
-    let urlParts = String(ContentInfo.url).replace(/\\/g, '/').split('/');
-    let url = `http://localhost:3000/upload/patient/medicalHistory/` + urlParts[urlParts.length - 1];
-    // console.log(url, "*-*-*-*-*-*-*")
-    if (String(ContentInfo.ext) === 'pdf') {
-        comp = <PDFViewer pdfURL={url} />;
-    } else if (['jpg', 'jpeg', 'png'].includes(String(ContentInfo.ext).toLowerCase())) {
-        comp = <ImageViewer imageURL={url} />;
-    }
+const AdditionalContent = ({ ContentInfo, name }) => {
+  const url = `http://localhost:3000/upload/patient/medicalHistory/${name}`;
+  let comp = <p>{ContentInfo.url}</p>;
 
-    return (
-        <div style={{ marginTop: '10px', marginLeft: '20px' }}>
-            {comp}
-        </div>
-    );
+  if (['pdf', 'jpg', 'jpeg', 'png'].includes(String(ContentInfo.ext).toLowerCase())) {
+    comp = ContentInfo.ext === 'pdf' ? <PDFViewer pdfURL={url} /> : <ImageViewer url={url} />;
+  }
+
+  return <div style={{ marginTop: '10px', marginLeft: '20px' }}>{comp}</div>;
 };
-const Row = ({ text, ContentInfo }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
 
-    const toggleExpand = () => {
-        setIsExpanded(!isExpanded);
+const Row = ({ text, ContentInfo, onDelete }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const rowStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px',
+    backgroundColor: isExpanded || isHovered ? '#e0f7fa' : 'transparent',
+    transition: 'background-color 0.3s',
+    cursor: 'pointer',
+    border: '1px solid #b2ebf2',
+    borderRadius: '5px',
+    marginBottom: '5px'
+  };
+
+  return (
+    <div>
+      <div
+        style={rowStyle}
+        onClick={toggleExpand}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div style={{ flex: 1 }}>{text}</div>
+        <IconButton onClick={() => onDelete(text)}>{isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</IconButton>
+        <IconButton onClick={() => onDelete(text)}>
+          <DeleteIcon />
+        </IconButton>
+      </div>
+      {isExpanded && <AdditionalContent ContentInfo={ContentInfo} name={text} />}
+    </div>
+  );
+};
+
+const RecordsList = () => {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await generateRows();
+        setRows(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
 
-    const rowStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '5px',
-        backgroundColor: isExpanded ? '#b2ebf2' : isHovered ? '#b2ebf2' : 'transparent',
-        transition: 'background-color 0.3s',
-        cursor: 'pointer',
-        border: '1px solid transparent',
-    };
+    fetchData();
+  }, []);
 
-    return (
-        <div>
-            <div
-                style={rowStyle}
-                onClick={toggleExpand}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >
-                <div>{text}</div>
-                <IconButton>
-                    {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-            </div>
-            {isExpanded && <AdditionalContent ContentInfo={ContentInfo} />}
-        </div>
-    );
-}; const RecordsList = () => {
-    const [rows, setRows] = useState([]);
+  const handleDelete = async (text) => {
+    try {
+      const res = await axiosInstance.delete(`upload/patient/medicalHistory/${text}`);
+      if (res.status === 200) {
+        const temp = rows.filter((row) => row.text !== text);
+        setRows(temp);
+        console.log(`Deleted row with text: ${text}`);
+      }
+    } catch (error) {
+      console.error('Error deleting row:', error);
+    }
+  };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await generateRows();
-            setRows(data);
-        };
+  async function generateRows() {
+    const res = await axiosInstance.get('upload/patient/medicalHistory/');
+    const data = res.data.result;
 
-        fetchData();
-    }, []);
+    return data.map((item) => {
+      const urlParts = item.medicalRecord?.split('.');
+      const ext = urlParts?.length > 0 ? urlParts[urlParts.length - 1].toLowerCase() : undefined;
 
-    async function generateRows() {
-        const rows = [];
-        const res = await axios.get('http://localhost:3000/upload/patient/medicalHistory/');
-
-        const data = res.data.result;
-        console.log(data + "-------")
-
-        for (let i = 0; i < data.length; i++) {
-            console.log(data[i].medicalRecord)
-            let url, ext;
-            if (data[i].medicalRecord) {
-                url = data[i].medicalRecord.split('.');
-                ext = url.length > 0 ? url[url.length - 1] : undefined;
-            }
-            rows.push({
-                text: data[i].name,
-                additionalContent: {
-                    url: data[i].medicalRecord,
-                    ext: ext,
-                },
-            });
+      return {
+        text: item.name,
+        additionalContent: {
+          url: item.medicalRecord,
+          ext: ext
         }
+      };
+    });
+  }
 
-        return rows;
-    }
-
-    return (
-        <div>
-            {rows.map((row, index) => (
-                <Row key={index} text={row.text} ContentInfo={row.additionalContent} />
-            ))}
-        </div>
-    );
+  return (
+    <div style={{ border: '1px solid #ccc', padding: '10px' }}>
+      {rows.map((row, index) => (
+        <Row key={index} text={row.text} ContentInfo={row.additionalContent} onDelete={handleDelete} />
+      ))}
+    </div>
+  );
 };
 
-export default RecordsList;
+export { RecordsList };

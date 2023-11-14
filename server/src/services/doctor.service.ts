@@ -1,12 +1,14 @@
+const { v4: uuidv4 } = require('uuid');
 import { HttpError } from '../utils';
+
 import StatusCodes from 'http-status-codes';
-import { Contract, Appointment, IDoctor, Doctor, Patient, Package, Request } from '../models';
+import { Contract, Appointment, IDoctor, Doctor, Request, Patient, Package } from '../models';
 
 const getMyPatients = async (query: any) => {
-  const appointments = await Appointment.find(query).distinct('patientID').select('patientID').populate('patientID');
-  if (!appointments) return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
+  const patientIDs = await Appointment.find(query).distinct('patientID');
+  if (!patientIDs) return new HttpError(StatusCodes.NOT_FOUND, 'No patients with this doctor');
 
-  const patients = appointments.map((appointment: any) => appointment.patientID);
+  const patients = await Patient.find({ _id: { $in: patientIDs } });
 
   return {
     status: StatusCodes.OK,
@@ -44,26 +46,150 @@ const getDoctors = async (query: any) => {
   return { result: doctors, status: StatusCodes.OK };
 };
 
-const viewContract = async (id : String) => {
-  const contract =  await Contract.find({doctorID: id})
-  if (!contract) throw new HttpError(StatusCodes.NOT_FOUND, 'No contract for this doctor')
+const viewAvailableAppointments = async (doctorID: string) => {
+  const doctor = await Doctor.findById(doctorID);
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
-  return{
-    status : StatusCodes.OK,
-    message : 'contract retrieved successfully',
-    result : contract
+  const weeklySlots = doctor.weeklySlots;
+  if (!weeklySlots) throw new HttpError(StatusCodes.NOT_FOUND, 'No available appointments for this doctor');
+
+  let availableAppointments = {};
+
+  const thisDay = new Date();
+  const currentYear = thisDay.getUTCFullYear();
+  const currentMonth = thisDay.getUTCMonth();
+  const currentDate = thisDay.getUTCDate();
+  const currentDay = thisDay.getUTCDay();
+  const lastDay = currentDay + 6;
+
+  // Get all doctor's appointments
+  const appointments = await Appointment.find({
+    doctorID: doctorID
+  });
+
+  for (let i = currentDay; i <= lastDay; i++) {
+    const dayOfWeek = i % 7;
+    const day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek];
+    const dailySlots = weeklySlots[day as keyof typeof weeklySlots];
+
+    (availableAppointments as any)[day] = []; // Initialize the day as an array
+    for (const slot of dailySlots) {
+      const slotHour = slot.from.hours;
+      const slotMinute = slot.from.minutes;
+      const slotHourEnd = slot.to.hours;
+      const slotMinuteEnd = slot.to.minutes;
+
+      let isSlotAvailable = true;
+      for (const appointment of appointments) {
+        const appointmentStartDate = appointment.startDate;
+        const appointmentYear = appointmentStartDate.getUTCFullYear();
+        const appointmentMonth = appointmentStartDate.getUTCMonth();
+        const appointmentDate = appointmentStartDate.getUTCDate();
+        const appointmentDay = appointmentStartDate.getUTCDay();
+        const appointmentHour = appointmentStartDate.getUTCHours();
+        const appointmentMinute = appointmentStartDate.getUTCMinutes();
+
+        if (
+          appointmentYear === currentYear &&
+          appointmentMonth === currentMonth &&
+          appointmentDate >= currentDate &&
+          appointmentDate <= currentDate + 6 &&
+          appointmentDay % 7 === dayOfWeek &&
+          slotHour === appointmentHour &&
+          slotMinute === appointmentMinute
+        ) {
+          isSlotAvailable = false;
+          break;
+        }
+      }
+
+      if (isSlotAvailable) {
+        const startDate = new Date(
+          currentYear,
+          currentMonth,
+          currentDate + i - currentDay,
+          slotHour + 2,
+          slotMinute,
+          0,
+          0
+        );
+        const endDate = new Date(
+          currentYear,
+          currentMonth,
+          currentDate + i - currentDay,
+          slotHourEnd + 2,
+          slotMinuteEnd,
+          0,
+          0
+        );
+
+        const price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute) / 60));
+
+        const id = uuidv4();
+
+        const slot = {
+          status: 'Upcoming',
+          sessionPrice: price,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          isFollowUp: false,
+          _id: id
+        };
+
+        (availableAppointments as any)[day].push(slot);
+      }
+    }
+  }
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Available Appointments retrieved successfully',
+    result: availableAppointments
   };
-}
+};
+// View the amount in my wallet req 67 for patient and doctor
+const viewWallet = async (userId: string, role: string) => {
+  let user = null;
+  let userType = '';
 
-const acceptContract = async (id : String) => {
+  if (role === 'patient' || role === 'Patient') {
+    user = await Patient.findById(userId);
+    userType = 'Patients';
+  } else if (role === 'doctor' || role === 'Doctor') {
+    user = await Doctor.findById(userId);
+    userType = 'Doctor';
+  }
+  if (!user) {
+    throw new HttpError(StatusCodes.NOT_FOUND, `${userType} not found`);
+  }
+
+  return {
+    result: user.wallet,
+    status: StatusCodes.OK,
+    message: `Successfully retrieved ${userType}'s wallet`
+  };
+};
+
+const viewContract = async (id: String) => {
+  const contract = await Contract.find({ doctorID: id });
+  if (!contract) throw new HttpError(StatusCodes.NOT_FOUND, 'No contract for this doctor');
+
+  return {
+    status: StatusCodes.OK,
+    message: 'contract retrieved successfully',
+    result: contract
+  };
+};
+
+const acceptContract = async (id: String) => {
   const contract = await viewContract(id);
 
-  if (contract.result.length > 0 && contract.result[0].status === "Pending") {
-    const doctor: any = await Doctor.findOne({_id: id})
+  if (contract.result.length > 0 && contract.result[0].status === 'Pending') {
+    const doctor: any = await Doctor.findOne({ _id: id });
     console.log(doctor);
     doctor.isContractAccepted = true;
     await doctor.save();
-    contract.result[0].status = "Accepted";
+    contract.result[0].status = 'Accepted';
     await contract.result[0].save();
 
     return {
@@ -79,7 +205,7 @@ const addSlots = async (doctorID: string, newSlots: any) => {
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
   const request = await Request.findOne({ medicID: doctor._id });
-  if (request?.status !== "Approved") throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor not approved yet');
+  if (request?.status !== 'Approved') throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor not approved yet');
 
   if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no Contract');
 
@@ -94,15 +220,15 @@ const addSlots = async (doctorID: string, newSlots: any) => {
     const slotStart = slot.from.hours * 60 + slot.from.minutes;
     const slotEnd = slot.to.hours * 60 + slot.to.minutes;
 
-    if ((incomingSlotStart < slotEnd && incomingSlotEnd > slotStart)) {
+    if (incomingSlotStart < slotEnd && incomingSlotEnd > slotStart) {
       throw new HttpError(StatusCodes.BAD_REQUEST, 'Time slot conflict detected');
     }
   }
 
   doctor.weeklySlots[newSlots.day].push(...newSlots.slots);
 
-  doctor.weeklySlots[newSlots.day].sort((a : any, b : any) => {
-    return (a.from.hours * 60 + a.from.minutes) - (b.from.hours * 60 + b.from.minutes);
+  doctor.weeklySlots[newSlots.day].sort((a: any, b: any) => {
+    return a.from.hours * 60 + a.from.minutes - (b.from.hours * 60 + b.from.minutes);
   });
 
   await doctor.save();
@@ -114,35 +240,36 @@ const addSlots = async (doctorID: string, newSlots: any) => {
   };
 };
 
-
 const scheduleFollowUp = async (doctorID: String, appointmentDetails: any) => {
-   const doctor: any = await Doctor.findOne({_id: doctorID})
-   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
-   if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no contract');
+  const doctor: any = await Doctor.findOne({ _id: doctorID });
+  if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+  if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no contract');
 
-   const patient = await Patient.findOne({email : appointmentDetails.email});
-   if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
+  const patient = await Patient.findOne({ email: appointmentDetails.email });
+  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
 
-   let sessionDiscount = 0;
-   if (patient.package) {
-     const pkg = await Package.findOne({ _id: patient.package.packageID });
-     if (pkg && patient.package!.endDate?.getTime() >= Date.now()) sessionDiscount = pkg.sessionDiscount;
-   }
+  let sessionDiscount = 0;
+  if (patient.package) {
+    const pkg = await Package.findOne({ _id: patient.package.packageID });
+    if (pkg && patient.package!.endDate?.getTime() >= Date.now()) sessionDiscount = pkg.sessionDiscount;
+  }
 
-   const contract: any =  await Contract.findOne({doctorID: doctorID})
+  const contract: any = await Contract.findOne({ doctorID: doctorID });
 
-   const time = ( new Date(appointmentDetails.endDate).getTime() - new Date(appointmentDetails.startDate).getTime()) / (1000 * 60 * 60)
-   let price = doctor.hourRate * time * (1 + contract.markUpProfit / 100);
-   price -= price * (sessionDiscount / 100)
+  const time =
+    (new Date(appointmentDetails.endDate).getTime() - new Date(appointmentDetails.startDate).getTime()) /
+    (1000 * 60 * 60);
+  let price = doctor.hourRate * time * (1 + contract.markUpProfit / 100);
+  price -= price * (sessionDiscount / 100);
 
-   const followUpAppointment = new Appointment({
-     doctorID: doctorID,
-     patientID: patient._id,
-     status: 'Upcoming', 
-     sessionPrice: price,
-     startDate: appointmentDetails.startDate,
-     endDate: appointmentDetails.endDate, 
-     isFollowUp: true,
+  const followUpAppointment = new Appointment({
+    doctorID: doctorID,
+    patientID: patient._id,
+    status: 'Upcoming',
+    sessionPrice: price,
+    startDate: appointmentDetails.startDate,
+    endDate: appointmentDetails.endDate,
+    isFollowUp: true
   });
 
   await followUpAppointment.save();
@@ -150,8 +277,17 @@ const scheduleFollowUp = async (doctorID: String, appointmentDetails: any) => {
   return {
     status: StatusCodes.OK,
     message: 'Follow up appointment scheduled successfully',
-    result: followUpAppointment,
+    result: followUpAppointment
   };
 };
 
-export { getDoctors, getMyPatients, viewContract, acceptContract, addSlots, scheduleFollowUp};
+export {
+  getDoctors,
+  getMyPatients,
+  viewAvailableAppointments,
+  viewWallet,
+  viewContract,
+  acceptContract,
+  addSlots,
+  scheduleFollowUp
+};

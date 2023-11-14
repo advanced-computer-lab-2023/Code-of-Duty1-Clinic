@@ -9,6 +9,7 @@ const updateInfo = async (id: string, info: any) => {
 
   const updatedUser = await User.findByIdAndUpdate(id, info, { new: true });
   if (!updatedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'the user does not exist');
+
   return {
     status: StatusCodes.OK,
     messsage: 'the user updated successfully',
