@@ -12,13 +12,27 @@ const addFamilyMember = async (id: string, body: any) => {
     userID = body.userID;
 
   if(body.email)
+  {
     userID = await Patient.findOne({email:body.email}).select('_id');
+    let userID2  = userID?._id.toString();
+    if(userID2 === id)
+    {
+      throw new HttpError(StatusCodes.BAD_REQUEST,'Please enter an Email other than your Email')
+    }
+  }
 
   if(body.phone)
+  {
     userID = await Patient.findOne({phone:body.phone}).select('_id');
+    let userID2  = userID?._id.toString();
+    if(userID2 === id)
+    {
+      throw new HttpError(StatusCodes.BAD_REQUEST,'Please enter a Phone Number other than your Phone Number')
+    }
+  }
 
   const { relation, name, age, gender, nationalID } = body;
- // if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
+  if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
 
   let newFamily;
   if (userID) {
@@ -37,7 +51,7 @@ const addFamilyMember = async (id: string, body: any) => {
   } else {
     throw new HttpError(
       StatusCodes.BAD_REQUEST,
-      'Either name, nationalID, gender, age, and relation should be provided, or userID and relation should be provided.'
+      'Either name, nationalID, gender, age, and relation should be provided, or userID or email or phone and relation should be provided.'
     );
   }
 
