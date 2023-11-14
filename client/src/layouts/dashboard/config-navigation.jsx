@@ -21,6 +21,11 @@ const navConfig = [
     icon: icon('ic_cart')
   },
   {
+    title: 'My package',
+    path: '/viewPackage',
+    icon: icon('ic_cart')
+  },
+  {
     title: 'blog',
     path: '/blog',
     icon: icon('ic_blog')
