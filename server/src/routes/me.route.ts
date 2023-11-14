@@ -12,7 +12,10 @@ import {
   getHealthRecords,
   filterAppointments,
   getUpcoming_Past_Appointments,
-  viewWallet
+  viewWallet,
+  getHealthPackage,
+  cancelSubscribtion,
+  subscribe
 } from '../services';
 
 const router = express.Router();
@@ -32,17 +35,14 @@ router.use(isAuthorized('Doctor', 'Patient'));
 // get my appointments
 router.get('/appointments', (req: Request, res: Response) => {
   if (req.query.s === 'Upcoming') {
-    controller(res)(getUpcoming_Past_Appointments)(req.decoded.id, req.decoded.role,"Upcoming");
-  }
-  else if (req.query.s === 'Completed') {
-    controller(res)(getUpcoming_Past_Appointments)(req.decoded.id, req.decoded.role, "Completed");
-  }
-  else if (req.query.s === 'filter') {
+    controller(res)(getUpcoming_Past_Appointments)(req.decoded.id, req.decoded.role, 'Upcoming');
+  } else if (req.query.s === 'Completed') {
+    controller(res)(getUpcoming_Past_Appointments)(req.decoded.id, req.decoded.role, 'Completed');
+  } else if (req.query.s === 'filter') {
     // user's id field depends on the role
     const userId = req.decoded.role === 'Patient' ? 'patientID' : 'doctorID';
     controller(res)(filterAppointments)({ ...req.query, [userId]: req.decoded.id, role: req.decoded.role });
-  }
-  else {
+  } else {
     // user's id field depends on the role
     const userID = req.decoded.role === 'Patient' ? 'patientID' : 'doctorID';
     controller(res)(getAppointments)({ ...req.query, [userID]: req.decoded.id });
@@ -103,12 +103,15 @@ router.post('/family', (req: Request, res: Response) => {
 });
 
 router.get('/package', (req: Request, res: Response) => {
-  // get package I am subscribed to
-  // controller(res)()();
+  controller(res)(getHealthPackage)(req.decoded.id);
 });
+
 router.post('/package', (req: Request, res: Response) => {
-  // subscribe to a package
-  // controller(res)()();
+  if (req.body.cancel) {
+    controller(res)(cancelSubscribtion)(req.decoded.id);
+  } else {
+    controller(res)(subscribe)(req.decoded.id, req.body.packageID);
+  }
 });
 
 export default router;

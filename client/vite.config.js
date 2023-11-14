@@ -8,6 +8,7 @@ import dns from 'dns'
 
 dns.setDefaultResultOrder('verbatim')
 
+
 export default defineConfig({
   plugins: [
     react(),

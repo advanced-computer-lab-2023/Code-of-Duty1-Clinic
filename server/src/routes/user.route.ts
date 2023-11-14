@@ -9,7 +9,7 @@ const router = express.Router();
 // Just for testing
 
 router.use(isAuthenticated);
-router.use(isAuthorized('Admin'));
+// router.use(isAuthorized('Admin'));
 
 router.delete('/:id', (req: Request, res: Response) => {
   controller(res)(deleteUsers)({ _id: req.params.id });

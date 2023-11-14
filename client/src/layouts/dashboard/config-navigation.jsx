@@ -16,8 +16,8 @@ const navConfig = [
     icon: icon('ic_user')
   },
   {
-    title: 'product',
-    path: '/products',
+    title: 'Packages',
+    path: '/packages',
     icon: icon('ic_cart')
   },
   {
@@ -41,8 +41,53 @@ const navConfig = [
     icon: icon('ic_user')
   },
   {
+    title: 'Patients',
+    path: '/patients',
+    icon: icon('ic_user')
+  },
+  {
+    title: 'Upload Documents',
+    path: '/upload-document',
+    icon: icon('ic_disabled')
+  },
+  {
+    title: 'Medical History',
+    path: '/medical-history',
+    icon: icon('ic_disabled')
+  },
+  {
+    title: 'Patients',
+    path: '/patients',
+    icon: icon('ic_user')
+  },
+  {
+    title: 'Upload Documents',
+    path: '/upload-document',
+    icon: icon('ic_disabled')
+  },
+  {
+    title: 'Medical History',
+    path: '/medical-history',
+    icon: icon('ic_disabled')
+  },
+  {
     title: 'Not found',
     path: '/404',
+    icon: icon('ic_disabled')
+  },
+  {
+    title: 'Add Family Member',
+    path: '/addFamily',
+    icon: icon('ic_user')
+  },
+  {
+    title: 'Forgot Password',
+    path: '/forgot-password',
+    icon: icon('ic_disabled')
+  },
+  {
+    title: 'View Requests',
+    path: '/requests-list',
     icon: icon('ic_disabled')
   }
 ];
