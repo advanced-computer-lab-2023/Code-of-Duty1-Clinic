@@ -48,9 +48,24 @@ const navConfig = [
     icon: icon('ic_user'),
   },
   {
+    title: 'Upload Documents',
+    path: '/upload-document',
+    icon: icon('ic_disabled')
+  },
+  {
+    title: 'Medical History',
+    path: '/medical-history',
+    icon: icon('ic_disabled')
+  },
+  {
     title: 'Not found',
     path: '/404',
-    icon: icon('ic_disabled'),
+    icon: icon('ic_disabled')
+  },
+  {
+    title: 'View Requests',
+    path: '/requests-list',
+    icon: icon('ic_disabled')
   },
 ];
 
