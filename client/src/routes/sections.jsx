@@ -17,6 +17,8 @@ export const HealthRecordPage = lazy(() => import('src/pages/health-record'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ForgotPage = lazy(() => import('src/pages/forgot-password'));
 export const ResetPage = lazy(() => import('src/pages/reset-password'));
+export const PackagePage = lazy(() => import('src/pages/packages'));
+export const AddFamilyPage = lazy(() => import('src/pages/addFamily'));
 
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
 export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
@@ -46,7 +48,10 @@ export default function Router() {
         { path: 'requests-list', element: <RequestsListPage /> },
         { path: 'patients', element: <PatientsPage /> },
         { path: 'health-record/:patientID', element: <HealthRecordPage /> },
-        { path: 'health-record', element: <HealthRecordPage /> }
+        { path: 'health-record', element: <HealthRecordPage /> },
+        { path: 'doctors', element: <DoctorsPage /> },
+        { path: 'packages', element: <PackagePage /> },
+        { path: 'addFamily', element: <AddFamilyPage /> }
       ]
     },
     {

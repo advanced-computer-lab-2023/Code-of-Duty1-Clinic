@@ -9,7 +9,10 @@ import {
   getPrescriptions,
   addFamilyMember,
   getFamily,
-  getHealthRecords
+  getHealthRecords,
+  getHealthPackage,
+  cancelSubscribtion,
+  subscribe
 } from '../services';
 
 const router = express.Router();
@@ -83,16 +86,23 @@ router.get('/family', (req: Request, res: Response) => {
   controller(res)(getFamily)(req.decoded.id);
 });
 router.post('/family', (req: Request, res: Response) => {
-  controller(res)(addFamilyMember)(req.decoded.id, req.body);
+
+    controller(res)(addFamilyMember)(req.decoded.id, req.body);
 });
 
+
 router.get('/package', (req: Request, res: Response) => {
-  // get package I am subscribed to
-  // controller(res)()();
+  controller(res)(getHealthPackage)(req.decoded.id)
 });
+
 router.post('/package', (req: Request, res: Response) => {
-  // subscribe to a package
-  // controller(res)()();
+  if(req.body.cancel)
+  {
+    controller(res)(cancelSubscribtion)(req.decoded.id)
+  }
+  else{
+    controller(res)(subscribe)(req.decoded.id,req.body.packageID)
+  }
 });
 
 export default router;
