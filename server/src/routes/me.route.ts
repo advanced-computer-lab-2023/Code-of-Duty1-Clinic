@@ -15,7 +15,11 @@ import {
   viewWallet,
   getHealthPackage,
   cancelSubscribtion,
-  subscribe
+  subscribe,
+  scheduleFollowUp,
+  addSlots,
+  viewContract,
+  acceptContract
 } from '../services';
 
 const router = express.Router();
