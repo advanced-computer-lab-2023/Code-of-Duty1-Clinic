@@ -10,6 +10,7 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const DoctorsPage = lazy(() => import('src/pages/doctors'));
 export const PatientsPage = lazy(() => import('src/pages/patients'));
+export const RequestsPage = lazy(() => import('src/pages/users'));
 export const ContractPage = lazy(() => import('src/pages/contract'));
 export const AddSlotsOrAppointmentPage = lazy(() => import('src/pages/addSlotsOrAppointment'));
 export const LoginPage = lazy(() => import('src/pages/login'));
@@ -44,7 +45,7 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'doctors', element: <DoctorsPage /> },
-        { path: 'reset-password', element: <ResetPage /> },
+        { path: 'requests', element: <RequestsPage /> },
         { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
         { path: '/medical-history', element: <MedicalHistoryPage /> },
         { path: 'requests-list', element: <RequestsListPage /> },
@@ -56,7 +57,8 @@ export default function Router() {
         { path: 'addFamily', element: <AddFamilyPage /> },
         { path: 'viewPackage', element: <ViewPackagePage /> },
         { path: 'contract', element: <ContractPage /> },
-        { path: 'addSlotsOrAppointment', element: <AddSlotsOrAppointmentPage /> }
+        { path: 'addSlotsOrAppointment', element: <AddSlotsOrAppointmentPage /> },
+        { path: 'reset-password', element: <ResetPage /> }
       ]
     },
     {

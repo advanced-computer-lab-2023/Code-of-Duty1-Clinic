@@ -171,6 +171,9 @@ const viewWallet = async (userId: string, role: string) => {
 };
 
 const viewContract = async (id: String) => {
+  const request = await Request.findOne({ medicID: id });
+  if (request?.status !== 'Approved') throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor not approved yet');
+
   const contract = await Contract.find({ doctorID: id });
   if (!contract) throw new HttpError(StatusCodes.NOT_FOUND, 'No contract for this doctor');
 
@@ -203,9 +206,6 @@ const acceptContract = async (id: String) => {
 const addSlots = async (doctorID: string, newSlots: any) => {
   const doctor: any = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
-
-  const request = await Request.findOne({ medicID: doctor._id });
-  if (request?.status !== 'Approved') throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor not approved yet');
 
   if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no Contract');
 

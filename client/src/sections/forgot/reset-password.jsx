@@ -14,8 +14,22 @@ import Iconify from 'src/components/iconify';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 export default function ResetPassword({ email, handleFinish }) {
-  const [newPassword, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+
+  const validatePassword = (password) => {
+    // Check if the password has at least one uppercase letter and one number
+    const uppercaseRegex = /[A-Z]/;
+    const numberRegex = /\d/;
+    return uppercaseRegex.test(password) && numberRegex.test(password);
+  };
+
+  const handlePasswordChange = (event) => {
+    const password = event.target.value;
+    setNewPassword(password);
+    setIsPasswordValid(validatePassword(password));
+  };
 
   const {
     isLoading,
@@ -23,7 +37,7 @@ export default function ResetPassword({ email, handleFinish }) {
     error
   } = useMutation(() =>
     axiosInstance.put('/auth/reset-password', { email, newPassword }).then((res) => {
-      if (res.status == 200) handleFinish();
+      if (res.status === 200) handleFinish();
       else console.log(res.data);
     })
   );
@@ -32,9 +46,10 @@ export default function ResetPassword({ email, handleFinish }) {
     <Box>
       <Typography sx={{ mt: 2, mb: 1 }}>Enter your new password</Typography>
       <TextField
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={handlePasswordChange}
         type={showPassword ? 'text' : 'password'}
         helperText="Enter your new password"
+        error={!isPasswordValid}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -42,9 +57,14 @@ export default function ResetPassword({ email, handleFinish }) {
                 <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
               </IconButton>
             </InputAdornment>
-          )
+          ),
         }}
-      ></TextField>
+      />
+      {!isPasswordValid && (
+        <Typography variant="body1" color="error" sx={{ pl: 1, pt: 1 }}>
+          Password must contain at least one uppercase letter and one number.
+        </Typography>
+      )}
 
       <Stack sx={{ pt: 2 }}>
         <LoadingButton
@@ -55,11 +75,12 @@ export default function ResetPassword({ email, handleFinish }) {
           type="submit"
           variant="contained"
           color="inherit"
+          disabled={!isPasswordValid}
         >
           Send
         </LoadingButton>
         {error && (
-          <Typography variant="body1" color="error" sx={{ pl: 11, pt: 2 }}>
+          <Typography variant="body1" color="error" sx={{ pl: 1, pt: 2 }}>
             {error.response.data.message}
           </Typography>
         )}

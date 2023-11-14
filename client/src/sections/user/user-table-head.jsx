@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-
 import Box from '@mui/material/Box';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -18,7 +17,7 @@ export default function UserTableHead({
   headLabel,
   numSelected,
   onRequestSort,
-  onSelectAllClick
+  onSelectAllClick,
 }) {
   const onSort = (property) => (event) => {
     onRequestSort(event, property);
@@ -50,7 +49,9 @@ export default function UserTableHead({
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box sx={{ ...visuallyHidden }}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</Box>
+                <Box sx={{ ...visuallyHidden }}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box>
               ) : null}
             </TableSortLabel>
           </TableCell>
@@ -64,8 +65,16 @@ UserTableHead.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']),
   orderBy: PropTypes.string,
   rowCount: PropTypes.number,
-  headLabel: PropTypes.array,
+  headLabel: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      align: PropTypes.string,
+      width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      minWidth: PropTypes.number,
+    })
+  ),
   numSelected: PropTypes.number,
   onRequestSort: PropTypes.func,
-  onSelectAllClick: PropTypes.func
+  onSelectAllClick: PropTypes.func,
 };

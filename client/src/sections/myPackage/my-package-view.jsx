@@ -13,15 +13,17 @@ import { useNavigate } from 'react-router-dom';
 
 export default function MyPackageView() {
   const navigate = useNavigate();
-  const [userPackage, setUserPackage] = useState({});
+  const [userPackage, setUserPackage] = useState({ name: '' });
+  const [packageStatus, setPackageStatus] = useState('Cancelled');
 
   const { isLoading: isLoadingPackage } = useQuery(
     'myPackages',
     () =>
       axiosInstance.get('/me/package').then((res) => {
         console.log(res.data);
-        setUserPackage(res.data.userPackage);
-      }),
+        setUserPackage(res.data.userPackage || { name: '' });
+        setPackageStatus(res.data.packageStatus || 'Cancelled')
+      }).catch((error) => console.log(error.message)),
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false
@@ -52,26 +54,32 @@ export default function MyPackageView() {
 
       <Grid container spacing={3} direction="row" justifyContent="center" alignItems="center" sx={{ mb: 3, mt: 5 }}>
         <StyledPackageContainer key={userPackage._id} spacing={5}>
-          <Typography variant="h6" sx={{ mt: -2, mb: 3, textAlign: 'center' }}>
-            {userPackage.name}
-          </Typography>
-          <Typography sx={{ mb: 2 }}>Price: {userPackage.price}</Typography>
-          <Typography sx={{ mb: 2 }}>Session Discount: {userPackage.sessionDiscount}</Typography>
-          <Typography sx={{ mb: 2 }}>Medicine Discount: {userPackage.medicineDiscount}</Typography>
-          <Typography sx={{ mb: 2 }}>Family Discount: {userPackage.familyDiscount}</Typography>
+          <Typography sx={{ mb: 2 }}>Status: {packageStatus || ''}</Typography>
+          {userPackage.name ? (
+            <>
+              <Typography variant="h6" sx={{ mt: -2, mb: 3, textAlign: 'center' }}>
+                {userPackage.name || ' '}
+              </Typography>
+              <Typography sx={{ mb: 2 }}>Price: {userPackage.price || ''}</Typography>
+              <Typography sx={{ mb: 2 }}>Session Discount: {userPackage.sessionDiscount || ''}</Typography>
+              <Typography sx={{ mb: 2 }}>Medicine Discount: {userPackage.medicineDiscount || ''}</Typography>
+              <Typography sx={{ mb: 2 }}>Family Discount: {userPackage.familyDiscount || ''}</Typography>
 
-          <LoadingButton
-            onClick={unsubscribe}
-            loading={isLoading}
-            loadingIndicator="Loading…"
-            fullWidth
-            size="large"
-            type="submit"
-            variant="contained"
-            color="inherit"
-          >
-            Cancel
-          </LoadingButton>
+
+              <LoadingButton
+                onClick={unsubscribe}
+                loading={isLoading}
+                loadingIndicator="Loading…"
+                fullWidth
+                size="large"
+                type="submit"
+                variant="contained"
+                color="inherit"
+              >
+                Cancel
+              </LoadingButton>
+            </>
+          ) : <></>}
         </StyledPackageContainer>
       </Grid>
     </Container>
