@@ -210,13 +210,23 @@ const getHealthRecords = async (patientID: String) => {
 
   const healthRecords = user.medicalHistory;
   if (!healthRecords) throw new HttpError(StatusCodes.NOT_FOUND, 'health records not found');
+  //create a new array of objects where the medicalRecord is not a URL
+  let filteredRecords = healthRecords.filter((record: any) => isNotURL(record.medicalRecord));
+  if (!filteredRecords) throw new HttpError(StatusCodes.NOT_FOUND, 'health records not found');
+  // console.log(healthRecords);
+  // console.log(filteredRecords);
 
   return {
-    result: healthRecords,
+    result: filteredRecords,
     status: StatusCodes.OK,
     message: 'Health records retrieved successfully'
   };
 };
+
+const isNotURL = (str: String) => {
+  return !str.endsWith('.pdf') && !str.endsWith('.jpeg') && !str.endsWith('.jpg') && !str.endsWith('.png');
+};
+
 export {
   viewDoctorsForPatient as viewAllDoctorsForPatient,
   getFamily,
