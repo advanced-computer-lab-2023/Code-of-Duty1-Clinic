@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { PatientView } from 'src/sections/patients/view';
+import { ResetView } from 'src/sections/reset/view';
 
 // ----------------------------------------------------------------------
 
-export default function PatientPage() {
+export default function ResetPage() {
   return (
     <>
       <Helmet>
-        <title> Patients </title>
+        <title> Reset </title>
       </Helmet>
 
-      <PatientView />
+      <ResetView />
     </>
   );
 }

@@ -16,7 +16,7 @@ import {
   packageRouter,
   chatroomRouter,
   paymentRouter,
-  uploadRouter,
+  uploadRouter
 } from './routes';
 import { StatusCodes } from 'http-status-codes';
 
@@ -35,20 +35,6 @@ app.use(
 );
 
 app.use(queryParser);
-
-// app.use((req, res, next) => {
-//   // Website you wish to allow to connect, localhost:3001 is the frontend
-//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3030');
-//   res.header('Access-Control-Allow-Headers', '*');
-//   res.header('Access-Control-Allow-Credentials', 'true');
-
-//   if (req.method == 'OPTIONS') {
-//     res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-//     return res.status(StatusCodes.OK).json({});
-//   }
-
-//   next();
-// });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.header('Access-Control-Allow-Credentials', 'true');
