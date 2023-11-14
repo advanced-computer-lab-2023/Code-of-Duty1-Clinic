@@ -44,7 +44,7 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'doctors', element: <DoctorsPage /> },
-        { path: 'reset-password', element: <ResetPage /> },
+			
         { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
         { path: '/medical-history', element: <MedicalHistoryPage /> },
         { path: 'requests-list', element: <RequestsListPage /> },
