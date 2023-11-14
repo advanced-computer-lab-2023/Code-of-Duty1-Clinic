@@ -9,14 +9,20 @@ const router = express.Router();
 
 router.use(isAuthenticated);
 
-router.get("/prices",async(req,res) => {
-  const prices = await stripe.prices.list({
-    apiKey: process.env.STRIPE_SECRET_KEY
-  })
-  return res.json(prices);
-});
+// router.get("/prices",async(req,res) => {
+//   const prices = await stripe.prices.list({
+//     apiKey: process.env.STRIPE_SECRET_KEY
+//   })
+//   return res.json(prices);
+// });
 
-router.post('/session/:priceAmount/:productName',async(req,res)=>{
+interface Product {
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+router.post('/session/subscription/:priceAmount/:productName',async(req,res)=>{
   try{
   const product = await stripe.products.create({
     name: req.params.productName,
@@ -58,6 +64,55 @@ router.post('/session/:priceAmount/:productName',async(req,res)=>{
  }
   
 });
+
+router.post('/session/oneTimePayment', async (req, res) => {
+  try {
+    const { products }: { products: Product[] } = req.body;
+    console.log(req.body);
+
+    // Create products in Stripe
+    const stripeProducts = await Promise.all(
+      products.map(async (product:Product) => {
+        return await stripe.products.create({
+          name: product.name,
+          type: 'service',
+        });
+      })
+    );
+
+    const stripePrices = await Promise.all(
+      products.map(async (product:Product, index:number) => {
+        const productObj = stripeProducts[index];
+
+        return await stripe.prices.create({
+          unit_amount: product.price * 100, // assuming the price is in cents
+          currency: 'usd',
+          product: productObj.id,
+        });
+      })
+    );
+
+    // Create line items for the Checkout Session
+    const lineItems = stripePrices.map((price, index) => ({
+      price: price.id,
+      quantity: products[index].quantity,
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      success_url: 'http://localhost:3030/success', // replace with your success URL
+      cancel_url: 'http://localhost:3030/cancel', // replace with your cancel URL
+    });
+
+    return res.json(session);
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
+    return res.status(500).json({ error: 'Failed to create checkout session' });
+  }
+});
+
 
 router.post('/payment/checkout', (req: Request, res: Response) => {
   // Handle payment checkout logic here
