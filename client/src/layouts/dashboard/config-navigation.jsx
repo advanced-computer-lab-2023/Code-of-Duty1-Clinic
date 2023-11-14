@@ -16,8 +16,8 @@ const navConfig = [
     icon: icon('ic_user')
   },
   {
-    title: 'product',
-    path: '/products',
+    title: 'Packages',
+    path: '/packages',
     icon: icon('ic_cart')
   },
   {
@@ -44,6 +44,11 @@ const navConfig = [
     title: 'Not found',
     path: '/404',
     icon: icon('ic_disabled')
+  },
+  {
+    title: 'Add Family Member',
+    path: '/addFamily',
+    icon: icon('ic_user')
   }
 ];
 

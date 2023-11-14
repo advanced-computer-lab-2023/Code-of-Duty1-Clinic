@@ -18,7 +18,7 @@ const addFamilyMember = async (id: string, body: any) => {
     userID = await Patient.findOne({phone:body.phone}).select('_id');
 
   const { relation, name, age, gender, nationalID } = body;
-  if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
+ // if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
 
   let newFamily;
   if (userID) {
@@ -234,11 +234,110 @@ const getHealthRecords = async (patientID: String) => {
     message: 'Health records retrieved successfully'
   };
 };
+
+const getHealthPackage = async (userID: string) => {
+
+  const user = await Patient.findOne({ _id: userID });
+
+  if(user?.package)
+  {
+
+    if(user?.package.packageStatus === 'Subscribed')
+    {
+
+      const userPackage = await Package.findOne({_id:user?.package.packageID}).select('-_id -isLatest');
+  
+      let renewalDate = user?.package.endDate as Date;
+      renewalDate.setDate(renewalDate.getDate() + 1); 
+  
+      return{
+  
+        status: StatusCodes.OK,
+        userPackage: userPackage,
+        packageStatus:"Subscribed",
+        renewalDate: renewalDate
+  
+      }
+
+    }
+
+    if(user?.package.packageStatus === 'Cancelled')
+    {
+
+      return{
+  
+        status: StatusCodes.OK,
+        packageStatus: 'Cancelled',
+        endDate: user?.package.endDate
+  
+      }
+
+    }
+  }
+
+  return {
+
+    status: StatusCodes.OK,
+    message: "You are not subscribed to a health package",
+    packageStatus: "UnSubscribed"
+
+  };
+};
+
+const cancelSubscribtion = async(userID:string) => {
+
+  const user = await Patient.findById(userID);
+
+  if(!(user?.package))
+  {
+    throw new HttpError(StatusCodes.BAD_REQUEST,"You're not subscribed to any packages");
+  }
+
+  await Patient.findByIdAndUpdate(userID, { $set: { 'package.packageStatus': 'Cancelled' } });
+
+  return {
+
+    status: StatusCodes.OK,
+    message: 'Cancelled Subscribtion sucessfully'
+
+  };
+
+};
+
+const subscribe = async( userID:string, packageID:string) =>
+{
+  let date = new Date();
+  date.setFullYear(date.getFullYear()+1);
+
+  const userPackage = {
+    packageID: packageID,
+    packageStatus: 'Subscribed',
+    endDate: date
+  }
+  
+
+  await Patient.findByIdAndUpdate(userID, {$set: {package: userPackage}});
+
+  return {
+
+    status: StatusCodes.OK,
+    message: 'Subscribed sucessfully'
+
+  };
+}
+
+
 export {
   viewDoctorsForPatient as viewAllDoctorsForPatient,
   getFamily,
   addFamilyMember,
   addHealthRecord,
   getHealthRecords,
-  saveMedicalHistory,removeMedicalHistory,getMedicalHistoryURL,getMedicalHistory
+  saveMedicalHistory,
+  removeMedicalHistory,
+  getMedicalHistoryURL,
+  getMedicalHistory,
+  getHealthPackage,
+  cancelSubscribtion,
+  subscribe
 };
