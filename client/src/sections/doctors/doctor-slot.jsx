@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -5,15 +7,27 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 
+import { useRouter } from 'src/routes/hooks';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 export default function DoctorDaySlots({ day, slots, doctorID }) {
+  const navigate = useNavigate();
+
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const today = daysOfWeek[new Date().getDay()];
 
   if (today == day) day = 'Today';
 
   const reserveSlot = (slot) => {
+    axiosInstance
+      .post(`/payment/session/oneTimePayment`, {
+        products: [{ name: `${slot.startDate} - ${slot.endDate}`, price: slot.sessionPrice, quantity: 1 }]
+      })
+      .then((res) => {
+        window.location.replace(res.data.url);
+      })
+      .catch((err) => console.log(err));
+
     axiosInstance
       .post(`/doctors/${doctorID}/appointments`, {
         startDate: slot.startDate,
@@ -38,8 +52,8 @@ export default function DoctorDaySlots({ day, slots, doctorID }) {
           const startDate = new Date(slot.startDate);
           const endDate = new Date(slot.endDate);
 
-          const from = `${startDate.getHours()}: ${startDate.getMinutes()}`;
-          const to = `${endDate.getHours()}: ${endDate.getMinutes()}`;
+          const from = `${startDate.getHours()}:${startDate.getMinutes()}`;
+          const to = `${endDate.getHours()}:${endDate.getMinutes()}`;
 
           return (
             <Stack>
