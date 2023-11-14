@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 import { HttpError } from '../utils';
 
-
 import StatusCodes from 'http-status-codes';
 import { User, Contract, Appointment, IPatient, IDoctor, Doctor, Request, Patient } from '../models';
 
@@ -149,5 +148,4 @@ const viewAvailableAppointments = async (doctorID: string) => {
   };
 };
 
-export { getDoctors, getMyPatients, viewAvailableAppointments, };
-
+export { getDoctors, getMyPatients, viewAvailableAppointments };
