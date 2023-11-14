@@ -169,4 +169,4 @@ const viewWallet = async (userId: string, role: string) => {
     message: `Successfully retrieved ${userType}'s wallet`
   };
 };
-export { getDoctors, getMyPatients, viewAvailableAppointments, saveRegistrationFiles, viewWallet };
+export { getDoctors, getMyPatients, viewAvailableAppointments, viewWallet };

@@ -32,7 +32,7 @@ export default function UserPage() {
   const [filterValues, setFilterValues] = useState({
     startDate: null,
     endDate: null,
-    status: '',
+    status: ''
   });
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -45,10 +45,8 @@ export default function UserPage() {
         if (filterValues.startDate || filterValues.endDate || filterValues.status) {
           endpoint += '?s=filter';
 
-          if (filterValues.startDate)
-            endpoint += `&startDate=${new Date(filterValues.startDate).toISOString()}`;
-          if (filterValues.endDate)
-            endpoint += `&endDate=${new Date(filterValues.endDate).toISOString()}`;
+          if (filterValues.startDate) endpoint += `&startDate=${new Date(filterValues.startDate).toISOString()}`;
+          if (filterValues.endDate) endpoint += `&endDate=${new Date(filterValues.endDate).toISOString()}`;
           if (filterValues.status) endpoint += `&status=${filterValues.status}`;
         }
 
@@ -87,10 +85,7 @@ export default function UserPage() {
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
+      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
     }
     setSelected(newSelected);
   };
@@ -186,11 +181,11 @@ export default function UserPage() {
           onClose={handleFilterClose}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'center',
+            horizontal: 'center'
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'center',
+            horizontal: 'center'
           }}
         >
           <Box p={2} style={{ width: '300px' }}>
@@ -200,11 +195,9 @@ export default function UserPage() {
               type="date"
               fullWidth
               InputLabelProps={{
-                shrink: true,
+                shrink: true
               }}
-              onChange={(e) =>
-                setFilterValues({ ...filterValues, startDate: e.target.value })
-              }
+              onChange={(e) => setFilterValues({ ...filterValues, startDate: e.target.value })}
               value={filterValues.startDate || ''}
             />
             {filterValues.startDate && (
@@ -224,11 +217,9 @@ export default function UserPage() {
               type="date"
               fullWidth
               InputLabelProps={{
-                shrink: true,
+                shrink: true
               }}
-              onChange={(e) =>
-                setFilterValues({ ...filterValues, endDate: e.target.value })
-              }
+              onChange={(e) => setFilterValues({ ...filterValues, endDate: e.target.value })}
               value={filterValues.endDate || ''}
             />
             {filterValues.endDate && (
@@ -244,15 +235,10 @@ export default function UserPage() {
             )}
             <Autocomplete
               options={['Upcoming', 'Completed', 'Cancelled', 'Rescheduled']}
-              renderInput={(params) => (
-                <TextField {...params} label="Status" fullWidth margin="normal" />
-              )}
-              onChange={(e, value) =>
-                setFilterValues({ ...filterValues, status: value })
-              }
+              renderInput={(params) => <TextField {...params} label="Status" fullWidth margin="normal" />}
+              onChange={(e, value) => setFilterValues({ ...filterValues, status: value })}
               value={filterValues.status || ''}
             />
-            
           </Box>
         </Popover>
       </Stack>
@@ -269,39 +255,34 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'patientName', label: 'Patient Name' },
-                  { id: 'doctorName', label: 'Doctor Name' },
+                  { id: 'patientName', label: 'Doctor Name' },
+                  { id: 'doctorName', label: 'Patient Name' },
                   { id: 'status', label: 'Status' },
                   { id: 'sessionPrice', label: 'Session Price' },
                   { id: 'startDate', label: 'Start Date' },
                   { id: 'endDate', label: 'End Date' },
                   { id: 'isFollowUp', label: 'Follow Up' },
-                  { id: '' },
+                  { id: '' }
                 ]}
               />
               <TableBody>
-                {appointments
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row._id}
-                      _id={row._id}
-                      patientName={row.patientName}
-                      doctorName={row.doctorName}
-                      status={row.status}
-                      sessionPrice={row.sessionPrice}
-                      startDate={row.startDate}
-                      endDate={row.endDate}
-                      isFollowUp={row.isFollowUp}
-                      selected={selected.indexOf(row._id) !== -1}
-                      handleClick={(event) => handleClick(event, row._id)}
-                    />
-                  ))}
+                {appointments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                  <UserTableRow
+                    key={row._id}
+                    _id={row._id}
+                    patientName={row.patientName}
+                    doctorName={row.doctorName}
+                    status={row.status}
+                    sessionPrice={row.sessionPrice}
+                    startDate={row.startDate}
+                    endDate={row.endDate}
+                    isFollowUp={row.isFollowUp}
+                    selected={selected.indexOf(row._id) !== -1}
+                    handleClick={(event) => handleClick(event, row._id)}
+                  />
+                ))}
 
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, appointments.length)}
-                />
+                <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, appointments.length)} />
               </TableBody>
             </Table>
           </TableContainer>

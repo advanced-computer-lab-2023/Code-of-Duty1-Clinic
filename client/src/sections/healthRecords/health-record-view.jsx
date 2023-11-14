@@ -43,7 +43,7 @@ export default function HealthRecordView({ patientID }) {
     try {
       await axiosInstance.post(`/patients/${patientID}/medicalhistory`, {
         name: newName,
-        medicalRecord: newRecord,
+        medicalRecord: newRecord
       });
       // Reload the page after successful submission
       window.location.reload();
@@ -77,12 +77,7 @@ export default function HealthRecordView({ patientID }) {
 
       {user === 'Doctor' && (
         <div>
-          <TextField
-            label="Name"
-            value={newName}
-            onChange={(event) => setNewName(event.target.value)}
-            sx={{ mb: 2 }}
-          />
+          <TextField label="Name" value={newName} onChange={(event) => setNewName(event.target.value)} sx={{ mb: 2 }} />
           <br />
           <TextField
             label="Health Record"
