@@ -44,6 +44,11 @@ const navConfig = [
     title: 'Not found',
     path: '/404',
     icon: icon('ic_disabled')
+  },
+  {
+    title: 'Forgot Password',
+    path: '/forgot-password',
+    icon: icon('ic_disabled')
   }
 ];
 
