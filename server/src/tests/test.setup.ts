@@ -16,7 +16,7 @@ let mongoServer: MongoMemoryServer;
 //   mongoServer = await MongoMemoryServer.create();
 //   const mongoUri = mongoServer.getUri();
 
-//   await mongoose.connect(mongoUri);
+//   await mongoose.connect(mongoUri)
 // };
 const connectDB = async (): Promise<MongoMemoryServer> => {
   mongoServer = await MongoMemoryServer.create();
