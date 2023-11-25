@@ -8,6 +8,10 @@ import doctorRouter from './doctor.route';
 import patientRouter from './patient.route';
 import paymentRouter from './payment.route';
 import uploadRouter from "./upload.route";
+import cartRouter from './cart.route';
+import orderRouter from './order.route';
+import medicineRouter from './medicine.route';
+
 export {
   authRouter,
   meRouter,
@@ -19,5 +23,19 @@ export {
   chatroomRouter,
   paymentRouter,
   uploadRouter,
+  cartRouter,
+  orderRouter,
+  medicineRouter
   
 };
+  
+// export * from './auth.route';
+// export * from './chatroom.route';
+// export * from './package.route';
+// export * from './request.route';
+// export * from './user.route';
+// export * from './me.route';
+// export * from './doctor.route';
+// export * from './patient.route';
+// export * from './payment.route';
+// export * from './upload.route';

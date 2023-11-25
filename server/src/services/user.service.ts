@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
-import { User } from '../models';
+import { User,Patient } from '../models';
 
 const updateInfo = async (id: string, info: any) => {
   const canUpdate = ['email', 'hourRate', 'hospital'];
@@ -18,7 +18,7 @@ const updateInfo = async (id: string, info: any) => {
 };
 
 const getUsers = async (query: Object) => {
-  const users = await User.find({ ...query, role: { $ne: 'Admin' } });
+  const users = await User.find({ ...query });
   if (!users) throw new HttpError(StatusCodes.NOT_FOUND, 'no users found');
 
   return {
@@ -26,5 +26,26 @@ const getUsers = async (query: Object) => {
     result: users
   };
 };
+const addNewDeliveryAddress = async (id: string, address: string) => {
+  const patient = await Patient.findById(id);
+  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'no such a user exist ');
+  if (!address)
+    return {
+      status: StatusCodes.OK,
+      result: patient.addresses
+    };
 
-export { updateInfo, getUsers };
+  patient.addresses!.push(address);
+  await patient.save();
+
+  // patient.updateOne({ addresses: addresses });
+  // console.log('i got there by the way and i finished my job');
+  // await patient.save();
+  // console.log('patient has been saved ');
+  return {
+    status: StatusCodes.OK,
+    result: patient.addresses
+  };
+};
+
+export { updateInfo, getUsers, addNewDeliveryAddress };

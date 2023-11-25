@@ -19,7 +19,8 @@ import {
   scheduleFollowUp,
   addSlots,
   viewContract,
-  acceptContract
+  acceptContract,
+  addNewDeliveryAddress 
 } from '../services';
 
 const router = express.Router();
@@ -117,5 +118,9 @@ router.post('/package', (req: Request, res: Response) => {
     controller(res)(subscribe)(req.decoded.id, req.body.packageID);
   }
 });
+router.use(isAuthorized('Pharmacist', 'Patient','Doctor'));
 
+router.post('/addNewAddress', (req: Request, res: Response) => {
+  controller(res)(addNewDeliveryAddress)(req.decoded.id, req.body.address);
+});
 export default router;

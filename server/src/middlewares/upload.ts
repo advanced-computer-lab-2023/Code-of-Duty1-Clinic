@@ -43,7 +43,8 @@ const allowedRegistrationFields = [
 ];
 
 const medicalHistoryUpload = multer({ storage: generateStorageObject('medicalHistory'), fileFilter: fileFilter });
+const medicineUpload = multer({ storage: generateStorageObject('medicine'), fileFilter: fileFilter });
 
 const registrationUpload = multer({ storage: generateStorageObject('registration'), fileFilter: fileFilter });
 
-export { registrationUpload, medicalHistoryUpload, allowedRegistrationFields };
+export { registrationUpload, medicalHistoryUpload, allowedRegistrationFields ,medicineUpload};

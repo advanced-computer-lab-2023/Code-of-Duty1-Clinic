@@ -21,4 +21,5 @@ router.put('/reject', (req: Request, res: Response) => {
   controller(res)(rejectRequest)(req.body.email);
 });
 
+
 export default router;

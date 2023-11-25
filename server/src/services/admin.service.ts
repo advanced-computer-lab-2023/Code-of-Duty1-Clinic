@@ -47,7 +47,7 @@ const deleteUsers = async (query: any) => {
 };
 
 const acceptRequest = async (email: string) => {
-  const doctor : any = await Doctor.findOne({email : email});
+  const doctor : any = await User.findOne({email : email});
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
   const request = await Request.findOne({medicID : doctor._id});
@@ -64,7 +64,7 @@ const acceptRequest = async (email: string) => {
 };
 
 const rejectRequest = async (email: string) => {
-  const doctor : any = await Doctor.findOne({email : email});
+  const doctor : any = await User.findOne({email : email});
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
   const request = await Request.findOne({medicID : doctor._id});
@@ -81,4 +81,4 @@ const rejectRequest = async (email: string) => {
 };
 
 
-export { getRequests, addAdmin, deleteUsers,acceptRequest, rejectRequest};
+export { getRequests, addAdmin, deleteUsers, acceptRequest, rejectRequest };
