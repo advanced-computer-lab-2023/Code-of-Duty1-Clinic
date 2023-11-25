@@ -2,6 +2,10 @@ import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 
 import Iconify from 'src/components/iconify';
+import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { axiosInstance } from 'src/utils/axiosInstance';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
@@ -29,9 +33,29 @@ const StyledRoot = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function CartWidget() {
+  const [cartItems, setCartItems] = useState(0);
+  const url = `http://localhost:3000/cart`;
+  const fetchCartData = async () => {
+    try {
+      const response = await axios.get(url, { withCredentials: true });
+      const items = response.data.result.items.reduce((acc, item) => acc + 1, 0);
+      setCartItems(items);
+    } catch (error) {
+      console.error('Error fetching cart data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCartData();
+  }, 0);
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate('/cart');
+  };
+
   return (
-    <StyledRoot>
-      <Badge showZero badgeContent={0} color="error" max={99}>
+    <StyledRoot onClick={handleClick}>
+      <Badge showZero badgeContent={cartItems} color="error" max={99}>
         <Iconify icon="eva:shopping-cart-fill" width={24} height={24} />
       </Badge>
     </StyledRoot>

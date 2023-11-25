@@ -41,11 +41,27 @@ export default function RegisterView() {
   const [loading, setLoading] = useState(false);
 
   const handleTabChange = (e, tabIndex) => {
+    e.preventDefault();
+
     setCurrentTab(tabIndex);
   };
+
   const onSubmit = async (body) => {
     try {
       setLoading(true);
+
+      let role = '';
+      switch (currentTab) {
+        case 0:
+          role = 'Patient';
+          break;
+        case 1:
+          role = 'Doctor';
+          break;
+        case 2:
+          role = 'Pharmacist';
+          break;
+      }
 
       const res = await fetch('http://localhost:3000/auth/register', {
         method: 'POST',
@@ -53,15 +69,13 @@ export default function RegisterView() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ...body, role: currentTab === 0 ? 'Patient' : 'Doctor' })
+        body: JSON.stringify({ ...body, role })
       });
 
       const data = await res.json();
-      if (res.ok) {
-        router.push('/upload-document');
-      } else {
-        setError(data.message);
-      }
+
+      if (res.ok) router.push('/upload-document');
+      else setError(data.message);
     } catch (e) {
       console.log(e);
     } finally {
@@ -111,6 +125,7 @@ export default function RegisterView() {
               <Tabs centered sx={{ mb: 2 }} onChange={handleTabChange}>
                 <Tab label="Register as a Patient" value={0} />
                 <Tab label="Register as a Doctor" value={1} />
+                <Tab label="Register as a Pharmacist" value={2} />
               </Tabs>
 
               <Stack spacing={3}>
@@ -194,35 +209,38 @@ export default function RegisterView() {
                   error={!!errors?.birthDate}
                   helperText={errors?.birthDate ? 'Required' : null}
                 />
-                {currentTab === 1 && (
-                  <Stack spacing={3}>
-                    <TextField
-                      label="Hour Rate"
-                      {...register('hourRate', {
-                        required: true
-                      })}
-                      error={!!errors?.hourRate}
-                      helperText={errors?.hourRate ? 'Required' : null}
-                    />
+                <Stack spacing={3}>
+                  {(currentTab === 1 || currentTab === 2) && (
+                    <>
+                      <TextField
+                        label="Hour Rate"
+                        {...register('hourRate', {
+                          required: true
+                        })}
+                        error={!!errors?.hourRate}
+                        helperText={errors?.hourRate ? 'Required' : null}
+                      />
 
-                    <TextField
-                      label="Hospital"
-                      {...register('hospital', {
-                        required: true
-                      })}
-                      error={!!errors?.hospital}
-                      helperText={errors?.hospital ? 'Required' : null}
-                    />
+                      <TextField
+                        label="Hospital"
+                        {...register('hospital', {
+                          required: true
+                        })}
+                        error={!!errors?.hospital}
+                        helperText={errors?.hospital ? 'Required' : null}
+                      />
 
-                    <TextField
-                      label="Educational Background"
-                      {...register('educationBackground', {
-                        required: true
-                      })}
-                      error={!!errors?.educationBackground}
-                      helperText={errors?.educationBackground ? 'Required' : null}
-                    />
-
+                      <TextField
+                        label="Educational Background"
+                        {...register('educationBackground', {
+                          required: true
+                        })}
+                        error={!!errors?.educationBackground}
+                        helperText={errors?.educationBackground ? 'Required' : null}
+                      />
+                    </>
+                  )}
+                  {currentTab === 1 && (
                     <TextField
                       label="Speciality"
                       {...register('specialty', {
@@ -231,9 +249,10 @@ export default function RegisterView() {
                       error={!!errors?.specialty}
                       helperText={errors?.specialty ? 'Required' : null}
                     />
-                    <RegistrationUpload />
-                  </Stack>
-                )}
+                  )}
+
+                  <RegistrationUpload />
+                </Stack>
 
                 <LoadingButton
                   loading={loading}

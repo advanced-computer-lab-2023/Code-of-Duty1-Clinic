@@ -12,7 +12,7 @@ const navConfig = [
   },
   {
     title: 'Appointments',
-    path: '/user',
+    path: '/appointments',
     icon: icon('ic_user')
   },
   {
@@ -81,6 +81,11 @@ const navConfig = [
     icon: icon('ic_user')
   },
   {
+    title: 'product',
+    path: '/products',
+    icon: icon('ic_cart')
+  },
+  {
     title: 'Upload Documents',
     path: '/upload-document',
     icon: icon('ic_disabled')
@@ -114,6 +119,16 @@ const navConfig = [
     title: 'View Requests',
     path: '/requests-list',
     icon: icon('ic_disabled')
+  },
+  {
+    title: 'Addresses',
+    path: '/addresses',
+    icon: icon('ic_analytics')
+  },
+  {
+    title: 'orders',
+    path: '/orders',
+    icon: icon('ic_analytics')
   }
 ];
 

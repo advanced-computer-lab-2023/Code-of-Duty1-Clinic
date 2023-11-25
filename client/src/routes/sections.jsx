@@ -7,7 +7,7 @@ import { RegistrationUpload, UploadView } from 'src/sections/upload';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
-export const UserPage = lazy(() => import('src/pages/user'));
+export const AppointmentsPage = lazy(() => import('src/pages/appointments'));
 export const DoctorsPage = lazy(() => import('src/pages/doctors'));
 export const PatientsPage = lazy(() => import('src/pages/patients'));
 export const RequestsPage = lazy(() => import('src/pages/users'));
@@ -26,6 +26,13 @@ export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
 export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
 export const MedicalHistoryPage = lazy(() => import('src/pages/medical-history'));
+
+export const CartPage = lazy(() => import('src/pages/cart'));
+export const OrdersPage = lazy(() => import('src/pages/orders'));
+export const PharmacistDocumentUploadPage = lazy(() => import('src/pages/pharmacist-upload-document'));
+export const MedicineImageUploadPage = lazy(() => import('src/pages/uploadMedicineImage'));
+export const ViewMedicineImage = lazy(() => import('src/pages/view-medicine-image'));
+export const AddressesPage = lazy(() => import('src/pages/addresses'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -41,7 +48,7 @@ export default function Router() {
       ),
       children: [
         { index: true, element: <IndexPage /> },
-        { path: 'user', element: <UserPage /> },
+        { path: 'appointments', element: <AppointmentsPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'doctors', element: <DoctorsPage /> },
@@ -58,7 +65,14 @@ export default function Router() {
         { path: 'viewPackage', element: <ViewPackagePage /> },
         { path: 'contract', element: <ContractPage /> },
         { path: 'addSlotsOrAppointment', element: <AddSlotsOrAppointmentPage /> },
-        { path: 'reset-password', element: <ResetPage /> }
+        { path: 'reset-password', element: <ResetPage /> },
+
+        { path: 'orders', element: <OrdersPage /> },
+        { path: 'cart', element: <CartPage /> },
+        { path: 'orders', element: <OrdersPage /> },
+        { path: 'upload-medicine-image', element: <MedicineImageUploadPage /> },
+        { path: 'view-medicine-image', element: <ViewMedicineImage /> },
+        { path: 'addresses', element: <AddressesPage /> }
       ]
     },
     {

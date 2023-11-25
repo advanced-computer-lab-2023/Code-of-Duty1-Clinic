@@ -21,7 +21,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Popover from '@mui/material/Popover';
 import Box from '@mui/material/Box';
 
-export default function UserPage() {
+export default function AppointmentsView() {
   const [appointments, setAppointments] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');

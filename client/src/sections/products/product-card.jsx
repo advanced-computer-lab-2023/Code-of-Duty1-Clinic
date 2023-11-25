@@ -11,11 +11,34 @@ import Button from '@mui/material/Button';
 import { fCurrency } from 'src/utils/format-number';
 
 import Label from 'src/components/label';
-import { ColorPreview } from 'src/components/color-utils';
-
+// import { ColorPreview } from 'src/components/color-utils';
+import Iconify from 'src/components/iconify/iconify';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // ----------------------------------------------------------------------
 
 export default function ShopProductCard({ product }) {
+  let count = 1;
+
+  const handleAddToCart = async (id, clickNumber) => {
+    if (clickNumber === 1) {
+      try {
+        await axios.post('http://localhost:3000/cart', { medID: id }, { withCredentials: true });
+        toast.success('Product added to the cart successfully!', {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        toast.error('Error adding to cart. Please try again later.', {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+    } else {
+      alert('The item is already added to the cart!');
+    }
+    console.log(count);
+    count++;
+  };
   const renderStatus = (
     <Label
       variant="filled"
@@ -25,10 +48,11 @@ export default function ShopProductCard({ product }) {
         top: 16,
         right: 16,
         position: 'absolute',
-        textTransform: 'uppercase'
+        textTransform: 'uppercase',
       }}
     >
-      {product.status}
+      {product.numStock != 0 ? 'available' : 'sold out'}
+      {/* suppose here to be the product.status */}
     </Label>
   );
 
@@ -36,29 +60,32 @@ export default function ShopProductCard({ product }) {
     <Box
       component="img"
       alt={product.name}
-      src={product.cover}
+      src={'assets/images/avatars/avatar_1.jpg'}
       sx={{
         top: 0,
         width: 1,
         height: 1,
         objectFit: 'cover',
-        position: 'absolute'
+        position: 'absolute',
       }}
     />
   );
 
   const renderPrice = (
     <Typography variant="subtitle1">
-      <Typography
+      {/* <Typography
         component="span"
         variant="body1"
         sx={{
           color: 'text.disabled',
-          textDecoration: 'line-through'
+          textDecoration: 'line-through',
         }}
       >
-        {product.priceSale && fCurrency(product.priceSale)}
-      </Typography>
+        {
+          product.price
+          // && fCurrency(product.price)
+        }
+      </Typography> */}
       &nbsp;
       {fCurrency(product.price)}
     </Typography>
@@ -67,8 +94,8 @@ export default function ShopProductCard({ product }) {
   return (
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
-        {product.status && renderStatus}
-
+        {product._id && renderStatus}
+        {/* suppose here to be the product status */}
         {renderImg}
       </Box>
 
@@ -78,7 +105,16 @@ export default function ShopProductCard({ product }) {
         </Link>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <ColorPreview colors={product.colors} />
+          {/* <ColorPreview colors={['red', 'blue', 'yellow', 'green']} /> */}
+          {/* it suppose here to be product.colors */}
+          <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() => handleAddToCart(product._id, count)}
+          >
+            add to cart
+          </Button>
           {renderPrice}
         </Stack>
       </Stack>
@@ -87,5 +123,5 @@ export default function ShopProductCard({ product }) {
 }
 
 ShopProductCard.propTypes = {
-  product: PropTypes.object
+  product: PropTypes.object,
 };
