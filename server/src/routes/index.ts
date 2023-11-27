@@ -7,7 +7,7 @@ import meRouter from './me.route';
 import doctorRouter from './doctor.route';
 import patientRouter from './patient.route';
 import paymentRouter from './payment.route';
-import uploadRouter from "./upload.route";
+import uploadRouter from './upload.route';
 import cartRouter from './cart.route';
 import orderRouter from './order.route';
 import medicineRouter from './medicine.route';
@@ -26,9 +26,8 @@ export {
   cartRouter,
   orderRouter,
   medicineRouter
-  
 };
-  
+
 // export * from './auth.route';
 // export * from './chatroom.route';
 // export * from './package.route';
