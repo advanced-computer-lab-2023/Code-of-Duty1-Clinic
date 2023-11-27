@@ -16,7 +16,10 @@ import {
   packageRouter,
   chatroomRouter,
   paymentRouter,
-  uploadRouter
+  uploadRouter,
+  cartRouter,
+  orderRouter,
+  medicineRouter
 } from './routes';
 import { StatusCodes } from 'http-status-codes';
 
@@ -53,6 +56,9 @@ app.use('/me', meRouter);
 app.use('/users', userRouter);
 app.use('/doctors', doctorRouter);
 app.use('/patients', patientRouter);
+app.use('/cart', cartRouter);
+app.use('/orders', orderRouter);
+app.use('/medicine', medicineRouter);
 app.use('/requests', requestRouter);
 app.use('/packages', packageRouter);
 app.use('/chatrooms', chatroomRouter);

@@ -61,16 +61,6 @@ const navConfig = [
     icon: icon('ic_user')
   },
   {
-    title: 'Patients',
-    path: '/patients',
-    icon: icon('ic_user')
-  },
-  {
-    title: 'Upload Documents',
-    path: '/upload-document',
-    icon: icon('ic_disabled')
-  },
-  {
     title: 'Medical History',
     path: '/medical-history',
     icon: icon('ic_disabled')
@@ -88,11 +78,6 @@ const navConfig = [
   {
     title: 'Upload Documents',
     path: '/upload-document',
-    icon: icon('ic_disabled')
-  },
-  {
-    title: 'Medical History',
-    path: '/medical-history',
     icon: icon('ic_disabled')
   },
   {

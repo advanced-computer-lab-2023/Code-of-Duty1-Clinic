@@ -69,7 +69,6 @@ export default function Router() {
 
         { path: 'orders', element: <OrdersPage /> },
         { path: 'cart', element: <CartPage /> },
-        { path: 'orders', element: <OrdersPage /> },
         { path: 'upload-medicine-image', element: <MedicineImageUploadPage /> },
         { path: 'view-medicine-image', element: <ViewMedicineImage /> },
         { path: 'addresses', element: <AddressesPage /> }

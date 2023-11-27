@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { axiosInstance } from 'src/utils/axiosInstance';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
-import Divider from '@mui/material/Divider';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useQuery, useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
@@ -19,11 +16,14 @@ export default function MyPackageView() {
   const { isLoading: isLoadingPackage } = useQuery(
     'myPackages',
     () =>
-      axiosInstance.get('/me/package').then((res) => {
-        console.log(res.data);
-        setUserPackage(res.data.userPackage || { name: '' });
-        setPackageStatus(res.data.packageStatus || 'Cancelled')
-      }).catch((error) => console.log(error.message)),
+      axiosInstance
+        .get('/me/package')
+        .then((res) => {
+          console.log(res.data);
+          setUserPackage(res.data.userPackage || { name: '' });
+          setPackageStatus(res.data.packageStatus || 'Cancelled');
+        })
+        .catch((error) => console.log(error.message)),
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false
@@ -53,7 +53,7 @@ export default function MyPackageView() {
       </Typography>
 
       <Grid container spacing={3} direction="row" justifyContent="center" alignItems="center" sx={{ mb: 3, mt: 5 }}>
-        <StyledPackageContainer key={userPackage._id} spacing={5}>
+        <StyledPackageContainer key={userPackage._id}>
           <Typography sx={{ mb: 2 }}>Status: {packageStatus || ''}</Typography>
           {userPackage.name ? (
             <>
@@ -64,7 +64,6 @@ export default function MyPackageView() {
               <Typography sx={{ mb: 2 }}>Session Discount: {userPackage.sessionDiscount || ''}</Typography>
               <Typography sx={{ mb: 2 }}>Medicine Discount: {userPackage.medicineDiscount || ''}</Typography>
               <Typography sx={{ mb: 2 }}>Family Discount: {userPackage.familyDiscount || ''}</Typography>
-
 
               <LoadingButton
                 onClick={unsubscribe}
@@ -79,7 +78,9 @@ export default function MyPackageView() {
                 Cancel
               </LoadingButton>
             </>
-          ) : <></>}
+          ) : (
+            <></>
+          )}
         </StyledPackageContainer>
       </Grid>
     </Container>

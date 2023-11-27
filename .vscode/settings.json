@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
         "fieldname"
+    ],
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "main"
     ]
 }
