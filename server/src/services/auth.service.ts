@@ -53,7 +53,8 @@ const logout = async (id: string) => {
 
   return {
     status: StatusCodes.OK,
-    message: 'Logout successful'
+    message: 'Logout successful',
+    token: 'wrong token'
   };
 };
 
