@@ -5,10 +5,13 @@ import { HttpError } from '../utils';
 import { Prescription, Appointment } from '../models';
 import path from 'path';
 import fs from 'fs';
+
 // Maybe we need to validate unique family member by userID or nationalID
 const addFamilyMember = async (id: string, body: any) => {
   let userID;
   if (body.userID) userID = body.userID;
+  
+  const query = body.email? { email: body.email } : body.phone? { phone: body.phone } : null;
 
   if (body.email) {
     userID = await Patient.findOne({ email: body.email }).select('_id');
@@ -59,9 +62,9 @@ const addFamilyMember = async (id: string, body: any) => {
   if (!updatedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
 
   return {
-    result: updatedUser,
     status: StatusCodes.OK,
-    message: 'Family member added successfully'
+    message: 'Family member added successfully',
+    result: updatedUser,
   };
 };
 
