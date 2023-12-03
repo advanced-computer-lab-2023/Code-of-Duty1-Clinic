@@ -6,8 +6,8 @@ interface ChatMessage {
 }
 
 interface IChatRoom {
-  patientID: mongoose.Schema.Types.ObjectId;
-  medicID: mongoose.Schema.Types.ObjectId;
+  user1ID: mongoose.Schema.Types.ObjectId;
+  user2ID: mongoose.Schema.Types.ObjectId;
   messages: ChatMessage[];
   date?: Date;
 }
@@ -15,12 +15,12 @@ interface IChatRoom {
 type IChatRoomDocument = IChatRoom & Document;
 
 const chatRoomSchema = new Schema<IChatRoomDocument>({
-  patientID: {
+  user1ID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  medicID: {
+  user2ID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -38,10 +38,10 @@ const chatRoomSchema = new Schema<IChatRoomDocument>({
   date: { type: Date, default: Date.now() }
 });
 
-chatRoomSchema.index({ patientID: 1 });
-chatRoomSchema.index({ medicID: 1 });
+chatRoomSchema.index({ user1ID: 1 });
+chatRoomSchema.index({ user2ID: 1 });
 
-const ChatRoomModel = mongoose.model<IChatRoomDocument>('ChatRoom', chatRoomSchema);
+const ChatRoom = mongoose.model<IChatRoomDocument>('ChatRoom', chatRoomSchema);
 
-export default ChatRoomModel;
+export default ChatRoom;
 export { IChatRoom };
