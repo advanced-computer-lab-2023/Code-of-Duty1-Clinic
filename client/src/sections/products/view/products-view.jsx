@@ -20,7 +20,6 @@ export default function ProductsView() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewProductDetails, setViewProductDetails] = useState(false);
 
   const handleOpenFilter = () => {
     setOpenFilter(true);

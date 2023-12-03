@@ -12,7 +12,7 @@ import {
   Stack,
   Select,
   MenuItem,
-  InputLabel,
+  InputLabel
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -35,7 +35,7 @@ export default function CartComponent() {
         name: item.id.name,
         count: item.count,
         price: item.id.price,
-        numstock: item.id.numStock,
+        numstock: item.id.numStock
       }));
       setCartItems(items);
     } catch (error) {
@@ -105,9 +105,7 @@ export default function CartComponent() {
         const decreaseUrl = `${url}/decrease/${itemId}`;
         await axiosInstance.patch(decreaseUrl, { itemId });
         setCartItems((currentItems) =>
-          currentItems.map((item) =>
-            item.id === itemId ? { ...item, count: item.count - 1 } : item
-          )
+          currentItems.map((item) => (item.id === itemId ? { ...item, count: item.count - 1 } : item))
         );
       }
       if (item.numstock - item.count >= 0) {
@@ -122,12 +120,12 @@ export default function CartComponent() {
     const products = cartItems.map((item) => ({
       name: item.name,
       price: item.price,
-      quantity: item.count,
+      quantity: item.count
     }));
     console.log(products);
     axiosInstance
       .post(`/payment/session/oneTimePayment`, {
-        products: products,
+        products: products
       })
       .then((res) => {
         window.location.replace(res.data.url);
@@ -135,7 +133,7 @@ export default function CartComponent() {
         axiosInstance.post('/orders', {
           paymentType: 'Card',
           StripePaymentID: res.data.id,
-          address,
+          address
         });
       })
       .catch((err) => console.log(err));
@@ -148,7 +146,7 @@ export default function CartComponent() {
     axiosInstance
       .post('/orders', {
         paymentType: 'Cash',
-        address,
+        address
       })
       .then((res) => navigate('/orders'));
   };
@@ -160,14 +158,14 @@ export default function CartComponent() {
           '& thead th': {
             backgroundColor: '#f5f5f5',
             color: '#333',
-            fontWeight: 'bold',
+            fontWeight: 'bold'
           },
           '& tbody td': {
-            border: '1px solid #ddd',
+            border: '1px solid #ddd'
           },
           '& tbody tr:hover': {
-            backgroundColor: '#f1f1f1',
-          },
+            backgroundColor: '#f1f1f1'
+          }
         }}
       >
         <TableHead>
@@ -211,8 +209,8 @@ export default function CartComponent() {
                       color: 'red',
                       '&:hover': {
                         color: 'white',
-                        backgroundColor: 'red',
-                      },
+                        backgroundColor: 'red'
+                      }
                     }}
                     onClick={() => handleRemoveItem(item.id)}
                   >
@@ -237,16 +235,22 @@ export default function CartComponent() {
       </Table>
       <br />
       <InputLabel>Select Address</InputLabel>
-      <Select label="Select Address" onChange={handleSelectChange} displayEmpty>
+      {/* <Select label="Select Address" onChange={handleSelectChange} displayEmpty>
         <MenuItem value="" disabled>
           Select an address
         </MenuItem>
-        {addresses.map((address, index) => (
-          <MenuItem key={index} value={address}>
-            {address}
+        {addresses && addresses.length > 0 ? (
+          addresses.map((address, index) => (
+            <MenuItem key={index} value={address}>
+              {address}
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem disabled value="">
+            No addresses available
           </MenuItem>
-        ))}
-      </Select>
+        )}
+      </Select> */}
     </>
   );
 }
