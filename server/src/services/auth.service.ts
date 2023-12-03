@@ -24,7 +24,7 @@ const login = async (body: any) => {
 };
 
 const register = async (body: any, files?: Express.Multer.File[]) => {
-  if (!['Patient', 'Doctor'].includes(body.role))
+  if (!['Patient', 'Doctor', 'Pharmacist'].includes(body.role))
     throw new Error('Role is not correct or you cannot register as admin');
 
   // ToDo: Verify Email with OTP
@@ -32,7 +32,7 @@ const register = async (body: any, files?: Express.Multer.File[]) => {
   const user = new User(body);
   await user.save();
 
-  if (body.role === 'Doctor') {
+  if (body.role === 'Doctor' || body.role === 'Pharmacist') {
     //TODO is it a must to add documents on registration as a doctor if so implement the logic here .
     //TODO can the doctor update these info after acceptance ? n
     const newRequest = new Request({
