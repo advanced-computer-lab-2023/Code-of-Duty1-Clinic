@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import axios from 'axios';
-
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
 
 import { fCurrency } from 'src/utils/format-number';
 
@@ -14,6 +15,7 @@ import Label from 'src/components/label';
 // import { ColorPreview } from 'src/components/color-utils';
 import Iconify from 'src/components/iconify/iconify';
 import { toast } from 'react-toastify';
+import { MedicineImage } from '../upload/medicineImage';
 import 'react-toastify/dist/ReactToastify.css';
 // ----------------------------------------------------------------------
 
@@ -25,12 +27,12 @@ export default function ShopProductCard({ product }) {
       try {
         await axios.post('http://localhost:3000/cart', { medID: id }, { withCredentials: true });
         toast.success('Product added to the cart successfully!', {
-          position: toast.POSITION.TOP_RIGHT,
+          position: toast.POSITION.TOP_RIGHT
         });
       } catch (error) {
         console.error('Error adding to cart:', error);
         toast.error('Error adding to cart. Please try again later.', {
-          position: toast.POSITION.TOP_RIGHT,
+          position: toast.POSITION.TOP_RIGHT
         });
       }
     } else {
@@ -48,7 +50,7 @@ export default function ShopProductCard({ product }) {
         top: 16,
         right: 16,
         position: 'absolute',
-        textTransform: 'uppercase',
+        textTransform: 'uppercase'
       }}
     >
       {product.numStock != 0 ? 'available' : 'sold out'}
@@ -66,9 +68,10 @@ export default function ShopProductCard({ product }) {
         width: 1,
         height: 1,
         objectFit: 'cover',
-        position: 'absolute',
+        position: 'absolute'
       }}
     />
+    // <MedicineImage MedicineID={product._id} />
   );
 
   const renderPrice = (
@@ -123,5 +126,5 @@ export default function ShopProductCard({ product }) {
 }
 
 ShopProductCard.propTypes = {
-  product: PropTypes.object,
+  product: PropTypes.object
 };
