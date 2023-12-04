@@ -19,9 +19,9 @@ import { MedicineImage } from '../upload/medicineImage';
 import 'react-toastify/dist/ReactToastify.css';
 // ----------------------------------------------------------------------
 
-export default function ShopProductCard({ product }) {
+export default function ShopProductCard({ product, onDetailsview }) {
+  const user = localStorage.getItem('userRole');
   let count = 1;
-
   const handleAddToCart = async (id, clickNumber) => {
     if (clickNumber === 1) {
       try {
@@ -54,6 +54,22 @@ export default function ShopProductCard({ product }) {
       }}
     >
       {product.numStock != 0 ? 'available' : 'sold out'}
+      {/* suppose here to be the product.status */}
+    </Label>
+  );
+  const renderArchive = (
+    <Label
+      variant="filled"
+      color={(product.status === 'sale' && 'error') || 'info'}
+      sx={{
+        zIndex: 9,
+        top: 16,
+        left: 16,
+        position: 'absolute',
+        textTransform: 'uppercase'
+      }}
+    >
+      {product.isArchived ? 'Archived' : 'not Archived'}
       {/* suppose here to be the product.status */}
     </Label>
   );
@@ -93,17 +109,25 @@ export default function ShopProductCard({ product }) {
       {fCurrency(product.price)}
     </Typography>
   );
-
   return (
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
         {product._id && renderStatus}
+        {user === 'Pharmacist' && renderArchive}
         {/* suppose here to be the product status */}
         {renderImg}
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
+        <Link
+          color="inherit"
+          underline="hover"
+          variant="subtitle2"
+          noWrap
+          onClick={() => {
+            onDetailsview(product);
+          }}
+        >
           {product.name}
         </Link>
 
