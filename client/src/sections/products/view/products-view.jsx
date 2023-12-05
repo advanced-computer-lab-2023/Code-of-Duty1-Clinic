@@ -12,7 +12,7 @@ import ProductSort from '../product-sort';
 import ProductFilters from '../product-filters';
 import ProductCartWidget from '../product-cart-widget';
 import axios from 'axios';
-
+import ProductDetails from '../product-details';
 // ----------------------------------------------------------------------
 
 export default function ProductsView() {
@@ -20,6 +20,21 @@ export default function ProductsView() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandProductDetails, setExpandProductDetails] = useState(false);
+  const [product, setProduct] = useState(null);
+  const user = localStorage.getItem('userRole');
+
+  const handleExpandProductDetails = (product) => {
+    setProduct(product);
+    setExpandProductDetails(true);
+  };
+  const handleCloseProductDetails = async () => {
+    const medicines = await axios.get('http://localhost:3000/medicine', {
+      withCredentials: true
+    });
+    setProducts(medicines.data.result);
+    setExpandProductDetails(false);
+  };
 
   const handleOpenFilter = () => {
     setOpenFilter(true);
@@ -33,7 +48,7 @@ export default function ProductsView() {
       try {
         setLoading(true);
         const medicines = await axios.get('http://localhost:3000/medicine', {
-          withCredentials: true,
+          withCredentials: true
         });
         setProducts(medicines.data.result);
       } catch (error) {
@@ -52,6 +67,9 @@ export default function ProductsView() {
   if (loading) {
     return <Typography variant="body1">Loading...</Typography>;
   }
+  if (expandProductDetails) {
+    return <ProductDetails product={product} onCloseProductDetails={handleCloseProductDetails} />;
+  }
 
   return (
     <Container>
@@ -60,31 +78,22 @@ export default function ProductsView() {
         {console.log(products)}
       </Typography>
 
-      <Stack
-        direction="row"
-        alignItems="center"
-        flexWrap="wrap-reverse"
-        justifyContent="flex-end"
-        sx={{ mb: 5 }}
-      >
+      <Stack direction="row" alignItems="center" flexWrap="wrap-reverse" justifyContent="flex-end" sx={{ mb: 5 }}>
         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters
-            openFilter={openFilter}
-            onOpenFilter={handleOpenFilter}
-            onCloseFilter={handleCloseFilter}
-          />
+          <ProductFilters openFilter={openFilter} onOpenFilter={handleOpenFilter} onCloseFilter={handleCloseFilter} />
 
           <ProductSort />
         </Stack>
       </Stack>
 
       <Grid container spacing={3}>
-        {products.map((product) => (
-          <Grid key={product.id} xs={12} sm={6} md={3}>
-            <ProductCard product={product} />
-            {/* {console.log(count)} */}
-          </Grid>
-        ))}
+        {products
+          .filter((product) => !(user === 'Patient' && product.isArchived))
+          .map((product) => (
+            <Grid key={product.id} xs={12} sm={6} md={3}>
+              <ProductCard product={product} onDetailsview={handleExpandProductDetails} />
+            </Grid>
+          ))}
       </Grid>
 
       <ProductCartWidget />
