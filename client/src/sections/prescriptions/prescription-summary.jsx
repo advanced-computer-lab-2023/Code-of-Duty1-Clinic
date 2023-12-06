@@ -8,9 +8,11 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import { axiosInstance } from '../../utils/axiosInstance';
 import { Select } from '@mui/material';
+import { set } from 'lodash';
 
 export default function PrescriptionSummary({
   prescriptionID,
@@ -73,7 +75,7 @@ export default function PrescriptionSummary({
   const [newMedicine, setNewMedicine] = useState('');
   const [newDosage, setNewDosage] = useState('');
 
-  console.log(medicinesListNames);
+  // console.log(medicinesListNames);
 
   const handleAddMedicine = async () => {
     console.log(newMedicine);
@@ -85,6 +87,39 @@ export default function PrescriptionSummary({
       setNewMedicine('');
       setNewDosage('');
       window.location.reload();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const [medArray, setMedArray] = useState([]);
+  useEffect(() => {
+    const getMedID = async () => {
+      try {
+        const res = await axiosInstance.get(`/medicine`);
+        setMedArray(res.data.result);
+        // console.log('Yes');
+        // console.log(medArray);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    getMedID();
+  }, []);
+
+  const handleAddCartItem = async (medicine) => {
+    console.log(medArray);
+    let medID = '';
+    for (let i = 0; i < medArray.length; i++) {
+      if (medArray[i].name === medicine) {
+        medID = medArray[i]._id;
+        console.log(medID);
+      }
+    }
+    try {
+      await axiosInstance.post(`/cart`, {
+        medID
+      });
     } catch (err) {
       console.error(err);
     }
@@ -188,6 +223,17 @@ export default function PrescriptionSummary({
                         onClick={() => handleDeleteMedicine(medicineData._id)}
                       >
                         <DeleteIcon />
+                      </IconButton>
+                    </div>
+                  )}
+                  {user === 'Patient' && (
+                    <div>
+                      <IconButton
+                        aria-label="add"
+                        color="primary"
+                        onClick={() => handleAddCartItem(medicineData.medicine)}
+                      >
+                        <AddCircleOutlineIcon />
                       </IconButton>
                     </div>
                   )}
