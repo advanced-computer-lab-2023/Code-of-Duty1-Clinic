@@ -23,6 +23,7 @@ export const ForgotPage = lazy(() => import('src/pages/forgot-password'));
 export const ResetPage = lazy(() => import('src/pages/reset-password'));
 export const PackagePage = lazy(() => import('src/pages/packages'));
 export const AddFamilyPage = lazy(() => import('src/pages/addFamily'));
+export const FamilyPage = lazy(() => import('src/pages/family'));
 export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
 export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
@@ -64,6 +65,7 @@ export default function Router() {
         { path: 'prescription', element: <PrescriptionsPage /> },
         { path: 'doctors', element: <DoctorsPage /> },
         { path: 'packages', element: <PackagePage /> },
+        { path: 'family', element: <FamilyPage /> },
         { path: 'addFamily', element: <AddFamilyPage /> },
         { path: 'viewPackage', element: <ViewPackagePage /> },
         { path: 'contract', element: <ContractPage /> },

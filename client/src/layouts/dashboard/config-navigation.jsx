@@ -96,6 +96,11 @@ const navConfig = [
     icon: icon('ic_disabled')
   },
   {
+    title: 'Family Members',
+    path: '/family',
+    icon: icon('ic_user')
+  },
+  {
     title: 'Add Family Member',
     path: '/addFamily',
     icon: icon('ic_user')
