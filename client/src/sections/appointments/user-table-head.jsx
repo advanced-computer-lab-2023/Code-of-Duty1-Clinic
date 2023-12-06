@@ -17,7 +17,7 @@ export default function UserTableHead({
   headLabel,
   numSelected,
   onRequestSort,
-  onSelectAllClick,
+  onSelectAllClick
 }) {
   const onSort = (property) => (event) => {
     onRequestSort(event, property);
@@ -26,13 +26,13 @@ export default function UserTableHead({
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
+        {/* <TableCell padding="checkbox">
           <Checkbox
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
           />
-        </TableCell>
+        </TableCell> */}
 
         {headLabel.map((headCell) => (
           <TableCell
@@ -49,9 +49,7 @@ export default function UserTableHead({
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box sx={{ ...visuallyHidden }}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
+                <Box sx={{ ...visuallyHidden }}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</Box>
               ) : null}
             </TableSortLabel>
           </TableCell>
@@ -71,10 +69,10 @@ UserTableHead.propTypes = {
       label: PropTypes.string.isRequired,
       align: PropTypes.string,
       width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-      minWidth: PropTypes.number,
+      minWidth: PropTypes.number
     })
   ),
   numSelected: PropTypes.number,
   onRequestSort: PropTypes.func,
-  onSelectAllClick: PropTypes.func,
+  onSelectAllClick: PropTypes.func
 };

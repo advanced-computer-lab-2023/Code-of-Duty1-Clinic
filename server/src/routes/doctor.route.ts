@@ -12,7 +12,7 @@ router.get('/:id/availableAppointments', isAuthorized('Patient'), (req: Request,
 });
 
 router.post('/:id/appointments', isAuthorized('Patient'), (req: Request, res: Response) => {
-  controller(res)(createAppointment)(req.decoded.id, req.params.id, req.body);
+  controller(res)(createAppointment)(req.params.id, req.body);
 });
 
 router.get('/:id', (req: Request, res: Response) => {

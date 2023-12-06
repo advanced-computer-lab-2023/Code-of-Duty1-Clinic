@@ -19,10 +19,11 @@ export default function UserTableRow({
   doctorName,
   status,
   sessionPrice,
+  day,
   startDate,
   endDate,
   isFollowUp,
-  handleClick,
+  handleClick
 }) {
   const [open, setOpen] = useState(null);
 
@@ -36,12 +37,8 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
-
-        <TableCell component="th" scope="row" padding="none">
+      <TableRow hover tabIndex={-1}>
+        <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
               {doctorName}
@@ -55,6 +52,8 @@ export default function UserTableRow({
 
         <TableCell>{sessionPrice}</TableCell>
 
+        <TableCell>{day}</TableCell>
+
         <TableCell>{startDate}</TableCell>
 
         <TableCell>{endDate}</TableCell>
@@ -65,10 +64,9 @@ export default function UserTableRow({
   );
 }
 
-
 UserTableRow.propTypes = {
   _id: PropTypes.string.isRequired,
-  doctorName: PropTypes.string, 
+  doctorName: PropTypes.string,
   patientName: PropTypes.string,
   status: PropTypes.string,
   sessionPrice: PropTypes.number,
@@ -76,5 +74,5 @@ UserTableRow.propTypes = {
   endDate: PropTypes.string,
   isFollowUp: PropTypes.bool,
   selected: PropTypes.bool,
-  handleClick: PropTypes.func,
+  handleClick: PropTypes.func
 };

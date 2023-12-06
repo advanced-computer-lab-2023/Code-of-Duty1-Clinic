@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { AppointmentsView } from 'src/sections/appointments/view';
+import { FamilyView } from 'src/sections/family/view';
 
 // ----------------------------------------------------------------------
 
-export default function AppointmentsPage() {
+export default function AppPage() {
   return (
     <>
       <Helmet>
-        <title> User </title>
+        <title> Add Family Member </title>
       </Helmet>
 
-      <AppointmentsView />
+      <FamilyView />
     </>
   );
 }

@@ -29,6 +29,8 @@ export default function AppointmentsView() {
   const [orderBy, setOrderBy] = useState('doctorID');
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const myName = localStorage.getItem('userName');
+
   const [filterValues, setFilterValues] = useState({
     startDate: null,
     endDate: null,
@@ -39,18 +41,14 @@ export default function AppointmentsView() {
 
   useEffect(() => {
     const fetchAppointments = async () => {
+      const params = {};
+
+      if (filterValues.startDate) params.startDate = new Date(filterValues.startDate).toISOString();
+      if (filterValues.endDate) params.endDate = new Date(filterValues.endDate).toISOString();
+      if (filterValues.status) params.status = filterValues.status;
+
       try {
-        let endpoint = '/me/appointments';
-
-        if (filterValues.startDate || filterValues.endDate || filterValues.status) {
-          endpoint += '?s=filter';
-
-          if (filterValues.startDate) endpoint += `&startDate=${new Date(filterValues.startDate).toISOString()}`;
-          if (filterValues.endDate) endpoint += `&endDate=${new Date(filterValues.endDate).toISOString()}`;
-          if (filterValues.status) endpoint += `&status=${filterValues.status}`;
-        }
-
-        const response = await axiosInstance.get(endpoint);
+        const response = await axiosInstance.get('/me/appointments', { params });
         setAppointments(response.data.result);
       } catch (error) {
         console.error('Error fetching appointments:', error);
@@ -101,7 +99,7 @@ export default function AppointmentsView() {
 
   const handleGetUpcomingAppointments = async () => {
     try {
-      const response = await axiosInstance.get('/me/appointments?s=Upcoming');
+      const response = await axiosInstance.get('/me/appointments?status=Upcoming');
       setAppointments(response.data.result);
     } catch (error) {
       console.error('Error fetching upcoming appointments:', error);
@@ -110,7 +108,7 @@ export default function AppointmentsView() {
 
   const handleGetPastAppointments = async () => {
     try {
-      const response = await axiosInstance.get('/me/appointments?s=Completed');
+      const response = await axiosInstance.get('/me/appointments?status=Completed');
       setAppointments(response.data.result);
     } catch (error) {
       console.error('Error fetching past appointments:', error);
@@ -259,8 +257,9 @@ export default function AppointmentsView() {
                   { id: 'doctorName', label: 'Patient Name' },
                   { id: 'status', label: 'Status' },
                   { id: 'sessionPrice', label: 'Session Price' },
-                  { id: 'startDate', label: 'Start Date' },
-                  { id: 'endDate', label: 'End Date' },
+                  { id: 'day', label: 'Day' },
+                  { id: 'startDate', label: 'Start time' },
+                  { id: 'endDate', label: 'End time' },
                   { id: 'isFollowUp', label: 'Follow Up' },
                   { id: '' }
                 ]}
@@ -270,12 +269,13 @@ export default function AppointmentsView() {
                   <UserTableRow
                     key={row._id}
                     _id={row._id}
-                    patientName={row.patientName}
-                    doctorName={row.doctorName}
+                    patientName={row.patientName == myName ? 'Me' : row.patientName}
+                    doctorName={row.doctorName == myName ? 'Me' : row.doctorName}
                     status={row.status}
                     sessionPrice={row.sessionPrice}
-                    startDate={row.startDate}
-                    endDate={row.endDate}
+                    day={new Date(row.startDate).toUTCString().slice(0, 16)}
+                    startDate={new Date(row.startDate).toUTCString().slice(17, 22)}
+                    endDate={new Date(row.endDate).toUTCString().slice(17, 22)}
                     isFollowUp={row.isFollowUp}
                     selected={selected.indexOf(row._id) !== -1}
                     handleClick={(event) => handleClick(event, row._id)}

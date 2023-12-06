@@ -66,7 +66,6 @@ export default function DoctorFilter({ onSearch }) {
           onChange={handleChange}
           placeholder="Search by date..."
           type="datetime-local"
-          startIcon={<TodayIcon />}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

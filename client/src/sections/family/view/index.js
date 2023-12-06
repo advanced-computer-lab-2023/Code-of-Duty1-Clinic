@@ -1,0 +1,1 @@
+export { default as FamilyView } from "./family-view";
