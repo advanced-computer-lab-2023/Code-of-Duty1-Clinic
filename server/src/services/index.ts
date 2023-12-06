@@ -14,4 +14,3 @@ export * from './pharmacist.service';
 // export * from './chatroom.service';
 // export * from './contract.service';
 // export * from './notification.service';
-// export * from './chatroom.service';

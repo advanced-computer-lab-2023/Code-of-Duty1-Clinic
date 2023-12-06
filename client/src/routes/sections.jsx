@@ -17,11 +17,13 @@ export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const HealthRecordPage = lazy(() => import('src/pages/health-record'));
+export const PrescriptionsPage = lazy(() => import('src/pages/prescriptions'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ForgotPage = lazy(() => import('src/pages/forgot-password'));
 export const ResetPage = lazy(() => import('src/pages/reset-password'));
 export const PackagePage = lazy(() => import('src/pages/packages'));
 export const AddFamilyPage = lazy(() => import('src/pages/addFamily'));
+export const FamilyPage = lazy(() => import('src/pages/family'));
 export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
 export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
@@ -59,8 +61,11 @@ export default function Router() {
         { path: 'patients', element: <PatientsPage /> },
         { path: 'health-record/:patientID', element: <HealthRecordPage /> },
         { path: 'health-record', element: <HealthRecordPage /> },
+        { path: 'prescription/:patientID', element: <PrescriptionsPage /> },
+        { path: 'prescription', element: <PrescriptionsPage /> },
         { path: 'doctors', element: <DoctorsPage /> },
         { path: 'packages', element: <PackagePage /> },
+        { path: 'family', element: <FamilyPage /> },
         { path: 'addFamily', element: <AddFamilyPage /> },
         { path: 'viewPackage', element: <ViewPackagePage /> },
         { path: 'contract', element: <ContractPage /> },

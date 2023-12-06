@@ -6,13 +6,13 @@ import {
   getUsers,
   updateInfo,
   getAppointments,
+  createAppointment,
   getPrescriptions,
   addFamilyMember,
   getFamily,
   getHealthRecords,
-  filterAppointments,
-  getUpcoming_Past_Appointments,
   viewWallet,
+  updateWallet,
   getHealthPackage,
   cancelSubscribtion,
   subscribe,
@@ -20,7 +20,8 @@ import {
   addSlots,
   viewContract,
   acceptContract,
-  addNewDeliveryAddress 
+  addNewDeliveryAddress,
+  getMyPrescriptions
 } from '../services';
 
 const router = express.Router();
@@ -37,21 +38,10 @@ router.put('/info', (req: Request, res: Response) => {
 
 router.use(isAuthorized('Doctor', 'Patient'));
 
-// get my appointments
 router.get('/appointments', (req: Request, res: Response) => {
-  if (req.query.s === 'Upcoming') {
-    controller(res)(getUpcoming_Past_Appointments)(req.decoded.id, req.decoded.role, 'Upcoming');
-  } else if (req.query.s === 'Completed') {
-    controller(res)(getUpcoming_Past_Appointments)(req.decoded.id, req.decoded.role, 'Completed');
-  } else if (req.query.s === 'filter') {
-    // user's id field depends on the role
-    const userId = req.decoded.role === 'Patient' ? 'patientID' : 'doctorID';
-    controller(res)(filterAppointments)({ ...req.query, [userId]: req.decoded.id, role: req.decoded.role });
-  } else {
-    // user's id field depends on the role
-    const userID = req.decoded.role === 'Patient' ? 'patientID' : 'doctorID';
-    controller(res)(getAppointments)({ ...req.query, [userID]: req.decoded.id });
-  }
+  // user's id field depends on his role
+  const userID = req.decoded.role === 'Patient' ? 'patientID' : 'doctorID';
+  controller(res)(getAppointments)({ ...req.query, [userID]: req.decoded.id });
 });
 router.post('/appointments', (req: Request, res: Response) => {
   controller(res)(scheduleFollowUp)(req.decoded.id, req.body);
@@ -59,6 +49,9 @@ router.post('/appointments', (req: Request, res: Response) => {
 
 router.get('/wallet', (req: Request, res: Response) => {
   controller(res)(viewWallet)(req.decoded.id, req.decoded.role);
+});
+router.put('/wallet', (req: Request, res: Response) => {
+  controller(res)(updateWallet)(req.decoded.id, req.decoded.role, req.body.amount);
 });
 
 // Doctor Routes
@@ -83,8 +76,8 @@ router.put('/contract', (req: Request, res: Response) => {
 router.get('/prescriptions/:id', (req: Request, res: Response) => {
   controller(res)(getPrescriptions)({ _id: req.params.id });
 });
-router.get('/prescriptions', (req: Request, res: Response) => {
-  controller(res)(getPrescriptions)(req.query);
+router.get('/prescriptions', isAuthorized('Patient'), (req: Request, res: Response) => {
+  controller(res)(getMyPrescriptions)(req.decoded.id, req.query);
 });
 
 router.get('/medicalhistory', isAuthorized('Patient'), (req: Request, res: Response) => {
@@ -118,9 +111,11 @@ router.post('/package', (req: Request, res: Response) => {
     controller(res)(subscribe)(req.decoded.id, req.body.packageID);
   }
 });
-router.use(isAuthorized('Pharmacist', 'Patient','Doctor'));
+
+router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));
 
 router.post('/addNewAddress', (req: Request, res: Response) => {
   controller(res)(addNewDeliveryAddress)(req.decoded.id, req.body.address);
 });
+
 export default router;

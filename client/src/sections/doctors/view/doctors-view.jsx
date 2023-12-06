@@ -23,8 +23,8 @@ export default function DoctorsView() {
     () =>
       axiosInstance.get(`/doctors`).then((res) => {
         const doctors = res.data.result;
-
         setFilteredDoctors(doctors);
+
         return doctors;
       }),
     {
@@ -38,15 +38,17 @@ export default function DoctorsView() {
   if (isLoading) return 'Loading...';
   if (error) return 'An error has occurred: ' + error.message;
 
-  const onSearch = (filters) => {
-    setFilteredDoctors(
-      doctors.filter((doctor) => {
-        return (
-          doctor.name.toLowerCase().includes(filters.name.toLowerCase()) &&
-          doctor.specialty.toLowerCase().includes(filters.specialty.toLowerCase())
-        );
-      })
-    );
+  const onSearch = async (filters) => {
+    const params = {};
+
+    if (filters.name) params.name = filters.name;
+    if (filters.specialty) params.specialty = filters.specialty;
+    if (filters.date) params.date = filters.date;
+
+    await axiosInstance
+      .get(`/doctors`, { params })
+      .then((res) => setFilteredDoctors(res.data.result))
+      .catch((err) => console.log(err));
   };
 
   let i = 0;
@@ -61,13 +63,14 @@ export default function DoctorsView() {
       </Card>
 
       <Grid container spacing={3}>
-        {filteredDoctors.map((doctor) => {
-          return (
-            <Grid key={doctor._id} item xs={12} md={12} sm={12}>
-              <DoctorCard i={i++} doctor={doctor} />
-            </Grid>
-          );
-        })}
+        {filteredDoctors &&
+          filteredDoctors.map((doctor) => {
+            return (
+              <Grid key={doctor._id} item xs={12} md={12} sm={12}>
+                <DoctorCard i={i++} doctor={doctor} />
+              </Grid>
+            );
+          })}
       </Grid>
     </Container>
   );

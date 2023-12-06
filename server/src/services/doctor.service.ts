@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 import { HttpError } from '../utils';
 
 import StatusCodes from 'http-status-codes';
-import { Contract, Appointment, IDoctor, Doctor, Request, Patient, Package } from '../models';
+import { Contract, Appointment, IDoctor, Doctor, Request, Patient, Package, Admin, User, IPatient } from '../models';
 
 const getMyPatients = async (query: any) => {
   const patientIDs = await Appointment.find(query).distinct('patientID');
@@ -20,15 +20,20 @@ const getMyPatients = async (query: any) => {
 const calculateTimeStamp = (slot: { hours: number; minutes: number }) => slot.hours * 60 + slot.minutes;
 
 const getDoctors = async (query: any) => {
-  let doctors: IDoctor[] = await Doctor.find(query); // .find({ isContractAccepted: true });
+  let { date, ...newQuery } = query;
+  if (newQuery.specialty) newQuery.specialty = new RegExp(newQuery.specialty, 'i');
+  if (newQuery.name) newQuery.name = new RegExp(newQuery.name, 'i');
 
-  if (query.date) {
-    const daysOfWeek = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    const day: string = daysOfWeek[query.date.getDay()];
-    const hours = query.date.getHours();
-    const minutes = query.date.getMinutes();
+  let doctors: IDoctor[] = await Doctor.find(newQuery); // .find({ isContractAccepted: true });
 
-    const inputTimeStamp = 60 * hours + minutes;
+  if (date) {
+    date = new Date(date);
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const day: string = daysOfWeek[date.getDay()];
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    const inputTimeStamp = calculateTimeStamp({ hours, minutes });
     doctors = doctors.filter((doctor: IDoctor) => {
       const slots = (doctor.weeklySlots as any)[day];
 
@@ -43,7 +48,11 @@ const getDoctors = async (query: any) => {
     });
   }
 
-  return { result: doctors, status: StatusCodes.OK };
+  return {
+    status: StatusCodes.OK,
+    message: 'Doctors retrieved successfully',
+    result: doctors
+  };
 };
 
 const viewAvailableAppointments = async (doctorID: string) => {
@@ -147,28 +156,6 @@ const viewAvailableAppointments = async (doctorID: string) => {
     result: availableAppointments
   };
 };
-// View the amount in my wallet req 67 for patient and doctor
-const viewWallet = async (userId: string, role: string) => {
-  let user = null;
-  let userType = '';
-
-  if (role === 'patient' || role === 'Patient') {
-    user = await Patient.findById(userId);
-    userType = 'Patients';
-  } else if (role === 'doctor' || role === 'Doctor') {
-    user = await Doctor.findById(userId);
-    userType = 'Doctor';
-  }
-  if (!user) {
-    throw new HttpError(StatusCodes.NOT_FOUND, `${userType} not found`);
-  }
-
-  return {
-    result: user.wallet,
-    status: StatusCodes.OK,
-    message: `Successfully retrieved ${userType}'s wallet`
-  };
-};
 
 const viewContract = async (id: String) => {
   const request = await Request.findOne({ medicID: id });
@@ -189,9 +176,9 @@ const acceptContract = async (id: String) => {
 
   if (contract.result.length > 0 && contract.result[0].status === 'Pending') {
     const doctor: any = await Doctor.findOne({ _id: id });
-    console.log(doctor);
     doctor.isContractAccepted = true;
     await doctor.save();
+
     contract.result[0].status = 'Accepted';
     await contract.result[0].save();
 
@@ -285,7 +272,6 @@ export {
   getDoctors,
   getMyPatients,
   viewAvailableAppointments,
-  viewWallet,
   viewContract,
   acceptContract,
   addSlots,

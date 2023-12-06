@@ -86,9 +86,19 @@ const navConfig = [
     icon: icon('ic_analytics')
   },
   {
+    title: 'My Prescriptions',
+    path: '/prescription',
+    icon: icon('ic_analytics')
+  },
+  {
     title: 'Not found',
     path: '/404',
     icon: icon('ic_disabled')
+  },
+  {
+    title: 'Family Members',
+    path: '/family',
+    icon: icon('ic_user')
   },
   {
     title: 'Add Family Member',
