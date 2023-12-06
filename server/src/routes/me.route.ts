@@ -20,7 +20,8 @@ import {
   addSlots,
   viewContract,
   acceptContract,
-  addNewDeliveryAddress 
+  addNewDeliveryAddress,
+  getMyPrescriptions
 } from '../services';
 
 const router = express.Router();
@@ -83,8 +84,8 @@ router.put('/contract', (req: Request, res: Response) => {
 router.get('/prescriptions/:id', (req: Request, res: Response) => {
   controller(res)(getPrescriptions)({ _id: req.params.id });
 });
-router.get('/prescriptions', (req: Request, res: Response) => {
-  controller(res)(getPrescriptions)(req.query);
+router.get('/prescriptions', isAuthorized('Patient'), (req: Request, res: Response) => {
+  controller(res)(getMyPrescriptions)(req.decoded.id, req.query);
 });
 
 router.get('/medicalhistory', isAuthorized('Patient'), (req: Request, res: Response) => {
@@ -118,7 +119,7 @@ router.post('/package', (req: Request, res: Response) => {
     controller(res)(subscribe)(req.decoded.id, req.body.packageID);
   }
 });
-router.use(isAuthorized('Pharmacist', 'Patient','Doctor'));
+router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));
 
 router.post('/addNewAddress', (req: Request, res: Response) => {
   controller(res)(addNewDeliveryAddress)(req.decoded.id, req.body.address);

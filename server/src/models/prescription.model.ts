@@ -8,6 +8,7 @@ interface IPrescription {
   dateIssued?: Date;
   isSubmitted?: boolean;
   medicines?: {
+    _id: any;
     medicine: string;
     dosage: string;
   }[];

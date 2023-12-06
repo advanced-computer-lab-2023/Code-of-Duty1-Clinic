@@ -13,6 +13,18 @@ const getPrescriptions = async (query: Object) => {
   };
 };
 
+const getMyPrescriptions = async (patientID: string, query: Object) => {
+  const presecription = await Prescription.find({ patientID })
+    .populate('doctorID', 'name')
+    .populate('patientID', 'name');
+  if (!presecription) throw new HttpError(StatusCodes.NOT_FOUND, 'no presecription found');
+
+  return {
+    status: StatusCodes.OK,
+    result: presecription
+  };
+};
+
 const addPrescription = async (doctorID: string, patientID: string, body: any) => {
   const newPrescription = await Prescription.create({
     doctorID,
@@ -29,7 +41,10 @@ const addPrescription = async (doctorID: string, patientID: string, body: any) =
 };
 
 const getPatientPrescriptions = async (doctorID: string, patientID: string) => {
-  const prescriptions = await Prescription.find({ doctorID, patientID });
+  //populate on both doctorID and patientID to get the patient name and doctor name and their ids
+  const prescriptions = await Prescription.find({ doctorID, patientID })
+    .populate('doctorID', 'name')
+    .populate('patientID', 'name');
   if (!prescriptions) throw new HttpError(StatusCodes.NOT_FOUND, 'no prescription found');
   return {
     prescriptions,
@@ -63,12 +78,12 @@ const addMedicineToPrescription = async (id: string, body: any) => {
   };
 };
 
-const deleteMedicineFromPrescription = async (id: string, body: any) => {
+const deleteMedicineFromPrescription = async (id: string, medicineId: string) => {
   const prescription = await Prescription.findById(id);
   if (prescription?.isSubmitted) throw new HttpError(StatusCodes.BAD_REQUEST, 'prescription is already submitted');
   let prescriptionMedicines = prescription?.medicines;
   console.log(prescriptionMedicines);
-  let updatedMedicines = prescriptionMedicines?.filter((medicine) => medicine?.medicine !== body.medicine);
+  let updatedMedicines = prescriptionMedicines?.filter((medicine) => medicine?._id.toString() !== medicineId);
   console.log(updatedMedicines);
   const updatedPrescription = await prescription?.updateOne({ medicines: updatedMedicines });
   if (!updatedPrescription) throw new HttpError(StatusCodes.BAD_REQUEST, 'failed to update prescription');
@@ -79,12 +94,11 @@ const deleteMedicineFromPrescription = async (id: string, body: any) => {
   };
 };
 
-const editDosage = async (id: string, body: any) => {
+const editDosage = async (id: string, medicineId: string, body: any) => {
   const prescription = await Prescription.findById(id);
-  //body has the dosage and medicine name
   let prescriptionMedicines = prescription?.medicines;
   prescriptionMedicines?.forEach((medicine) => {
-    if (medicine?.medicine === body.medicine) {
+    if (medicine?._id.toString() === medicineId) {
       medicine.dosage = body.dosage;
     }
   });
@@ -100,6 +114,7 @@ const editDosage = async (id: string, body: any) => {
 export {
   getPrescriptions,
   addPrescription,
+  getMyPrescriptions,
   getPatientPrescriptions,
   updatePrescriptions,
   addMedicineToPrescription,

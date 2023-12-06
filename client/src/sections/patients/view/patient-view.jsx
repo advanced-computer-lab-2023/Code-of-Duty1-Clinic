@@ -118,6 +118,10 @@ export default function UserPage() {
     navigate(`/health-record/${patientID}`);
   };
 
+  const handleViewPrescriptions = (patientID) => {
+    navigate(`/prescription/${patientID}`);
+  };
+
   const notFound = !dataFiltered.length && !!filterName;
   console.log(user);
   if (user === 'Doctor') {
@@ -172,6 +176,10 @@ export default function UserPage() {
                       viewHealthRecords={() => {
                         console.log('view health records' + row._id);
                         handleViewHealthRecords(row._id);
+                      }}
+                      viewPrescriptions={() => {
+                        console.log('view prescriptions');
+                        handleViewPrescriptions(row._id);
                       }}
                     />
                   ))}
