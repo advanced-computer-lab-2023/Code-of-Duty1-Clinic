@@ -94,7 +94,7 @@ export default function PrescriptionView({ patientID }) {
   const medicinesListNames = medicinesList.map((medicine) => medicine.name);
   console.log(medicinesListNames);
 
-  if (user !== 'Patient')
+  if (user !== 'Patient' && user !== 'Doctor')
     return (
       <Container>
         <Box

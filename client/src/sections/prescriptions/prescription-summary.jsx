@@ -170,19 +170,27 @@ export default function PrescriptionSummary({
                       <strong>Dosage:</strong> {medicineData.dosage}
                     </Typography>
                   </Box>
-                  <IconButton
-                    aria-label="edit"
-                    color="primary"
-                    onClick={() => {
-                      setEditingMedicineId(medicineData._id);
-                      setEditedDosage(medicineData.dosage);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton aria-label="delete" color="error" onClick={() => handleDeleteMedicine(medicineData._id)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  {user === 'Doctor' && (
+                    <div>
+                      <IconButton
+                        aria-label="edit"
+                        color="primary"
+                        onClick={() => {
+                          setEditingMedicineId(medicineData._id);
+                          setEditedDosage(medicineData.dosage);
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        aria-label="delete"
+                        color="error"
+                        onClick={() => handleDeleteMedicine(medicineData._id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </div>
+                  )}
                 </>
               )}
             </Box>
