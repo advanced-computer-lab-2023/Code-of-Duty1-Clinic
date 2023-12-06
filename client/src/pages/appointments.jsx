@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import { AppointmentsView } from 'src/sections/Appointments/view';
+import { AppointmentsView } from 'src/sections/appointments/view';
 
 // ----------------------------------------------------------------------
 

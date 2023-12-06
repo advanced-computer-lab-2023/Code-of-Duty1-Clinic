@@ -1,29 +1,28 @@
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Card from '@mui/material/Card';
-import Box from '@mui/material/Box';
-
-import { axiosInstance } from '../../utils/axiosInstance';
 
 export default function MemberCard({ member }) {
+  const isRegistered = member.nationalID ? false : true;
+
   return (
     <Card type="section">
-      <Stack direction={'row'} spacing={3} m={4}>
-        <Stack spacing={0} alignItems="center" justifyContent="center">
+      <Stack direction={'row'} spacing={3} m={4} alignItems="center" justifyContent="center">
+        <Stack spacing={1}>
           <Typography variant="h5" color={'Highlight'} noWrap>
-            Dr. {doctor.name}
-          </Typography>
-          <Typography variant="subtitle1" noWrap>
-            Specialty: {doctor.specialty}
-          </Typography>
-          <Typography variant="subtitle1" noWrap>
-            Education: {doctor.educationBackground}
+            Name: {member.name}
           </Typography>
           <Typography variant="subtitle1" mb={1} noWrap>
-            Hospital: {doctor.hospital}
+            {isRegistered ? `Natioanl ID: ${member.nationalID}` : `UserID: ${member.userID}`}
           </Typography>
           <Typography variant="subtitle1" fontSize={18} fontFamily={'Segoe UI'}>
-            Hourly Rate: {doctor.hourRate}
+            Relation: {member.relation}
+          </Typography>
+          <Typography variant="subtitle1" noWrap>
+            Gender: {member.gender}
+          </Typography>
+          <Typography variant="subtitle1" noWrap>
+            {isRegistered ? `Phone: ${member.phone}` : `Age: ${member.age}`}
           </Typography>
         </Stack>
       </Stack>

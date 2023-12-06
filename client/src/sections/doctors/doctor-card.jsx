@@ -25,6 +25,7 @@ export default function DoctorCard({ i, doctor }) {
 
   if (error) return 'An error has occurred';
 
+  let ii = 0;
   return (
     <Card type="section">
       <Stack direction={'row'} spacing={3} m={4}>
@@ -61,7 +62,13 @@ export default function DoctorCard({ i, doctor }) {
 
         <Stack direction={'row'} spacing={0} alignItems="center" justifyContent="center">
           {Object.keys(weekSlots).map((day) => (
-            <DoctorDaySlots key={day} day={day} slots={weekSlots[day]} doctorID={doctor._id} />
+            <DoctorDaySlots
+              key={ii++}
+              day={day}
+              slots={weekSlots[day]}
+              doctorID={doctor._id}
+              doctorName={doctor.name}
+            />
           ))}
         </Stack>
       </Stack>

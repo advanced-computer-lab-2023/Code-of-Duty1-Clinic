@@ -210,6 +210,17 @@ export default function RegisterView() {
                   helperText={errors?.birthDate ? 'Required' : null}
                 />
                 <Stack spacing={3}>
+                  {currentTab === 1 && (
+                    <TextField
+                      label="Speciality"
+                      {...register('specialty', {
+                        required: true
+                      })}
+                      error={!!errors?.specialty}
+                      helperText={errors?.specialty ? 'Required' : null}
+                    />
+                  )}
+
                   {(currentTab === 1 || currentTab === 2) && (
                     <>
                       <TextField
@@ -238,20 +249,9 @@ export default function RegisterView() {
                         error={!!errors?.educationBackground}
                         helperText={errors?.educationBackground ? 'Required' : null}
                       />
+                      <RegistrationUpload />
                     </>
                   )}
-                  {currentTab === 1 && (
-                    <TextField
-                      label="Speciality"
-                      {...register('specialty', {
-                        required: true
-                      })}
-                      error={!!errors?.specialty}
-                      helperText={errors?.specialty ? 'Required' : null}
-                    />
-                  )}
-
-                  <RegistrationUpload />
                 </Stack>
 
                 <LoadingButton

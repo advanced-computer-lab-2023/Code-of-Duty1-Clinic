@@ -23,7 +23,6 @@ export default function FamilyView() {
   if (isLoading) return 'Loading...';
   if (error) return 'An error has occurred: ' + error.message;
 
-  let i = 0;
   return (
     <Container>
       <Typography variant="h4" sx={{ mb: 1 }}>
@@ -33,7 +32,7 @@ export default function FamilyView() {
       <Grid container spacing={3}>
         {members.map((member) => {
           return (
-            <Grid key={member._id} item xs={12} md={12} sm={12}>
+            <Grid key={member._id} item xs={6} md={6} sm={12}>
               <MemberCard member={member} />
             </Grid>
           );

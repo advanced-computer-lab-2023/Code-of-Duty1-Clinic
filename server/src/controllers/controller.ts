@@ -19,7 +19,7 @@ const controller =
 
       res.status(result.status || StatusCodes.OK).json(result);
     } catch (error: any) {
-      console.log(error);
+      console.log(error.message);
 
       res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
