@@ -18,16 +18,16 @@ router.put('/:id', isAuthorized('Doctor'), (req: Request, res: Response) => {
   controller(res)(updatePrescriptions)(req.params.id, req.body);
 });
 
-router.put('/:id/addmedicine', isAuthorized('Doctor'), (req: Request, res: Response) => {
+router.post('/:id/medicine', isAuthorized('Doctor'), (req: Request, res: Response) => {
   controller(res)(addMedicineToPrescription)(req.params.id, req.body);
 });
 
-router.put('/:id/deletemedicine', isAuthorized('Doctor'), (req: Request, res: Response) => {
-  controller(res)(deleteMedicineFromPrescription)(req.params.id, req.body);
+router.delete('/:id/medicine/:medicineId', isAuthorized('Doctor'), (req: Request, res: Response) => {
+  controller(res)(deleteMedicineFromPrescription)(req.params.id, req.params.medicineId);
 });
 
-router.put('/:id/editDosage', isAuthorized('Doctor'), (req: Request, res: Response) => {
-  controller(res)(editDosage)(req.params.id, req.body);
+router.put('/:id/medicine/:medicineId', isAuthorized('Doctor'), (req: Request, res: Response) => {
+  controller(res)(editDosage)(req.params.id, req.params.medicineId, req.body);
 });
 
 export default router;
