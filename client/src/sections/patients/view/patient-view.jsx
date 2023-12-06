@@ -225,7 +225,7 @@ export default function UserPage() {
           </Typography>
 
           <Typography sx={{ color: 'text.secondary' }}>
-            You have to be a doctor to view this page. Go to the registration Page and register as a Doctor.
+            You have to be a doctor to view this page. Go to the registration Page and register to get access.
           </Typography>
 
           <Box

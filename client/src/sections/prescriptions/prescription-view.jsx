@@ -94,6 +94,43 @@ export default function PrescriptionView({ patientID }) {
   const medicinesListNames = medicinesList.map((medicine) => medicine.name);
   console.log(medicinesListNames);
 
+  if (user !== 'Patient')
+    return (
+      <Container>
+        <Box
+          sx={{
+            py: 12,
+            maxWidth: 480,
+            mx: 'auto',
+            display: 'contents',
+            minHeight: '80vh',
+            textAlign: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+            justifyContent: 'center'
+          }}
+        >
+          <Typography variant="h3" sx={{ mb: 3 }}>
+            Sorry, You aren't Authenticated!
+          </Typography>
+
+          <Typography sx={{ color: 'text.secondary' }}>
+            You have to be a Patient to view this page. Go to the registration Page and register to get access.
+          </Typography>
+
+          <Box
+            component="img"
+            src="/assets/illustrations/illustration_404.svg"
+            sx={{
+              margin: '0 auto',
+              display: 'block',
+              height: 260,
+              my: { xs: 5, sm: 10 }
+            }}
+          />
+        </Box>
+      </Container>
+    );
   return (
     <div>
       <Container maxWidth="xl">
