@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 
 import controller from '../controllers';
 import { isAuthenticated, isAuthorized } from '../middlewares';
-import { addOrder, getOrders, updateOrder, cancelOrder } from '../services';
+import { addOrder, getOrders, updateOrder, cancelOrder, getAllOrders } from '../services';
 // import { getOrders, addOrder, updateOrder } from '../services';
 
 const router = express.Router();
@@ -30,7 +30,10 @@ router.put('/:id/cancel', (req: Request, res: Response) => {
 router.put('/:id', (req: Request, res: Response) => {
   controller(res)(updateOrder)(req.params.id, req.body);
 });
-
+router.use(isAuthorized('Pharmacist'));
+router.get('/all', (req: Request, res: Response) => {
+  controller(res)(getAllOrders)(req.query);
+});
 // Optional
 // router.use(isAuthorized('Pharmacist'));
 

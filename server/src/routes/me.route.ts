@@ -36,7 +36,7 @@ router.put('/info', (req: Request, res: Response) => {
   controller(res)(updateInfo)(req.decoded.id, req.body);
 });
 
-router.use(isAuthorized('Doctor', 'Patient'));
+// router.use(isAuthorized('Doctor', 'Patient'));
 
 router.get('/appointments', (req: Request, res: Response) => {
   // user's id field depends on his role
@@ -112,9 +112,10 @@ router.post('/package', (req: Request, res: Response) => {
   }
 });
 
-router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));
+// router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));
 
 router.post('/addNewAddress', (req: Request, res: Response) => {
+  console.log('i got here ');
   controller(res)(addNewDeliveryAddress)(req.decoded.id, req.body.address);
 });
 
