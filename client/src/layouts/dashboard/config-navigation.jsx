@@ -124,6 +124,11 @@ const navConfig = [
     title: 'orders',
     path: '/orders',
     icon: icon('ic_analytics')
+  },
+  {
+    title: 'report',
+    path: '/report',
+    icon: icon('ic_analytics')
   }
 ];
 

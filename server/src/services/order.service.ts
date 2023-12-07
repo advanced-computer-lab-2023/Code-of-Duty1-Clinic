@@ -48,8 +48,7 @@ const addOrder = async (id: string, info: Object) => {
 const updateOrder = async (id: string, info: Object) => {
   const canUpdate = ['status', 'address', 'date'];
   for (const field in info) {
-    if (!canUpdate.includes(field))
-      throw new HttpError(StatusCodes.BAD_REQUEST, 'you cannot update these fields ');
+    if (!canUpdate.includes(field)) throw new HttpError(StatusCodes.BAD_REQUEST, 'you cannot update these fields ');
   }
   const order = await Order.findByIdAndUpdate(id, info);
   if (!order) throw new HttpError(StatusCodes.NOT_FOUND, 'order is not exist');
@@ -60,11 +59,7 @@ const updateOrder = async (id: string, info: Object) => {
   };
 };
 const cancelOrder = async (id: string) => {
-  const order: IOrder | null = await Order.findByIdAndUpdate(
-    id,
-    { status: 'Cancelled' },
-    { new: true }
-  );
+  const order: IOrder | null = await Order.findByIdAndUpdate(id, { status: 'Cancelled' }, { new: true });
   if (!order) throw new HttpError(StatusCodes.NOT_FOUND, 'this order doesnot exist');
   order.items.forEach(async (item) => {
     await Medicine.findByIdAndUpdate(item.id, {
@@ -77,5 +72,12 @@ const cancelOrder = async (id: string) => {
     order
   };
 };
+const getAllOrders = async (query: Object) => {
+  const orders = await Order.find({ ...query });
+  return {
+    status: StatusCodes.OK,
+    orders
+  };
+};
 
-export { getOrders, addOrder, updateOrder, cancelOrder };
+export { getOrders, addOrder, updateOrder, cancelOrder, getAllOrders };
