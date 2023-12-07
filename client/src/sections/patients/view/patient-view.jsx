@@ -118,16 +118,11 @@ export default function UserPage() {
   };
 
   const notFound = !dataFiltered.length && !!filterName;
-  console.log(user);
   if (user === 'Doctor') {
     return (
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4">Patients</Typography>
-
-          <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
-          </Button>
         </Stack>
 
         <Card>

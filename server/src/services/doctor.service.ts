@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 import { HttpError } from '../utils';
 
 import StatusCodes from 'http-status-codes';
-import { Contract, Appointment, IDoctor, Doctor, Request, Patient, Package, Admin, User, IPatient } from '../models';
+import { Contract, Appointment, IDoctor, Doctor, Request, Patient, Package } from '../models';
 
 const getMyPatients = async (query: any) => {
   const patientIDs = await Appointment.find(query).distinct('patientID');
@@ -72,9 +72,7 @@ const viewAvailableAppointments = async (doctorID: string) => {
   const lastDay = currentDay + 6;
 
   // Get all doctor's appointments
-  const appointments = await Appointment.find({
-    doctorID: doctorID
-  });
+  const appointments = await Appointment.find({ doctorID, status: 'Upcoming' });
 
   for (let i = currentDay; i <= lastDay; i++) {
     const dayOfWeek = i % 7;

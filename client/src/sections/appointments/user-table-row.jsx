@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
-import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+import Popover from '@mui/material/Popover';
+import MenuItem from '@mui/material/MenuItem';
+import Snackbar from '@mui/material/Snackbar';
+import Divider from '@mui/material/Divider';
+
+import { axiosInstance } from '../../utils/axiosInstance';
 
 export default function UserTableRow({
-  selected,
   _id,
   patientName,
   doctorName,
@@ -26,6 +26,20 @@ export default function UserTableRow({
   handleClick
 }) {
   const [open, setOpen] = useState(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const cancelAppointment = async () => {
+    await axiosInstance
+      .delete(`me/appointments/${_id}`)
+      .then((res) => {
+        window.location.reload();
+      })
+      .catch((err) => {
+        setOpenSnackbar(true);
+        setMessage(err.response.data.message);
+      });
+  };
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -33,6 +47,14 @@ export default function UserTableRow({
 
   const handleCloseMenu = () => {
     setOpen(null);
+  };
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackbar(false);
   };
 
   return (
@@ -59,7 +81,40 @@ export default function UserTableRow({
         <TableCell>{endDate}</TableCell>
 
         <TableCell>{isFollowUp ? 'Yes' : 'No'}</TableCell>
+
+        <TableCell align="right">
+          <IconButton onClick={handleOpenMenu}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
+        </TableCell>
       </TableRow>
+
+      <Popover
+        open={!!open}
+        anchorEl={open}
+        onClose={handleCloseMenu}
+        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          sx: { width: 140 }
+        }}
+      >
+        <MenuItem onClick={() => console.log('clicked')}>
+          <Iconify icon="carbon:request-quote" sx={{ mr: 2 }} />
+          Follow up
+        </MenuItem>
+        <MenuItem onClick={() => console.log('clicked')}>
+          <Iconify icon="uis:schedule" sx={{ mr: 2 }} />
+          Reschedule
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={cancelAppointment}>
+          <Iconify icon="material-symbols:cancel" sx={{ mr: 2 }} />
+          Cancel
+        </MenuItem>
+      </Popover>
+
+      <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackBar} message={message} />
     </>
   );
 }

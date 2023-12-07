@@ -7,13 +7,13 @@ import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------
 
-export default function TableNoData({ query }) {
+export default function TableNoData() {
   return (
     <TableRow>
       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
         <Paper
           sx={{
-            textAlign: 'center',
+            textAlign: 'center'
           }}
         >
           <Typography variant="h6" paragraph>
@@ -21,8 +21,7 @@ export default function TableNoData({ query }) {
           </Typography>
 
           <Typography variant="body2">
-            No results found for &nbsp;
-            <strong>&quot;{query}&quot;</strong>.
+            No results found for this query;
             <br /> Try checking for typos or using complete words.
           </Typography>
         </Paper>
@@ -32,5 +31,5 @@ export default function TableNoData({ query }) {
 }
 
 TableNoData.propTypes = {
-  query: PropTypes.string,
+  query: PropTypes.string
 };

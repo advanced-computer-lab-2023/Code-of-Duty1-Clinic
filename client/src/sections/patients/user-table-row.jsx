@@ -28,7 +28,7 @@ export default function UserTableRow({
   status,
   handleClick,
   viewProfile,
-  viewHealthRecords,
+  viewHealthRecords
 }) {
   const [open, setOpen] = useState(null);
 
@@ -82,7 +82,7 @@ export default function UserTableRow({
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         PaperProps={{
-          sx: { width: 140 },
+          sx: { width: 140 }
         }}
       >
         <MenuItem onClick={viewProfile}>
@@ -111,5 +111,5 @@ UserTableRow.propTypes = {
   email: PropTypes.any,
   gender: PropTypes.any,
   selected: PropTypes.any,
-  status: PropTypes.string,
+  status: PropTypes.string
 };

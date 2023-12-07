@@ -49,7 +49,7 @@ export default function AppointmentsView() {
 
       try {
         const response = await axiosInstance.get('/me/appointments', { params });
-        setAppointments(response.data.result);
+        setAppointments(response.data.result || []);
       } catch (error) {
         console.error('Error fetching appointments:', error);
       }
@@ -253,36 +253,39 @@ export default function AppointmentsView() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'patientName', label: 'Doctor Name' },
-                  { id: 'doctorName', label: 'Patient Name' },
+                  { id: 'patientName', label: "Doctor's Name" },
+                  { id: 'doctorName', label: "Patient's Name" },
                   { id: 'status', label: 'Status' },
                   { id: 'sessionPrice', label: 'Session Price' },
                   { id: 'day', label: 'Day' },
                   { id: 'startDate', label: 'Start time' },
                   { id: 'endDate', label: 'End time' },
-                  { id: 'isFollowUp', label: 'Follow Up' },
+                  { id: 'isFollowUp', label: 'Is Follow up' },
                   { id: '' }
                 ]}
               />
               <TableBody>
-                {appointments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                  <UserTableRow
-                    key={row._id}
-                    _id={row._id}
-                    patientName={row.patientName == myName ? 'Me' : row.patientName}
-                    doctorName={row.doctorName == myName ? 'Me' : row.doctorName}
-                    status={row.status}
-                    sessionPrice={row.sessionPrice}
-                    day={new Date(row.startDate).toUTCString().slice(0, 16)}
-                    startDate={new Date(row.startDate).toUTCString().slice(17, 22)}
-                    endDate={new Date(row.endDate).toUTCString().slice(17, 22)}
-                    isFollowUp={row.isFollowUp}
-                    selected={selected.indexOf(row._id) !== -1}
-                    handleClick={(event) => handleClick(event, row._id)}
-                  />
-                ))}
+                {appointments
+                  .toReversed()
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => (
+                    <UserTableRow
+                      key={row._id}
+                      _id={row._id}
+                      patientName={row.patientName == myName ? 'Me' : row.patientName}
+                      doctorName={row.doctorName == myName ? 'Me' : row.doctorName}
+                      status={row.status}
+                      sessionPrice={row.sessionPrice}
+                      day={new Date(row.startDate).toUTCString().slice(0, 16)}
+                      startDate={new Date(row.startDate).toUTCString().slice(17, 22)}
+                      endDate={new Date(row.endDate).toUTCString().slice(17, 22)}
+                      isFollowUp={row.isFollowUp}
+                      selected={selected.indexOf(row._id) !== -1}
+                      handleClick={(event) => handleClick(event, row._id)}
+                    />
+                  ))}
 
-                <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, appointments.length)} />
+                {appointments.length == 0 && <TableNoData />}
               </TableBody>
             </Table>
           </TableContainer>

@@ -6,7 +6,7 @@ import {
   getUsers,
   updateInfo,
   getAppointments,
-  createAppointment,
+  cancelAppointment,
   getPrescriptions,
   addFamilyMember,
   getFamily,
@@ -44,6 +44,9 @@ router.get('/appointments', (req: Request, res: Response) => {
 });
 router.post('/appointments', (req: Request, res: Response) => {
   controller(res)(scheduleFollowUp)(req.decoded.id, req.body);
+});
+router.delete('/appointments/:id', (req: Request, res: Response) => {
+  controller(res)(cancelAppointment)(req.decoded.id, req.params.id);
 });
 
 router.get('/wallet', (req: Request, res: Response) => {
