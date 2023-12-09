@@ -1,1 +1,1 @@
-export {default as ReqTable} from './users';
+export { default as ReqTable } from './users';

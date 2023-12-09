@@ -14,7 +14,7 @@ const getAppointments = async (query: any) => {
     .populate('patientID', 'name'); // Assuming 'name' is the field in the Patient model
 
   // Transform the result to the desired format
-  const formattedAppointments = appointments.map(appointment => ({
+  const formattedAppointments = appointments.map((appointment) => ({
     patientName: (appointment.patientID as any).name,
     doctorName: (appointment.doctorID as any).name,
     _id: appointment._id,
@@ -23,7 +23,7 @@ const getAppointments = async (query: any) => {
     startDate: appointment.startDate,
     endDate: appointment.endDate,
     isFollowUp: appointment.isFollowUp,
-    __v: appointment.__v,
+    __v: appointment.__v
   }));
   return {
     status: StatusCodes.OK,
@@ -31,7 +31,6 @@ const getAppointments = async (query: any) => {
     result: formattedAppointments || [] // Return an empty array if appointments is falsy
   };
 };
-
 
 const createAppointment = async (patientID: String, doctorID: String, body: any) => {
   const doctor = await Doctor.findById(doctorID);
@@ -56,28 +55,23 @@ const getUpcoming_Past_Appointments = async (userId: string, role: string, statu
   if ((role === 'doctor' || role === 'Doctor') && (await Doctor.exists({ _id: userId }))) {
     query = {
       doctorID: userId,
-      startDate: status === 'Upcoming' ? { $gte: new Date() } : { $lt: new Date() },
+      startDate: status === 'Upcoming' ? { $gte: new Date() } : { $lt: new Date() }
     };
     model = Doctor;
   } else if ((role === 'patient' || role === 'Patient') && (await Patient.exists({ _id: userId }))) {
     query = {
       patientID: userId,
-      startDate: status === 'Upcoming' ? { $gte: new Date() } : { $lt: new Date() },
+      startDate: status === 'Upcoming' ? { $gte: new Date() } : { $lt: new Date() }
     };
     model = Patient;
   } else {
-    throw new HttpError(
-      StatusCodes.BAD_REQUEST,
-      'Role is neither a doctor nor a patient or wrong user id'
-    );
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'Role is neither a doctor nor a patient or wrong user id');
   }
 
-  const appointments = await Appointment.find(query)
-    .populate('patientID', 'name')
-    .populate('doctorID', 'name');
+  const appointments = await Appointment.find(query).populate('patientID', 'name').populate('doctorID', 'name');
 
   if (model) {
-    const formattedAppointments = appointments.map(appointment => ({
+    const formattedAppointments = appointments.map((appointment) => ({
       patientName: (appointment.patientID as any)?.name,
       doctorName: (appointment.doctorID as any)?.name,
       _id: appointment._id,
@@ -86,13 +80,13 @@ const getUpcoming_Past_Appointments = async (userId: string, role: string, statu
       startDate: appointment.startDate,
       endDate: appointment.endDate,
       isFollowUp: appointment.isFollowUp,
-      __v: appointment.__v,
+      __v: appointment.__v
     }));
 
     return {
       status: StatusCodes.OK,
       message: 'Appointments retrieved successfully',
-      result: formattedAppointments,
+      result: formattedAppointments
     };
   }
 };
@@ -109,41 +103,44 @@ const filterAppointments = async (query: any) => {
   if ((query.role === 'doctor' || query.role === 'Doctor') && (await Doctor.exists({ _id: query.doctorID }))) {
     model = Doctor;
     roleQuery = { doctorID: query.doctorID };
-  } else if ((query.role === 'patient' || query.role === 'Patient') && (await Patient.exists({ _id: query.patientID }))) {
+  } else if (
+    (query.role === 'patient' || query.role === 'Patient') &&
+    (await Patient.exists({ _id: query.patientID }))
+  ) {
     model = Patient;
     roleQuery = { patientID: query.patientID };
   } else {
-    throw new HttpError(
-      StatusCodes.BAD_REQUEST,
-      'User is neither a doctor nor a patient'
-    );
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'User is neither a doctor nor a patient');
   }
 
-  const appointments = await Appointment.find({ ...roleQuery, startDate: { $gte: startDate }, endDate: { $lte: endDate }, status: status })
+  const appointments = await Appointment.find({
+    ...roleQuery,
+    startDate: { $gte: startDate },
+    endDate: { $lte: endDate },
+    status: status
+  })
     .populate('patientID', 'name') // Assuming 'name' is the field in the Patient model
     .populate('doctorID', 'name'); // Assuming 'name' is the field in the Doctor model
 
   if (model) {
-    const formattedAppointments = appointments.map(appointment => ({
-      patientName: (appointment.patientID as any)?.name ,
-      doctorName: (appointment.doctorID as any)?.name ,
+    const formattedAppointments = appointments.map((appointment) => ({
+      patientName: (appointment.patientID as any)?.name,
+      doctorName: (appointment.doctorID as any)?.name,
       _id: appointment._id,
       status: appointment.status,
       sessionPrice: appointment.sessionPrice,
       startDate: appointment.startDate,
       endDate: appointment.endDate,
       isFollowUp: appointment.isFollowUp,
-      __v: appointment.__v,
+      __v: appointment.__v
     }));
 
     return {
       status: StatusCodes.OK,
       message: 'Appointments retrieved successfully',
-      result: formattedAppointments,
+      result: formattedAppointments
     };
   }
 };
-
-
 
 export { getAppointments, createAppointment, getUpcoming_Past_Appointments, filterAppointments };

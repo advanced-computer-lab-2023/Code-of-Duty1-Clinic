@@ -31,7 +31,7 @@ export default function BlogView() {
           options={[
             { value: 'latest', label: 'Latest' },
             { value: 'popular', label: 'Popular' },
-            { value: 'oldest', label: 'Oldest' },
+            { value: 'oldest', label: 'Oldest' }
           ]}
         />
       </Stack>

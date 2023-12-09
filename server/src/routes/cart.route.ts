@@ -2,13 +2,7 @@ import express, { Request, Response } from 'express';
 
 import controller from '../controllers';
 import { isAuthenticated } from '../middlewares';
-import {
-  getCart,
-  removeCartItem,
-  increaseItemCount,
-  decreaseItemCount,
-  addCartItem
-} from '../services';
+import { getCart, removeCartItem, increaseItemCount, decreaseItemCount, addCartItem } from '../services';
 
 const router = express.Router();
 

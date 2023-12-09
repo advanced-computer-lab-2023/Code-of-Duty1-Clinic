@@ -17,8 +17,7 @@ const getCart = async (userId: string) => {
 const addCartItem = async (userId: string, medID: string) => {
   let cart = await Cart.findOne({ userID: userId });
   const medicine = await Medicine.findOne({ _id: medID });
-  if (!medicine )
-    throw new HttpError(StatusCodes.NOT_FOUND, 'Medicine are out of Stock');
+  if (!medicine) throw new HttpError(StatusCodes.NOT_FOUND, 'Medicine are out of Stock');
 
   if (!cart) {
     cart = new Cart({ userID: userId, items: [] });
@@ -73,7 +72,7 @@ const increaseItemCount = async (userId: string, itemId: string) => {
     throw new HttpError(StatusCodes.NOT_FOUND, 'Medicine not found');
   }
 
-  if (medicine.numStock -item.count=== 0) {
+  if (medicine.numStock - item.count === 0) {
     throw new HttpError(StatusCodes.BAD_REQUEST, 'Medicine is out of stock');
   }
 

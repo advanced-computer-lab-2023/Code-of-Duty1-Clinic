@@ -47,4 +47,4 @@ const medicineUpload = multer({ storage: generateStorageObject('medicine'), file
 
 const registrationUpload = multer({ storage: generateStorageObject('registration'), fileFilter: fileFilter });
 
-export { registrationUpload, medicalHistoryUpload, allowedRegistrationFields ,medicineUpload};
+export { registrationUpload, medicalHistoryUpload, allowedRegistrationFields, medicineUpload };

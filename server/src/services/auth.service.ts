@@ -24,7 +24,7 @@ const login = async (body: any) => {
 };
 
 const register = async (body: any, files?: Express.Multer.File[]) => {
-  if (!['Patient', 'Doctor'].includes(body.role))
+  if (!['Patient', 'Doctor', 'Pharmacist'].includes(body.role))
     throw new Error('Role is not correct or you cannot register as admin');
 
   // ToDo: Verify Email with OTP

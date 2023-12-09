@@ -15,15 +15,15 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
     colors,
     plotOptions: {
       bar: {
-        columnWidth: '16%',
-      },
+        columnWidth: '16%'
+      }
     },
     fill: {
-      type: series.map((i) => i.fill),
+      type: series.map((i) => i.fill)
     },
     labels,
     xaxis: {
-      type: 'datetime',
+      type: 'datetime'
     },
     tooltip: {
       shared: true,
@@ -34,10 +34,10 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
             return `${value.toFixed(0)} visits`;
           }
           return value;
-        },
-      },
+        }
+      }
     },
-    ...options,
+    ...options
   });
 
   return (
@@ -45,14 +45,7 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
       <CardHeader title={title} subheader={subheader} />
 
       <Box sx={{ p: 3, pb: 1 }}>
-        <Chart
-          dir="ltr"
-          type="line"
-          series={series}
-          options={chartOptions}
-          width="100%"
-          height={364}
-        />
+        <Chart dir="ltr" type="line" series={series} options={chartOptions} width="100%" height={364} />
       </Box>
     </Card>
   );
@@ -61,5 +54,5 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
 AppWebsiteVisits.propTypes = {
   chart: PropTypes.object,
   subheader: PropTypes.string,
-  title: PropTypes.string,
+  title: PropTypes.string
 };

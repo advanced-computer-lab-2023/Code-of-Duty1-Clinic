@@ -5,7 +5,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 const ScheduleFollowUpForm = () => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [open, setOpen] = useState(false);
@@ -42,8 +47,8 @@ const ScheduleFollowUpForm = () => {
 
   return (
     <Container maxWidth="sm">
-     <Box sx={{ mt: 4, mb: 4 }}>        
-      <Card variant="outlined" sx={{ p: 3, width: '100%', maxWidth: 500 }}>
+      <Box sx={{ mt: 4, mb: 4 }}>
+        <Card variant="outlined" sx={{ p: 3, width: '100%', maxWidth: 500 }}>
           <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: '#333' }}>
             Schedule Follow-Up Appointment
           </Typography>
@@ -79,14 +84,7 @@ const ScheduleFollowUpForm = () => {
                 fullWidth
                 margin="normal"
               />
-              <Button
-                type="submit"
-                variant="contained"
-                color="inherit"
-                disabled={loading}
-                fullWidth
-                sx={{ mt: 2 }}
-              >
+              <Button type="submit" variant="contained" color="inherit" disabled={loading} fullWidth sx={{ mt: 2 }}>
                 {loading ? 'Scheduling...' : 'Schedule Appointment'}
               </Button>
             </Stack>

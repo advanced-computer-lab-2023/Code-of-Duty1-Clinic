@@ -55,6 +55,7 @@ export default function LoginView() {
         // setUser({ name: user.name, role: user.role });
         localStorage.setItem('userRole', user.role);
         localStorage.setItem('userName', user.name);
+        localStorage.setItem('userId', user._id);
 
         router.push(destination);
       } else {

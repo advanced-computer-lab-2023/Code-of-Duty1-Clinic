@@ -1,15 +1,16 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 interface ChatMessage {
-  sender: mongoose.Schema.Types.ObjectId;
+  sender: mongoose.Types.ObjectId;
   content: string;
+  isSeen?: boolean;
+  date?: Date;
 }
 
 interface IChatRoom {
   user1ID: mongoose.Schema.Types.ObjectId;
   user2ID: mongoose.Schema.Types.ObjectId;
   messages: ChatMessage[];
-  date?: Date;
 }
 
 type IChatRoomDocument = IChatRoom & Document;
@@ -28,19 +29,19 @@ const chatRoomSchema = new Schema<IChatRoomDocument>({
   messages: {
     type: [
       {
-        sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        content: { type: String, required: true }
+        sender: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
+        content: { type: String, required: true },
+        date: { type: Date, default: Date.now() },
+        isSeen: { type: Boolean, default: false }
       }
     ],
     required: true
-  },
-
-  date: { type: Date, default: Date.now() }
+  }
 });
 
 chatRoomSchema.index({ user1ID: 1 });
 chatRoomSchema.index({ user2ID: 1 });
-
+chatRoomSchema.index({ 'messages._id': 1 });
 const ChatRoom = mongoose.model<IChatRoomDocument>('ChatRoom', chatRoomSchema);
 
 export default ChatRoom;

@@ -22,21 +22,21 @@ export default function AppConversionRates({ title, subheader, chart, ...other }
       y: {
         formatter: (value) => fNumber(value),
         title: {
-          formatter: () => '',
-        },
-      },
+          formatter: () => ''
+        }
+      }
     },
     plotOptions: {
       bar: {
         horizontal: true,
         barHeight: '28%',
-        borderRadius: 2,
-      },
+        borderRadius: 2
+      }
     },
     xaxis: {
-      categories: series.map((i) => i.label),
+      categories: series.map((i) => i.label)
     },
-    ...options,
+    ...options
   });
 
   return (
@@ -44,14 +44,7 @@ export default function AppConversionRates({ title, subheader, chart, ...other }
       <CardHeader title={title} subheader={subheader} />
 
       <Box sx={{ mx: 3 }}>
-        <Chart
-          dir="ltr"
-          type="bar"
-          series={[{ data: chartSeries }]}
-          options={chartOptions}
-          width="100%"
-          height={364}
-        />
+        <Chart dir="ltr" type="bar" series={[{ data: chartSeries }]} options={chartOptions} width="100%" height={364} />
       </Box>
     </Card>
   );
@@ -60,5 +53,5 @@ export default function AppConversionRates({ title, subheader, chart, ...other }
 AppConversionRates.propTypes = {
   chart: PropTypes.object,
   subheader: PropTypes.string,
-  title: PropTypes.string,
+  title: PropTypes.string
 };

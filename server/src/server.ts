@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
-import { SocketManager } from './utils/socket-m';
+
 import { queryParser } from './middlewares';
 import {
   authRouter,
@@ -19,17 +19,13 @@ import {
   uploadRouter,
   cartRouter,
   orderRouter,
-  medicineRouter
+  medicineRouter,
+  notificationRouter
 } from './routes';
 import { StatusCodes } from 'http-status-codes';
-import http from 'http';
-import { Server, Socket } from 'socket.io';
-
 
 const app = express();
-const httpServer = http.createServer(app);
-const io = new Server(httpServer);
-const socketManager = new SocketManager(io);
+
 app.use(cookieParser());
 app.use(json());
 app.use(urlencoded({ extended: true }));
@@ -66,9 +62,10 @@ app.use('/orders', orderRouter);
 app.use('/medicine', medicineRouter);
 app.use('/requests', requestRouter);
 app.use('/packages', packageRouter);
-app.use('/chatrooms', chatroomRouter);
+app.use('/chat', chatroomRouter);
 app.use('/payment', paymentRouter);
 app.use('/upload', uploadRouter);
+app.use('/notifications', notificationRouter);
 
 app.all('*', (req: Request, res: Response) => res.status(404).send('Path Not Found'));
 

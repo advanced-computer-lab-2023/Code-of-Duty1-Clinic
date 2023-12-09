@@ -22,7 +22,7 @@ export default function UserTableRow({
   startDate,
   endDate,
   isFollowUp,
-  handleClick,
+  handleClick
 }) {
   const [open, setOpen] = useState(null);
 
@@ -65,10 +65,9 @@ export default function UserTableRow({
   );
 }
 
-
 UserTableRow.propTypes = {
   _id: PropTypes.string.isRequired,
-  doctorName: PropTypes.string, 
+  doctorName: PropTypes.string,
   patientName: PropTypes.string,
   status: PropTypes.string,
   sessionPrice: PropTypes.number,
@@ -76,5 +75,5 @@ UserTableRow.propTypes = {
   endDate: PropTypes.string,
   isFollowUp: PropTypes.bool,
   selected: PropTypes.bool,
-  handleClick: PropTypes.func,
+  handleClick: PropTypes.func
 };

@@ -49,10 +49,7 @@ pharmacistSchema.virtual('request', {
   justOne: false
 });
 
-const pharmacistModel: mongoose.Model<IPharmacistDocument> = User.discriminator(
-  'Pharmacist',
-  pharmacistSchema
-);
+const pharmacistModel: mongoose.Model<IPharmacistDocument> = User.discriminator('Pharmacist', pharmacistSchema);
 
 export default pharmacistModel;
 export { IPharmacist };

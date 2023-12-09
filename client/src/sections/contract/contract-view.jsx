@@ -31,32 +31,33 @@ const DoctorContract = () => {
     if (error) {
       setMessage(error.response?.data?.message || error.message);
       setOpen(true);
-    }
-    else if (loading) {
+    } else if (loading) {
       setMessage('Loading...');
       setOpen(true);
     }
   }, [loading, error]);
 
   const fetchContracts = () => {
-    axiosInstance.get('/me/contract')
-      .then(response => {
+    axiosInstance
+      .get('/me/contract')
+      .then((response) => {
         setContracts(response.data.result);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         setError(error);
       });
   };
 
   const handleAcceptContract = () => {
-    axiosInstance.put('/me/contract')
-      .then(response => {
+    axiosInstance
+      .put('/me/contract')
+      .then((response) => {
         setMessage(response.data.message);
         setOpen(true);
         fetchContracts();
       })
-      .catch(error => {
+      .catch((error) => {
         setError(error);
       });
   };
@@ -67,7 +68,6 @@ const DoctorContract = () => {
     }
     setOpen(false);
   };
-
 
   return (
     <Container>
@@ -94,11 +94,7 @@ const DoctorContract = () => {
                 <TableCell>{contract.markUpProfit}</TableCell>
                 <TableCell>
                   {contract.status === 'Pending' && (
-                    <Button 
-                      variant="contained" 
-                      color="inherit" 
-                      onClick={() => handleAcceptContract()}
-                    >
+                    <Button variant="contained" color="inherit" onClick={() => handleAcceptContract()}>
                       Accept
                     </Button>
                   )}

@@ -69,19 +69,9 @@ export default function OrdersView() {
         Previous Orders
       </Typography>
 
-      <Stack
-        direction="row"
-        alignItems="center"
-        flexWrap="wrap-reverse"
-        justifyContent="flex-end"
-        sx={{ mb: 5 }}
-      >
+      <Stack direction="row" alignItems="center" flexWrap="wrap-reverse" justifyContent="flex-end" sx={{ mb: 5 }}>
         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters
-            openFilter={openFilter}
-            onOpenFilter={handleOpenFilter}
-            onCloseFilter={handleCloseFilter}
-          />
+          <ProductFilters openFilter={openFilter} onOpenFilter={handleOpenFilter} onCloseFilter={handleCloseFilter} />
 
           <ProductSort />
         </Stack>
@@ -90,11 +80,7 @@ export default function OrdersView() {
       {orders ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', marginBottom: 100 }}>
           {orders.map((order) => (
-            <OrderCard
-              order={order}
-              key={order.id}
-              onCancelOrder={() => handleCancelOrder(order._id)}
-            />
+            <OrderCard order={order} key={order.id} onCancelOrder={() => handleCancelOrder(order._id)} />
           ))}
         </Box>
       ) : (

@@ -12,7 +12,7 @@ export function useRouter() {
       forward: () => navigate(1),
       reload: () => window.location.reload(),
       push: (href) => navigate(href),
-      replace: (href) => navigate(href, { replace: true }),
+      replace: (href) => navigate(href, { replace: true })
     }),
     [navigate]
   );

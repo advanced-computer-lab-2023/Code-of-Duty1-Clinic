@@ -25,12 +25,12 @@ export default function ShopProductCard({ product }) {
       try {
         await axios.post('http://localhost:3000/cart', { medID: id }, { withCredentials: true });
         toast.success('Product added to the cart successfully!', {
-          position: toast.POSITION.TOP_RIGHT,
+          position: toast.POSITION.TOP_RIGHT
         });
       } catch (error) {
         console.error('Error adding to cart:', error);
         toast.error('Error adding to cart. Please try again later.', {
-          position: toast.POSITION.TOP_RIGHT,
+          position: toast.POSITION.TOP_RIGHT
         });
       }
     } else {
@@ -48,7 +48,7 @@ export default function ShopProductCard({ product }) {
         top: 16,
         right: 16,
         position: 'absolute',
-        textTransform: 'uppercase',
+        textTransform: 'uppercase'
       }}
     >
       {product.numStock != 0 ? 'available' : 'sold out'}
@@ -66,7 +66,7 @@ export default function ShopProductCard({ product }) {
         width: 1,
         height: 1,
         objectFit: 'cover',
-        position: 'absolute',
+        position: 'absolute'
       }}
     />
   );
@@ -123,5 +123,5 @@ export default function ShopProductCard({ product }) {
 }
 
 ShopProductCard.propTypes = {
-  product: PropTypes.object,
+  product: PropTypes.object
 };

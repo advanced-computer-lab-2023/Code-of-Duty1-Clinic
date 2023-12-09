@@ -24,7 +24,7 @@ export const SORT_OPTIONS = [
   { value: 'featured', label: 'Featured' },
   { value: 'newest', label: 'Newest' },
   { value: 'priceDesc', label: 'Price: High-Low' },
-  { value: 'priceAsc', label: 'Price: Low-High' },
+  { value: 'priceAsc', label: 'Price: Low-High' }
 ];
 export const GENDER_OPTIONS = ['Men', 'Women', 'Kids'];
 export const CATEGORY_OPTIONS = ['All', 'Shose', 'Apparel', 'Accessories'];
@@ -32,18 +32,9 @@ export const RATING_OPTIONS = ['up4Star', 'up3Star', 'up2Star', 'up1Star'];
 export const PRICE_OPTIONS = [
   { value: 'below', label: 'Below $25' },
   { value: 'between', label: 'Between $25 - $75' },
-  { value: 'above', label: 'Above $75' },
+  { value: 'above', label: 'Above $75' }
 ];
-export const COLOR_OPTIONS = [
-  '#00AB55',
-  '#000000',
-  '#FFFFFF',
-  '#FFC0CB',
-  '#FF4842',
-  '#1890FF',
-  '#94D82D',
-  '#FFC107',
-];
+export const COLOR_OPTIONS = ['#00AB55', '#000000', '#FFFFFF', '#FFC0CB', '#FF4842', '#1890FF', '#94D82D', '#FFC107'];
 
 // ----------------------------------------------------------------------
 
@@ -88,12 +79,7 @@ export default function ProductFilters({ openFilter, onOpenFilter, onCloseFilter
       <Typography variant="subtitle2">Price</Typography>
       <RadioGroup>
         {PRICE_OPTIONS.map((item) => (
-          <FormControlLabel
-            key={item.value}
-            value={item.value}
-            control={<Radio />}
-            label={item.label}
-          />
+          <FormControlLabel key={item.value} value={item.value} control={<Radio />} label={item.label} />
         ))}
       </RadioGroup>
     </Stack>
@@ -114,7 +100,7 @@ export default function ProductFilters({ openFilter, onOpenFilter, onCloseFilter
                 icon={<Rating readOnly value={4 - index} />}
                 checkedIcon={<Rating readOnly value={4 - index} />}
                 sx={{
-                  '&:hover': { bgcolor: 'transparent' },
+                  '&:hover': { bgcolor: 'transparent' }
                 }}
               />
             }
@@ -122,7 +108,7 @@ export default function ProductFilters({ openFilter, onOpenFilter, onCloseFilter
             sx={{
               my: 0.5,
               borderRadius: 1,
-              '&:hover': { opacity: 0.48 },
+              '&:hover': { opacity: 0.48 }
             }}
           />
         ))}
@@ -132,12 +118,7 @@ export default function ProductFilters({ openFilter, onOpenFilter, onCloseFilter
 
   return (
     <>
-      <Button
-        disableRipple
-        color="inherit"
-        endIcon={<Iconify icon="ic:round-filter-list" />}
-        onClick={onOpenFilter}
-      >
+      <Button disableRipple color="inherit" endIcon={<Iconify icon="ic:round-filter-list" />} onClick={onOpenFilter}>
         Filters&nbsp;
       </Button>
 
@@ -146,15 +127,10 @@ export default function ProductFilters({ openFilter, onOpenFilter, onCloseFilter
         open={openFilter}
         onClose={onCloseFilter}
         PaperProps={{
-          sx: { width: 280, border: 'none', overflow: 'hidden' },
+          sx: { width: 280, border: 'none', overflow: 'hidden' }
         }}
       >
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ px: 1, py: 2 }}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 1, py: 2 }}>
           <Typography variant="h6" sx={{ ml: 1 }}>
             Filters
           </Typography>
@@ -199,5 +175,5 @@ export default function ProductFilters({ openFilter, onOpenFilter, onCloseFilter
 ProductFilters.propTypes = {
   openFilter: PropTypes.bool,
   onOpenFilter: PropTypes.func,
-  onCloseFilter: PropTypes.func,
+  onCloseFilter: PropTypes.func
 };

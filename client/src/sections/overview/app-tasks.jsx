@@ -44,7 +44,7 @@ export default function AnalyticsTasks({ title, subheader, list, ...other }) {
 AnalyticsTasks.propTypes = {
   list: PropTypes.array,
   subheader: PropTypes.string,
-  title: PropTypes.string,
+  title: PropTypes.string
 };
 
 // ----------------------------------------------------------------------
@@ -90,12 +90,12 @@ function TaskItem({ task, checked, onChange }) {
           pr: 1,
           py: 1,
           '&:not(:last-of-type)': {
-            borderBottom: (theme) => `dashed 1px ${theme.palette.divider}`,
+            borderBottom: (theme) => `dashed 1px ${theme.palette.divider}`
           },
           ...(checked && {
             color: 'text.disabled',
-            textDecoration: 'line-through',
-          }),
+            textDecoration: 'line-through'
+          })
         }}
       >
         <FormControlLabel
@@ -143,5 +143,5 @@ function TaskItem({ task, checked, onChange }) {
 TaskItem.propTypes = {
   checked: PropTypes.bool,
   onChange: PropTypes.func,
-  task: PropTypes.object,
+  task: PropTypes.object
 };

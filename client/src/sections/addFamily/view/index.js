@@ -1,1 +1,1 @@
-export {default as AddFamilyView} from './addFamily-view'
+export { default as AddFamilyView } from './addFamily-view';

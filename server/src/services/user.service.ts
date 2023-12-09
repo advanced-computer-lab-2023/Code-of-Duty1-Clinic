@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
-import { User,Patient } from '../models';
+import { User, Patient } from '../models';
 
 const updateInfo = async (id: string, info: any) => {
   const canUpdate = ['email', 'hourRate', 'hospital'];

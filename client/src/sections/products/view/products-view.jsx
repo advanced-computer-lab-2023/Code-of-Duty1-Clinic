@@ -33,7 +33,7 @@ export default function ProductsView() {
       try {
         setLoading(true);
         const medicines = await axios.get('http://localhost:3000/medicine', {
-          withCredentials: true,
+          withCredentials: true
         });
         setProducts(medicines.data.result);
       } catch (error) {
@@ -60,19 +60,9 @@ export default function ProductsView() {
         {console.log(products)}
       </Typography>
 
-      <Stack
-        direction="row"
-        alignItems="center"
-        flexWrap="wrap-reverse"
-        justifyContent="flex-end"
-        sx={{ mb: 5 }}
-      >
+      <Stack direction="row" alignItems="center" flexWrap="wrap-reverse" justifyContent="flex-end" sx={{ mb: 5 }}>
         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters
-            openFilter={openFilter}
-            onOpenFilter={handleOpenFilter}
-            onCloseFilter={handleCloseFilter}
-          />
+          <ProductFilters openFilter={openFilter} onOpenFilter={handleOpenFilter} onCloseFilter={handleCloseFilter} />
 
           <ProductSort />
         </Stack>

@@ -24,7 +24,7 @@ import {
   Tbody,
   Tr,
   Th,
-  Td,
+  Td
 } from '@chakra-ui/react';
 
 const originalDoctorsData = [
@@ -39,15 +39,15 @@ const originalDoctorsData = [
         id: 1,
         date: '2023-10-10',
         time: '10:00 AM',
-        location: 'Room 101',
+        location: 'Room 101'
       },
       {
         id: 2,
         date: '2023-10-11',
         time: '2:00 PM',
-        location: 'Room 202',
-      },
-    ],
+        location: 'Room 202'
+      }
+    ]
   },
   {
     id: 2,
@@ -60,15 +60,15 @@ const originalDoctorsData = [
         id: 3,
         date: '2023-10-12',
         time: '9:00 AM',
-        location: 'Room 303',
+        location: 'Room 303'
       },
       {
         id: 4,
         date: '2023-10-13',
         time: '3:00 PM',
-        location: 'Room 404',
-      },
-    ],
+        location: 'Room 404'
+      }
+    ]
   },
   {
     id: 3,
@@ -81,16 +81,16 @@ const originalDoctorsData = [
         id: 5,
         date: '2023-10-14',
         time: '11:00 AM',
-        location: 'Room 505',
+        location: 'Room 505'
       },
       {
         id: 6,
         date: '2023-10-15',
         time: '4:00 PM',
-        location: 'Room 606',
-      },
-    ],
-  },
+        location: 'Room 606'
+      }
+    ]
+  }
 ];
 
 const originalPrescriptionData = [
@@ -98,32 +98,32 @@ const originalPrescriptionData = [
     id: 1,
     medication: 'Medication A',
     dosage: '1 tablet twice a day',
-    instructions: 'Take with food',
+    instructions: 'Take with food'
   },
   {
     id: 2,
     medication: 'Medication B',
     dosage: '2 tablets at bedtime',
-    instructions: 'Avoid alcohol',
+    instructions: 'Avoid alcohol'
   },
   {
     id: 3,
     medication: 'Medication C',
     dosage: '1 capsule in the morning',
-    instructions: 'Store in a cool, dry place',
+    instructions: 'Store in a cool, dry place'
   },
   {
     id: 4,
     medication: 'Medication D',
     dosage: '2 tablets after meals',
-    instructions: 'Drink plenty of water',
+    instructions: 'Drink plenty of water'
   },
   {
     id: 5,
     medication: 'Medication E',
     dosage: '1 tablet daily',
-    instructions: 'Take with or without food',
-  },
+    instructions: 'Take with or without food'
+  }
 ];
 
 const PatientPage = () => {
@@ -185,9 +185,7 @@ const PatientPage = () => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
 
-      filteredDoctors = filteredDoctors.filter((doctor) =>
-        doctor.name.toLowerCase().includes(searchLower)
-      );
+      filteredDoctors = filteredDoctors.filter((doctor) => doctor.name.toLowerCase().includes(searchLower));
 
       filteredPrescriptions = filteredPrescriptions.filter((prescription) =>
         prescription.medication.toLowerCase().includes(searchLower)
@@ -227,25 +225,20 @@ const PatientPage = () => {
   };
 
   const handleAddFamilyMember = () => {
-    if (
-      familyMemberName &&
-      familyMemberNationalID &&
-      familyMemberGender &&
-      familyMemberAge
-    ) {
+    if (familyMemberName && familyMemberNationalID && familyMemberGender && familyMemberAge) {
       const newFamilyMember = {
         name: familyMemberName,
         nationalID: familyMemberNationalID,
         relation: familyMemberGender,
-        patientID: familyMemberAge,
+        patientID: familyMemberAge
       };
 
-      fetch("http://localhost:3000/users/me/family", {
+      fetch('http://localhost:3000/users/me/family', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newFamilyMember),
+        body: JSON.stringify(newFamilyMember)
       })
         .then((response) => {
           if (response.ok) {
@@ -423,11 +416,7 @@ const PatientPage = () => {
             {/* Add Family Member Form */}
             <FormControl mt={4}>
               <FormLabel>Name</FormLabel>
-              <Input
-                value={familyMemberName}
-                onChange={handleFamilyMemberNameChange}
-                placeholder="Name"
-              />
+              <Input value={familyMemberName} onChange={handleFamilyMemberNameChange} placeholder="Name" />
             </FormControl>
             <FormControl mt={4}>
               <FormLabel>National ID</FormLabel>
@@ -451,17 +440,9 @@ const PatientPage = () => {
             </FormControl>
             <FormControl mt={4}>
               <FormLabel>PatientID</FormLabel>
-              <Input
-                value={familyMemberAge}
-                onChange={handleFamilyMemberAgeChange}
-                placeholder="PatientID"
-              />
+              <Input value={familyMemberAge} onChange={handleFamilyMemberAgeChange} placeholder="PatientID" />
             </FormControl>
-            <Button
-              colorScheme="blue"
-              mt={4}
-              onClick={handleAddFamilyMember}
-            >
+            <Button colorScheme="blue" mt={4} onClick={handleAddFamilyMember}>
               Add Family Member
             </Button>
           </TabPanel>

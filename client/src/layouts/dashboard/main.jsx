@@ -25,9 +25,9 @@ export default function Main({ children, sx, ...other }) {
         ...(lgUp && {
           px: 2,
           py: `${HEADER.H_DESKTOP + SPACING}px`,
-          width: `calc(100% - ${NAV.WIDTH}px)`,
+          width: `calc(100% - ${NAV.WIDTH}px)`
         }),
-        ...sx,
+        ...sx
       }}
       {...other}
     >
@@ -38,5 +38,5 @@ export default function Main({ children, sx, ...other }) {
 
 Main.propTypes = {
   children: PropTypes.node,
-  sx: PropTypes.object,
+  sx: PropTypes.object
 };

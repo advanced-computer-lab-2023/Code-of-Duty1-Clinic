@@ -1,4 +1,4 @@
-import {SubscriptionCard} from './components/more_components'
+import { SubscriptionCard } from './components/more_components';
 
 import React from 'react';
 import axios from 'axios';
@@ -10,35 +10,34 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
+    display: 'flex'
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer + 1
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0,
+    flexShrink: 0
   },
   drawerPaper: {
-    width: drawerWidth,
+    width: drawerWidth
   },
   drawerContainer: {
-    overflow: 'auto',
+    overflow: 'auto'
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(3)
   },
   activeTab: {
-    backgroundColor: theme.palette.action.selected,
-  },
+    backgroundColor: theme.palette.action.selected
+  }
 }));
 
 const PatientsView = () => {
   const classes = useStyles();
   const [activeTab, setActiveTab] = useState('doctors');
   const [Packages, setPackages] = useState([]);
-
 
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
@@ -69,19 +68,17 @@ const PatientsView = () => {
         return <div>Family Members Content</div>;
       case 'subscriptions':
         return (
-        <div>
-          <Typography variant="h4" gutterBottom>
-            Subscriptions
-          </Typography>
-          <div style={{ display: 'flex', gap: '16px' }}>
-            {Packages.map((Package) => (
-              <SubscriptionCard
-                Package = {Package}
-              />
-            ))}
+          <div>
+            <Typography variant="h4" gutterBottom>
+              Subscriptions
+            </Typography>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              {Packages.map((Package) => (
+                <SubscriptionCard Package={Package} />
+              ))}
+            </div>
           </div>
-        </div>
-      );
+        );
       default:
         return null;
     }
@@ -99,47 +96,57 @@ const PatientsView = () => {
         className={classes.drawer}
         variant="permanent"
         classes={{
-          paper: classes.drawerPaper,
+          paper: classes.drawerPaper
         }}
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
           <List>
-            <ListItem button 
-            onClick ={()=>handleTabClick('doctors')} 
-            className={activeTab === 'doctors' ? classes.activeTab: ''}>
+            <ListItem
+              button
+              onClick={() => handleTabClick('doctors')}
+              className={activeTab === 'doctors' ? classes.activeTab : ''}
+            >
               <ListItemIcon>
                 <LocalHospital />
               </ListItemIcon>
               <ListItemText primary="Doctors" />
             </ListItem>
-            <ListItem button
-             onClick ={()=>handleTabClick('prescriptions')} 
-             className={activeTab === 'prescriptions' ? classes.activeTab: ''}>
+            <ListItem
+              button
+              onClick={() => handleTabClick('prescriptions')}
+              className={activeTab === 'prescriptions' ? classes.activeTab : ''}
+            >
               <ListItemIcon>
                 <Description />
               </ListItemIcon>
               <ListItemText primary="Prescriptions" />
             </ListItem>
-            <ListItem button
-            onClick ={()=>handleTabClick('Appointments')} 
-            className={activeTab === 'Appointments' ? classes.activeTab: ''}>
+            <ListItem
+              button
+              onClick={() => handleTabClick('Appointments')}
+              className={activeTab === 'Appointments' ? classes.activeTab : ''}
+            >
               <ListItemIcon>
                 <EventNote />
               </ListItemIcon>
               <ListItemText primary="Appointments" />
             </ListItem>
-            <ListItem button
-            onClick ={()=>handleTabClick('Family Members')} 
-            className={activeTab === 'Family Members' ? classes.activeTab: ''}>
+            <ListItem
+              button
+              onClick={() => handleTabClick('Family Members')}
+              className={activeTab === 'Family Members' ? classes.activeTab : ''}
+            >
               <ListItemIcon>
                 <People />
               </ListItemIcon>
               <ListItemText primary="Family Members" />
             </ListItem>
-            <ListItem button
-            onClick ={()=>handleTabClick('Subscriptions')} 
-            className={activeTab === 'Subscriptions' ? classes.activeTab: ''}>
+            <ListItem
+              button
+              onClick={() => handleTabClick('Subscriptions')}
+              className={activeTab === 'Subscriptions' ? classes.activeTab : ''}
+            >
               <ListItemIcon>
                 <CreditCard />
               </ListItemIcon>

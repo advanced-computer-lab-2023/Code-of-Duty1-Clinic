@@ -1,30 +1,46 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Box, Container, Card, Stack, TextField, Typography, Button, MenuItem, Snackbar, IconButton } from '@mui/material';
+import {
+  Box,
+  Container,
+  Card,
+  Stack,
+  TextField,
+  Typography,
+  Button,
+  MenuItem,
+  Snackbar,
+  IconButton
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 const AddSlotsForm = () => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [open, setOpen] = useState(false);
-  
 
   const onSubmit = async (data) => {
-
     const timeStringToObject = (timeString) => {
       const [hours, minutes] = timeString.split(':');
       return { hours: parseInt(hours, 10), minutes: parseInt(minutes, 10) };
     };
-  
+
     const slotData = {
       day: data.day,
-      slots: [{
-        from: timeStringToObject(data.startTime),
-        to: timeStringToObject(data.endTime),     
-        maxPatients: data.maxPatients
-      }]
+      slots: [
+        {
+          from: timeStringToObject(data.startTime),
+          to: timeStringToObject(data.endTime),
+          maxPatients: data.maxPatients
+        }
+      ]
     };
 
     setLoading(true);
@@ -58,7 +74,7 @@ const AddSlotsForm = () => {
 
   return (
     <Container maxWidth="sm">
-       <Box sx={{ mt: 4, mb: 4 }}>
+      <Box sx={{ mt: 4, mb: 4 }}>
         <Card variant="outlined" sx={{ p: 3, width: '100%', maxWidth: 500 }}>
           <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: '#333' }}>
             Add Slots
@@ -75,7 +91,7 @@ const AddSlotsForm = () => {
                 fullWidth
                 margin="normal"
               >
-                {daysOfWeek.map(day => (
+                {daysOfWeek.map((day) => (
                   <MenuItem key={day} value={day}>
                     {day}
                   </MenuItem>
@@ -111,15 +127,7 @@ const AddSlotsForm = () => {
                 margin="normal"
               />
 
-              
-              <Button
-                type="submit"
-                variant="contained"
-                color="inherit"
-                disabled={loading}
-                fullWidth
-                sx={{ mt: 2 }}
-              >
+              <Button type="submit" variant="contained" color="inherit" disabled={loading} fullWidth sx={{ mt: 2 }}>
                 {loading ? 'Adding...' : 'Add Slots'}
               </Button>
             </Stack>
