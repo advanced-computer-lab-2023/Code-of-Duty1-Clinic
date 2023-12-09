@@ -115,7 +115,19 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
   let i = 0;
   return (
     <>
-      <Box sx={{ border: 1, borderColor: 'primary.main' }}>
+      <Stack
+        key={day}
+        sx={{
+          border: 1,
+          borderColor: 'primary.main',
+          height: '150px',
+          overflowY: 'hidden',
+          overflowX: 'hidden',
+          '&:hover': {
+            overflowY: 'auto'
+          }
+        }}
+      >
         <Typography variant="h5" sx={{ mx: 1 }}>
           {day}
         </Typography>
@@ -136,7 +148,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
             );
           })}
         </Stack>
-      </Box>
+      </Stack>
 
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogTitle>Book and Pay</DialogTitle>

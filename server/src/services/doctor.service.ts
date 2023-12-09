@@ -85,8 +85,11 @@ const viewAvailableAppointments = async (doctorID: string) => {
       const slotMinute = slot.from.minutes;
       const slotHourEnd = slot.to.hours;
       const slotMinuteEnd = slot.to.minutes;
-      if (slotHour < new Date().getHours()) continue;
-      if (slotHour === new Date().getHours() && slotMinute < new Date().getMinutes()) continue;
+
+      if (dayOfWeek === currentDay) {
+        if (slotHour < new Date().getHours()) continue;
+        if (slotHour === new Date().getHours() && slotMinute < new Date().getMinutes()) continue;
+      }
 
       let isSlotAvailable = true;
       for (const appointment of appointments) {
