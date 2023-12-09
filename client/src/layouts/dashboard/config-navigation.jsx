@@ -86,6 +86,11 @@ const navConfig = [
     icon: icon('ic_analytics')
   },
   {
+    title: 'My Prescriptions',
+    path: '/prescription',
+    icon: icon('ic_analytics')
+  },
+  {
     title: 'Not found',
     path: '/404',
     icon: icon('ic_disabled')
@@ -118,6 +123,11 @@ const navConfig = [
   {
     title: 'orders',
     path: '/orders',
+    icon: icon('ic_analytics')
+  },
+  {
+    title: 'report',
+    path: '/report',
     icon: icon('ic_analytics')
   }
 ];

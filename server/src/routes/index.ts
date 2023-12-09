@@ -11,6 +11,8 @@ import uploadRouter from './upload.route';
 import cartRouter from './cart.route';
 import orderRouter from './order.route';
 import medicineRouter from './medicine.route';
+import prescriptionRouter from './prescription.route';
+import reportRouter from './report.route';
 
 export {
   authRouter,
@@ -25,7 +27,9 @@ export {
   uploadRouter,
   cartRouter,
   orderRouter,
-  medicineRouter
+  medicineRouter,
+  prescriptionRouter,
+  reportRouter
 };
 
 // export * from './auth.route';

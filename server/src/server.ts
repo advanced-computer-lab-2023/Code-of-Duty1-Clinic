@@ -19,7 +19,9 @@ import {
   uploadRouter,
   cartRouter,
   orderRouter,
-  medicineRouter
+  medicineRouter,
+  prescriptionRouter,
+  reportRouter
 } from './routes';
 import { StatusCodes } from 'http-status-codes';
 
@@ -64,6 +66,8 @@ app.use('/packages', packageRouter);
 app.use('/chatrooms', chatroomRouter);
 app.use('/payment', paymentRouter);
 app.use('/upload', uploadRouter);
+app.use('/prescription', prescriptionRouter);
+app.use('/report', reportRouter);
 
 app.all('*', (req: Request, res: Response) => res.status(404).send('Path Not Found'));
 

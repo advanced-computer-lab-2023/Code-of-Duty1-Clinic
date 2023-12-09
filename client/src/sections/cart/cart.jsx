@@ -235,7 +235,7 @@ export default function CartComponent() {
       </Table>
       <br />
       <InputLabel>Select Address</InputLabel>
-      {/* <Select label="Select Address" onChange={handleSelectChange} displayEmpty>
+      <Select label="Select Address" onChange={handleSelectChange} displayEmpty>
         <MenuItem value="" disabled>
           Select an address
         </MenuItem>
@@ -250,7 +250,7 @@ export default function CartComponent() {
             No addresses available
           </MenuItem>
         )}
-      </Select> */}
+      </Select>
     </>
   );
 }

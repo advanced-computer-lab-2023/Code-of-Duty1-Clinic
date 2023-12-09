@@ -17,6 +17,7 @@ export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const HealthRecordPage = lazy(() => import('src/pages/health-record'));
+export const PrescriptionsPage = lazy(() => import('src/pages/prescriptions'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ForgotPage = lazy(() => import('src/pages/forgot-password'));
 export const ResetPage = lazy(() => import('src/pages/reset-password'));
@@ -34,6 +35,7 @@ export const PharmacistDocumentUploadPage = lazy(() => import('src/pages/pharmac
 export const MedicineImageUploadPage = lazy(() => import('src/pages/uploadMedicineImage'));
 export const ViewMedicineImage = lazy(() => import('src/pages/view-medicine-image'));
 export const AddressesPage = lazy(() => import('src/pages/addresses'));
+export const ReportPage = lazy(() => import('src/pages/report'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -60,6 +62,8 @@ export default function Router() {
         { path: 'patients', element: <PatientsPage /> },
         { path: 'health-record/:patientID', element: <HealthRecordPage /> },
         { path: 'health-record', element: <HealthRecordPage /> },
+        { path: 'prescription/:patientID', element: <PrescriptionsPage /> },
+        { path: 'prescription', element: <PrescriptionsPage /> },
         { path: 'doctors', element: <DoctorsPage /> },
         { path: 'packages', element: <PackagePage /> },
         { path: 'family', element: <FamilyPage /> },
@@ -73,7 +77,8 @@ export default function Router() {
         { path: 'cart', element: <CartPage /> },
         { path: 'upload-medicine-image', element: <MedicineImageUploadPage /> },
         { path: 'view-medicine-image', element: <ViewMedicineImage /> },
-        { path: 'addresses', element: <AddressesPage /> }
+        { path: 'addresses', element: <AddressesPage /> },
+        { path: 'report', element: <ReportPage /> }
       ]
     },
     {

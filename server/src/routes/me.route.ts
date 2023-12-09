@@ -23,6 +23,7 @@ import {
   viewContract,
   acceptContract,
   addNewDeliveryAddress,
+  getMyPrescriptions,
   getWeeklySlots
 } from '../services';
 
@@ -38,7 +39,7 @@ router.put('/info', (req: Request, res: Response) => {
   controller(res)(updateInfo)(req.decoded.id, req.body);
 });
 
-router.use(isAuthorized('Doctor', 'Patient'));
+// router.use(isAuthorized('Doctor', 'Patient'));
 
 router.get('/appointments', (req: Request, res: Response) => {
   const userID = req.decoded.role === 'Patient' ? 'patientID' : 'doctorID';
@@ -86,8 +87,8 @@ router.put('/contract', (req: Request, res: Response) => {
 router.get('/prescriptions/:id', (req: Request, res: Response) => {
   controller(res)(getPrescriptions)({ _id: req.params.id });
 });
-router.get('/prescriptions', (req: Request, res: Response) => {
-  controller(res)(getPrescriptions)(req.query);
+router.get('/prescriptions', isAuthorized('Patient'), (req: Request, res: Response) => {
+  controller(res)(getMyPrescriptions)(req.decoded.id, req.query);
 });
 
 router.get('/medicalhistory', isAuthorized('Patient'), (req: Request, res: Response) => {
@@ -122,9 +123,10 @@ router.post('/package', (req: Request, res: Response) => {
   }
 });
 
-router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));
+// router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));
 
 router.post('/addNewAddress', (req: Request, res: Response) => {
+  console.log('i got here ');
   controller(res)(addNewDeliveryAddress)(req.decoded.id, req.body.address);
 });
 

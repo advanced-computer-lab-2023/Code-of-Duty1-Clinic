@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -117,6 +118,10 @@ export default function UserPage() {
     navigate(`/health-record/${patientID}`);
   };
 
+  const handleViewPrescriptions = (patientID) => {
+    navigate(`/prescription/${patientID}`);
+  };
+
   const notFound = !dataFiltered.length && !!filterName;
   if (user === 'Doctor') {
     return (
@@ -167,6 +172,10 @@ export default function UserPage() {
                         console.log('view health records' + row._id);
                         handleViewHealthRecords(row._id);
                       }}
+                      viewPrescriptions={() => {
+                        console.log('view prescriptions');
+                        handleViewPrescriptions(row._id);
+                      }}
                     />
                   ))}
 
@@ -191,6 +200,41 @@ export default function UserPage() {
       </Container>
     );
   } else {
-    return;
+    return (
+      <Container>
+        <Box
+          sx={{
+            py: 12,
+            maxWidth: 480,
+            mx: 'auto',
+            display: 'contents',
+            minHeight: '80vh',
+            textAlign: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+            justifyContent: 'center'
+          }}
+        >
+          <Typography variant="h3" sx={{ mb: 3 }}>
+            Sorry, You aren't Authenticated!
+          </Typography>
+
+          <Typography sx={{ color: 'text.secondary' }}>
+            You have to be a doctor to view this page. Go to the registration Page and register to get access.
+          </Typography>
+
+          <Box
+            component="img"
+            src="/assets/illustrations/illustration_404.svg"
+            sx={{
+              margin: '0 auto',
+              display: 'block',
+              height: 260,
+              my: { xs: 5, sm: 10 }
+            }}
+          />
+        </Box>
+      </Container>
+    );
   }
 }
