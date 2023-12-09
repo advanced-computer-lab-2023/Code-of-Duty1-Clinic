@@ -6,7 +6,10 @@ import {
   getUsers,
   updateInfo,
   getAppointments,
-  createAppointment,
+  rescheduleAppointment,
+  cancelAppointment,
+  scheduleFollowUp,
+  approveDisapproveAppointment as approveDisapproveFollowUp,
   getPrescriptions,
   addFamilyMember,
   getFamily,
@@ -16,12 +19,12 @@ import {
   getHealthPackage,
   cancelSubscribtion,
   subscribe,
-  scheduleFollowUp,
   addSlots,
   viewContract,
   acceptContract,
   addNewDeliveryAddress,
-  getMyPrescriptions
+  getMyPrescriptions,
+  getWeeklySlots
 } from '../services';
 
 const router = express.Router();
@@ -39,12 +42,20 @@ router.put('/info', (req: Request, res: Response) => {
 // router.use(isAuthorized('Doctor', 'Patient'));
 
 router.get('/appointments', (req: Request, res: Response) => {
-  // user's id field depends on his role
   const userID = req.decoded.role === 'Patient' ? 'patientID' : 'doctorID';
   controller(res)(getAppointments)({ ...req.query, [userID]: req.decoded.id });
 });
-router.post('/appointments', (req: Request, res: Response) => {
-  controller(res)(scheduleFollowUp)(req.decoded.id, req.body);
+router.post('/appointments/:id', (req: Request, res: Response) => {
+  controller(res)(scheduleFollowUp)(req.decoded.id, req.params.id, req.body);
+});
+router.put('/appointments/:id/followUp', (req: Request, res: Response) => {
+  controller(res)(approveDisapproveFollowUp)(req.decoded.id, req.params.id, req.body.isApproved);
+});
+router.put('/appointments/:id/reschedule', (req: Request, res: Response) => {
+  controller(res)(rescheduleAppointment)(req.decoded.id, req.params.id, req.body);
+});
+router.delete('/appointments/:id', (req: Request, res: Response) => {
+  controller(res)(cancelAppointment)(req.decoded.id, req.params.id);
 });
 
 router.get('/wallet', (req: Request, res: Response) => {
@@ -55,10 +66,10 @@ router.put('/wallet', (req: Request, res: Response) => {
 });
 
 // Doctor Routes
-router.get('/weeklyslots', (req: Request, res: Response) => {
-  // controller(res)()();
+router.get('/weeklyslots', isAuthorized('Doctor'), (req: Request, res: Response) => {
+  controller(res)(getWeeklySlots)(req.decoded.id);
 });
-router.put('/weeklyslots', (req: Request, res: Response) => {
+router.put('/weeklyslots', isAuthorized('Doctor'), (req: Request, res: Response) => {
   controller(res)(addSlots)(req.decoded.id, req.body);
 });
 router.delete('/weeklyslots', (req: Request, res: Response) => {

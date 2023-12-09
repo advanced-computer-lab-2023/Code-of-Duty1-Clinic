@@ -18,7 +18,10 @@ export default function DoctorCard({ i, doctor }) {
   } = useQuery(
     `slots${i}`,
     () => axiosInstance.get(`/doctors/${doctor._id}/availableAppointments`).then((res) => res.data.result),
-    { refetchOnWindowFocus: false, refetchOnMount: false }
+    {
+      refetchOnWindowFocus: false
+      //  refetchOnMount: false }
+    }
   );
 
   if (isLoading) return null;

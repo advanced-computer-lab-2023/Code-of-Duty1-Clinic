@@ -32,6 +32,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
   const [selectedUser, setSelectedUser] = useState({ id: '', name: '' });
   const [alignment, setAlignment] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleClick = async (slot) => {
     if (family.length == 0)
@@ -51,59 +52,62 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
     setSelectedUser({ id: option._id, name: option.name });
   };
 
-  const createAppointment = () => {
-    axiosInstance
-      .post(`/doctors/${doctorID}/appointments`, {
-        patientID: selectedUser.id,
-        patientName: selectedUser.name,
-        startDate: slot.startDate,
-        endDate: slot.endDate,
-        sessionPrice: slot.sessionPrice
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => console.log(err));
+  const createAppointment = async () => {
+    if (slot.startDate < new Date()) {
+      setMessage('This appointment is not available anymore');
+      return setOpenSnackbar(true);
+    }
+
+    return axiosInstance.post(`/doctors/${doctorID}/appointments`, {
+      patientID: selectedUser.id,
+      patientName: selectedUser.name,
+      startDate: slot.startDate,
+      endDate: slot.endDate,
+      sessionPrice: slot.sessionPrice
+    });
   };
 
   const handleReserve = () => {
-    if (!alignment || !selectedUser.id) return setOpenSnackbar(true);
+    if (!alignment || !selectedUser.id) {
+      setMessage('Some fields are not filled correctly');
+      return setOpenSnackbar(true);
+    }
 
     if (alignment === 'Card')
       axiosInstance
         .post(`/payment/session/oneTimePayment`, {
           products: [
             {
-              name: `Appointment with Dr. ${doctorName} on ${new Date(slot.startDate).toUTCString().slice(0, 16)}
-              from ${new Date(slot.startDate).toUTCString().slice(17, 22)} to ${new Date(slot.endDate)
-                .toUTCString()
-                .slice(17, 22)}`,
+              name: `Appointment with Dr. ${doctorName} on ${new Date(slot.startDate).toString().slice(0, 16)}
+              from ${new Date(slot.startDate).toString().slice(16, 31)} to ${new Date(slot.endDate)
+                .toString()
+                .slice(16, 31)}`,
               price: slot.sessionPrice,
               quantity: 1
             }
           ]
         })
-        .then((res) => {
-          createAppointment();
-          window.location.replace(res.data.url);
-        })
-        .catch((err) => console.log(err));
+        .then((res) => createAppointment().then((res1) => res))
+        .then((res) => window.location.replace(res.data.url))
+        .catch((err) => {
+          setMessage(err.response?.data.message || 'Network error');
+          setOpenSnackbar(true);
+        });
     else
       axiosInstance
         .put(`/me/wallet`, {
           amount: -slot.sessionPrice
         })
-        .then((res) => {
-          createAppointment();
-          window.location.reload();
-        })
-        .catch((err) => console.log(err));
+        .then((res) => createAppointment())
+        .then((res) => window.location.reload())
+        .catch((err) => {
+          setMessage(err.response?.data.message || 'Network error');
+          setOpenSnackbar(true);
+        });
   };
 
   const handleCloseSnackBar = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+    if (reason === 'clickaway') return;
 
     setOpenSnackbar(false);
   };
@@ -119,8 +123,8 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
 
         <Stack alignItems="center" justifyContent="center" sx={{}}>
           {slots.map((slot) => {
-            const from = new Date(slot.startDate).toUTCString().split(' ')[4].slice(0, 5);
-            const to = new Date(slot.endDate).toUTCString().split(' ')[4].slice(0, 5);
+            const from = `${new Date(slot.startDate).getUTCHours()}:${new Date(slot.startDate).getUTCMinutes()}`;
+            const to = `${new Date(slot.endDate).getUTCHours()}:${new Date(slot.endDate).getUTCMinutes()}`;
 
             return (
               <Stack key={i++}>
@@ -191,8 +195,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
           open={openSnackbar}
           autoHideDuration={5000}
           onClose={handleCloseSnackBar}
-          message="Some fields are not filled correctly"
-          // key={vertical + horizontal}
+          message={message}
         />
       </Dialog>
     </>

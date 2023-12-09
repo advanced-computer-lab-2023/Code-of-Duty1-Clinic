@@ -41,7 +41,7 @@ const navConfig = [
     icon: icon('ic_contract')
   },
   {
-    title: 'add Slots Or Appointment',
+    title: 'Weekly slots',
     path: '/addSlotsOrAppointment',
     icon: icon('ic_add')
   },

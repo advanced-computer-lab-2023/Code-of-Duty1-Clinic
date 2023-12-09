@@ -73,8 +73,6 @@ const getFamily = async (patientID: string) => {
     })
   );
 
-  console.log(family);
-
   return {
     status: StatusCodes.OK,
     message: 'Family members retrieved successfully',
@@ -225,8 +223,6 @@ const getHealthRecords = async (patientID: String) => {
   //create a new array of objects where the medicalRecord is not a URL
   let filteredRecords = healthRecords.filter((record: any) => isNotURL(record.medicalRecord));
   if (!filteredRecords) throw new HttpError(StatusCodes.NOT_FOUND, 'health records not found');
-  // console.log(healthRecords);
-  // console.log(filteredRecords);
 
   return {
     result: filteredRecords,

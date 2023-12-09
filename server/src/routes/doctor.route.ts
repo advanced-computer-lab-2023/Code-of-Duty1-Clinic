@@ -7,7 +7,7 @@ import { isAuthenticated, isAuthorized } from '../middlewares';
 const router = express.Router();
 router.use(isAuthenticated);
 
-router.get('/:id/availableAppointments', isAuthorized('Patient'), (req: Request, res: Response) => {
+router.get('/:id/availableAppointments', (req: Request, res: Response) => {
   controller(res)(viewAvailableAppointments)(req.params.id);
 });
 
