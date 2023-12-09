@@ -1,20 +1,22 @@
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
 import { Order, IOrder, Medicine } from '../models';
-import { getAllOrders } from './order.service';
-import { ObjectId } from 'mongoose';
 import { Types } from 'mongoose';
-const getReport = async (query: Object, filter: Object) => {
-  let orders = await Order.find({ ...query, status: { $ne: 'Cancelled' } });
-  if ('day' in filter) {
-    orders = orders.filter((order) => order.date.getDay() == filter.day);
-  }
-  if ('month' in filter) {
-    orders = orders.filter((order) => order.date.getMonth() + 1 == filter.month);
-  }
-  if ('year' in filter) {
+const getReport = async (query: Object) => {
+  let orders = await Order.find({ status: { $ne: 'Cancelled' } });
+
+  if ('day' in query) {
     orders = orders.filter((order) => {
-      return order.date.getFullYear() == filter.year;
+      console.log(order.date.getDate());
+      return order.date.getDate() - 1 == query.day;
+    });
+  }
+  if ('month' in query) {
+    orders = orders.filter((order) => order.date.getMonth() + 1 == query.month);
+  }
+  if ('year' in query) {
+    orders = orders.filter((order) => {
+      return order.date.getFullYear() == query.year;
     });
   }
 
@@ -40,7 +42,6 @@ const getReport = async (query: Object, filter: Object) => {
     }
   }
 
-  console.log(filteredOrder);
   return {
     status: StatusCodes.OK,
     filteredOrder
