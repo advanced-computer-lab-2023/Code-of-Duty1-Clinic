@@ -8,6 +8,6 @@ const router = express.Router();
 router.use(isAuthenticated);
 router.use(isAuthorized('Pharmacist'));
 router.get('/', (req: Request, res: Response) => {
-  controller(res)(getReport)(req.query, req.body);
+  controller(res)(getReport)(req.query);
 });
 export default router;
