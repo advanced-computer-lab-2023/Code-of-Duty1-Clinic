@@ -28,7 +28,7 @@ export default function DoctorsView() {
         return doctors;
       }),
     {
-      refetchOnMount: false,
+      // refetchOnMount: false,
       refetchOnWindowFocus: false
     }
   );

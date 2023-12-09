@@ -5,9 +5,8 @@ import { HttpError } from '../utils';
 const getAppointments = async (query: any) => {
   if (query.startDate) query.startDate = { $gte: query.startDate };
   if (query.endDate) query.endDate = { $lte: query.endDate };
-  if (!query.status) query.status = { $ne: 'Pending' };
 
-  const now = new Date(Date.now());
+  const now = new Date(Date.now() + 2 * 60 * 60 * 1000);
   await Appointment.updateMany({ endDate: { $lt: now }, status: 'Upcoming' }, { status: 'Completed' }); // Not scalable but will do
 
   let appointments = await Appointment.find(query).populate('doctorID', 'name');
@@ -48,7 +47,8 @@ const createAppointment = async (doctorID: String, body: any) => {
   const doctor = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
-  if (body.startDate < new Date(Date.now()))
+  // A local time zone issue
+  if (new Date(body.startDate) < new Date(Date.now() + 2 * 60 * 60 * 1000))
     throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot schedule an appointment in the past');
 
   body.doctorID = doctorID;
@@ -64,31 +64,35 @@ const createAppointment = async (doctorID: String, body: any) => {
   };
 };
 
-// Double check the date local time issue
-const cancelAppointment = async (userID: string, appointmentID: string) => {
-  const appointment = await Appointment.findById(appointmentID);
-  if (!appointment) throw new HttpError(StatusCodes.NOT_FOUND, 'Appointment not found');
+const rescheduleAppointment = async (userID: string, appointmentID: any, newBody: any) => {
+  const appointment = await validateAppointment(userID, appointmentID);
+  if (appointment.status !== 'Upcoming' || appointment.startDate < new Date(Date.now() + 2 * 60 * 60 * 1000))
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot reschedule a non-upcoming appointment');
 
-  const status = appointment.status;
-  if (status === 'Cancelled' || status === 'Completed' || new Date(appointment.startDate) < new Date())
-    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot cancel this appointment due to its status');
+  const newAppointment = { ...appointment.toJSON(), ...newBody }; // newBody will override some of the old values
+  appointment.set(newAppointment);
+  appointment.save();
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Appointment rescheduled successfully'
+  };
+};
+
+const cancelAppointment = async (userID: string, appointmentID: string) => {
+  const appointment = await validateAppointment(userID, appointmentID);
+  if (appointment.status === 'Completed' || appointment.startDate < new Date(Date.now() + 2 * 60 * 60 * 1000))
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot cancel a completed appointment');
 
   const patient = await Patient.findById(appointment.patientID);
-  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
-
-  // I should also be able to cancel my family appointments
-  let patientFamily = patient.family || [];
-  const isFamily = patientFamily.some((member: any) => member.userID == userID);
-
-  if (!isFamily && appointment.patientID.toString() != userID && appointment.doctorID.toString() != userID)
-    throw new HttpError(StatusCodes.FORBIDDEN, 'You are not authorized to do this');
+  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
 
   // Because follow ups are free, we don't need to refund the patient
-  if (status !== 'Pending') {
+  if (appointment.status !== 'Pending') {
     // if the appointment was cancelled by the doctor or by patient less than 24 hours before now, the patient will be refunded
     if (
       appointment.doctorID.toString() == userID ||
-      new Date(appointment.startDate) >= new Date(Date.now() + 24 * 60 * 60 * 1000)
+      new Date(appointment.startDate) >= new Date(Date.now() + 26 * 60 * 60 * 1000)
     ) {
       patient.wallet! += appointment.sessionPrice;
       patient.save();
@@ -96,7 +100,7 @@ const cancelAppointment = async (userID: string, appointmentID: string) => {
       Doctor.findByIdAndUpdate(appointment.doctorID, { $inc: { wallet: -appointment.sessionPrice } }); // Maybe he will be indebted
     }
 
-    // Should send a notification and email to the doctor and patient
+    // here it should send a notification and email to the doctor and patient
   }
 
   appointment.status = 'Cancelled';
@@ -108,4 +112,79 @@ const cancelAppointment = async (userID: string, appointmentID: string) => {
   };
 };
 
-export { getAppointments, createAppointment, cancelAppointment };
+// if user is doctor, status will be upcoming, if user is patient, status will be pending
+const scheduleFollowUp = async (userID: string, prevAppointmentID: string, appointmentDetails: any) => {
+  const appointment = await validateAppointment(userID, prevAppointmentID);
+
+  if (appointment.status !== 'Completed')
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot schedule a follow up');
+
+  const { _id, ...prevAppointment } = appointment.toJSON();
+  const newAppointment = {
+    ...prevAppointment,
+    ...appointmentDetails,
+    isFollowUp: true,
+    previousAppointment: prevAppointmentID,
+    status: userID === appointment.doctorID.toString() ? 'Upcoming' : 'Pending'
+  };
+
+  const newAppointmentDoc = await Appointment.create(newAppointment);
+
+  return {
+    status: StatusCodes.CREATED,
+    message: 'Follow up appointment scheduled successfully',
+    result: newAppointmentDoc
+  };
+};
+
+const approveDisapproveAppointment = async (userID: string, appointmentID: string, isApproved: boolean) => {
+  const appointment = await Appointment.findById(appointmentID);
+  if (!appointment) throw new HttpError(StatusCodes.NOT_FOUND, 'Appointment not found');
+
+  if (appointment.status !== 'Pending')
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot approve/disapprove this appointment');
+
+  if (appointment.doctorID.toString() !== userID)
+    throw new HttpError(StatusCodes.FORBIDDEN, 'You are not authorized to do this');
+
+  appointment.status = isApproved ? 'Upcoming' : 'Cancelled';
+  appointment.save();
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Appointment approved/disapproved successfully'
+  };
+};
+
+// helper function
+async function validateAppointment(userID: string, appointmentID: string) {
+  const appointment = await Appointment.findById(appointmentID);
+  if (!appointment) throw new HttpError(StatusCodes.NOT_FOUND, 'Appointment not found');
+
+  const status = appointment.status;
+  if (status === 'Cancelled')
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot change this appointment because it was cancelled');
+
+  if (appointment.patientID.toString() != userID) {
+    const patient: any = await User.findById(userID);
+    if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
+
+    // I should also be able to cancel my family appointments
+    let userFamily = patient.family || [];
+    const isFamily = userFamily.some((member: any) => member.userID == appointment.patientID.toString());
+
+    if (!isFamily && appointment.doctorID.toString() != userID)
+      throw new HttpError(StatusCodes.FORBIDDEN, 'You are not authorized to do this');
+  }
+
+  return appointment;
+}
+
+export {
+  getAppointments,
+  createAppointment,
+  rescheduleAppointment,
+  cancelAppointment,
+  scheduleFollowUp,
+  approveDisapproveAppointment
+};

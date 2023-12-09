@@ -20,6 +20,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Popover from '@mui/material/Popover';
 import Box from '@mui/material/Box';
+import Snackbar from '@mui/material/Snackbar';
 
 export default function AppointmentsView() {
   const [appointments, setAppointments] = useState([]);
@@ -28,6 +29,8 @@ export default function AppointmentsView() {
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('doctorID');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [message, setMessage] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const myName = localStorage.getItem('userName');
 
@@ -47,12 +50,15 @@ export default function AppointmentsView() {
       if (filterValues.endDate) params.endDate = new Date(filterValues.endDate).toISOString();
       if (filterValues.status) params.status = filterValues.status;
 
-      try {
-        const response = await axiosInstance.get('/me/appointments', { params });
-        setAppointments(response.data.result || []);
-      } catch (error) {
-        console.error('Error fetching appointments:', error);
-      }
+      const response = axiosInstance
+        .get('/me/appointments', { params })
+        .then((res) => {
+          setAppointments(res.data.result || []);
+        })
+        .catch((err) => {
+          setOpenSnackbar(true);
+          setMessage(err.response?.data.message || 'Network error');
+        });
     };
 
     fetchAppointments();
@@ -71,21 +77,6 @@ export default function AppointmentsView() {
       return;
     }
     setSelected([]);
-  };
-
-  const handleClick = (event, doctorID) => {
-    const selectedIndex = selected.indexOf(doctorID);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, doctorID);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -135,6 +126,14 @@ export default function AppointmentsView() {
   const handleApplyFilters = () => {
     fetchAppointments();
     handleFilterClose();
+  };
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackbar(false);
   };
 
   return (
@@ -232,7 +231,7 @@ export default function AppointmentsView() {
               </Button>
             )}
             <Autocomplete
-              options={['Upcoming', 'Completed', 'Cancelled', 'Rescheduled']}
+              options={['Upcoming', 'Completed', 'Cancelled', 'Pending']}
               renderInput={(params) => <TextField {...params} label="Status" fullWidth margin="normal" />}
               onChange={(e, value) => setFilterValues({ ...filterValues, status: value })}
               value={filterValues.status || ''}
@@ -268,22 +267,36 @@ export default function AppointmentsView() {
                 {appointments
                   .toReversed()
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row._id}
-                      _id={row._id}
-                      patientName={row.patientName == myName ? 'Me' : row.patientName}
-                      doctorName={row.doctorName == myName ? 'Me' : row.doctorName}
-                      status={row.status}
-                      sessionPrice={row.sessionPrice}
-                      day={new Date(row.startDate).toUTCString().slice(0, 16)}
-                      startDate={new Date(row.startDate).toUTCString().slice(17, 22)}
-                      endDate={new Date(row.endDate).toUTCString().slice(17, 22)}
-                      isFollowUp={row.isFollowUp}
-                      selected={selected.indexOf(row._id) !== -1}
-                      handleClick={(event) => handleClick(event, row._id)}
-                    />
-                  ))}
+                  .map((row) => {
+                    let startDate = new Date(row.startDate);
+                    startDate.setHours(startDate.getHours() - 2);
+                    const from = startDate.toTimeString().slice(0, 5);
+
+                    let endDate = new Date(row.endDate);
+                    endDate.setHours(endDate.getHours() - 2);
+                    const to = endDate.toTimeString().slice(0, 5);
+
+                    const day = startDate.toDateString();
+
+                    return (
+                      <UserTableRow
+                        key={row._id}
+                        _id={row._id}
+                        patientName={row.patientName == myName ? 'Me' : row.patientName}
+                        doctorID={row.doctorID._id}
+                        doctorName={row.doctorName == myName ? 'Me' : row.doctorName}
+                        status={row.status}
+                        sessionPrice={row.sessionPrice}
+                        day={day}
+                        startDate={from}
+                        endDate={to}
+                        isFollowUp={row.isFollowUp}
+                        selected={selected.indexOf(row._id) !== -1}
+                        setMessage={setMessage}
+                        setOpenSnackbar={setOpenSnackbar}
+                      />
+                    );
+                  })}
 
                 {appointments.length == 0 && <TableNoData />}
               </TableBody>
@@ -301,6 +314,8 @@ export default function AppointmentsView() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
+
+      <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackBar} message={message} />
     </Container>
   );
 }

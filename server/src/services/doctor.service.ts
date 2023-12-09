@@ -85,6 +85,8 @@ const viewAvailableAppointments = async (doctorID: string) => {
       const slotMinute = slot.from.minutes;
       const slotHourEnd = slot.to.hours;
       const slotMinuteEnd = slot.to.minutes;
+      if (slotHour < new Date().getHours()) continue;
+      if (slotHour === new Date().getHours() && slotMinute < new Date().getMinutes()) continue;
 
       let isSlotAvailable = true;
       for (const appointment of appointments) {
@@ -137,8 +139,8 @@ const viewAvailableAppointments = async (doctorID: string) => {
         const slot = {
           status: 'Upcoming',
           sessionPrice: price,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate,
+          endDate,
           isFollowUp: false,
           _id: id
         };
@@ -225,53 +227,16 @@ const addSlots = async (doctorID: string, newSlots: any) => {
   };
 };
 
-const scheduleFollowUp = async (doctorID: String, appointmentDetails: any) => {
-  const doctor: any = await Doctor.findOne({ _id: doctorID });
+const getWeeklySlots = async (doctorID: string) => {
+  const doctor: any = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
-  if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no contract');
 
-  const patient = await Patient.findOne({ email: appointmentDetails.email });
-  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
-
-  let sessionDiscount = 0;
-  if (patient.package) {
-    const pkg = await Package.findOne({ _id: patient.package.packageID });
-    if (pkg && patient.package!.endDate?.getTime() >= Date.now()) sessionDiscount = pkg.sessionDiscount;
-  }
-
-  const contract: any = await Contract.findOne({ doctorID: doctorID });
-
-  const time =
-    (new Date(appointmentDetails.endDate).getTime() - new Date(appointmentDetails.startDate).getTime()) /
-    (1000 * 60 * 60);
-  let price = doctor.hourRate * time * (1 + contract.markUpProfit / 100);
-  price -= price * (sessionDiscount / 100);
-
-  const followUpAppointment = new Appointment({
-    doctorID: doctorID,
-    patientID: patient._id,
-    status: 'Upcoming',
-    sessionPrice: price,
-    startDate: appointmentDetails.startDate,
-    endDate: appointmentDetails.endDate,
-    isFollowUp: true
-  });
-
-  await followUpAppointment.save();
-
+  const { _id, ...weeklySlots } = doctor.weeklySlots._doc;
   return {
     status: StatusCodes.OK,
-    message: 'Follow up appointment scheduled successfully',
-    result: followUpAppointment
+    message: 'Weekly slots retrieved successfully',
+    result: weeklySlots
   };
 };
 
-export {
-  getDoctors,
-  getMyPatients,
-  viewAvailableAppointments,
-  viewContract,
-  acceptContract,
-  addSlots,
-  scheduleFollowUp
-};
+export { getDoctors, getMyPatients, viewAvailableAppointments, viewContract, acceptContract, addSlots, getWeeklySlots };
