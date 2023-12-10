@@ -2,13 +2,7 @@ import express, { Request, Response } from 'express';
 
 import controller from '../controllers';
 import { isAuthenticated } from '../middlewares';
-import {
-  getCart,
-  removeCartItem,
-  increaseItemCount,
-  decreaseItemCount,
-  addCartItem
-} from '../services';
+import { getCart, removeCartItem, increaseItemCount, decreaseItemCount, addCartItem } from '../services';
 
 const router = express.Router();
 
@@ -19,7 +13,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 router.post('/', (req: Request, res: Response) => {
-  controller(res)(addCartItem)(req.decoded.id, req.body.medID);
+  controller(res)(addCartItem)(req.decoded.id, req.body.medID, req.body.prescriptionID, req.body.medicineID);
 });
 
 router.delete('/:id', (req: Request, res: Response) => {
