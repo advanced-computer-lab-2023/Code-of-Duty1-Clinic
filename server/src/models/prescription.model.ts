@@ -11,6 +11,7 @@ interface IPrescription {
     _id: any;
     medicine: string;
     dosage: string;
+    isSubmitted: boolean;
   }[];
 }
 
@@ -31,7 +32,8 @@ const prescriptionSchema = new Schema({
     type: [
       {
         medicine: { type: String, required: true },
-        dosage: { type: String, required: true }
+        dosage: { type: String, required: true },
+        isSubmitted: { type: Boolean, default: false }
       }
     ],
     default: []

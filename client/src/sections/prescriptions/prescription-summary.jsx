@@ -11,8 +11,9 @@ import SaveIcon from '@mui/icons-material/Save';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import { axiosInstance } from '../../utils/axiosInstance';
-import { Select } from '@mui/material';
+import { Select, Input, Button } from '@mui/material';
 import { set } from 'lodash';
+import { da, tr } from 'date-fns/locale';
 
 export default function PrescriptionSummary({
   prescriptionID,
@@ -25,6 +26,7 @@ export default function PrescriptionSummary({
   isSubmitted,
   medicinesListNames,
   sx,
+  fetchPrescriptions,
   ...other
 }) {
   const user = localStorage.getItem('userRole');
@@ -38,9 +40,37 @@ export default function PrescriptionSummary({
       console.log(`Edit medicine with ID: ${medicineId}`);
       setEditingMedicineId('');
       setEditedDosage('');
-      window.location.reload();
+      fetchPrescriptions();
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const checkDate = () => {
+    const dateYear = Number(date.slice(0, 4));
+    const dateMonth = Number(date.slice(5, 7));
+    const dateDay = Number(date.slice(8, 10));
+    const today = new Date();
+    if (today.getFullYear() == dateYear + 1) {
+      if (today.getMonth() + 1 == 1 && dateMonth == 12) {
+        if (today.getDate() + 30 - dateDay <= 7) {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    } else if (today.getFullYear() == dateYear) {
+      if (today.getMonth() + 1 == dateMonth) {
+        if (today.getDate() - dateDay > 7) {
+          return true;
+        }
+      } else if (today.getMonth() + 1 == dateMonth + 1 && today.getDate() + 30 - dateDay <= 7) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
     }
   };
 
@@ -48,7 +78,7 @@ export default function PrescriptionSummary({
     try {
       await axiosInstance.delete(`/prescription/${prescriptionID}/medicine/${medicineId}`);
       console.log(`Delete medicine with ID: ${medicineId}`);
-      window.location.reload();
+      fetchPrescriptions();
     } catch (error) {
       console.error(error);
     }
@@ -61,7 +91,7 @@ export default function PrescriptionSummary({
       });
       console.log(`Edit description for prescription ID: ${prescriptionID}`);
       setEditingDescription(false);
-      window.location.reload();
+      fetchPrescriptions();
     } catch (error) {
       console.error(error);
     }
@@ -86,7 +116,7 @@ export default function PrescriptionSummary({
       });
       setNewMedicine('');
       setNewDosage('');
-      window.location.reload();
+      fetchPrescriptions();
     } catch (err) {
       console.error(err);
     }
@@ -98,8 +128,6 @@ export default function PrescriptionSummary({
       try {
         const res = await axiosInstance.get(`/medicine`);
         setMedArray(res.data.result);
-        // console.log('Yes');
-        // console.log(medArray);
       } catch (err) {
         console.error(err);
       }
@@ -107,7 +135,7 @@ export default function PrescriptionSummary({
     getMedID();
   }, []);
 
-  const handleAddCartItem = async (medicine) => {
+  const handleAddCartItem = async (medicine, medicineID) => {
     console.log(medArray);
     let medID = '';
     for (let i = 0; i < medArray.length; i++) {
@@ -118,8 +146,12 @@ export default function PrescriptionSummary({
     }
     try {
       await axiosInstance.post(`/cart`, {
-        medID
+        medID: medID,
+        prescriptionID: prescriptionID,
+        medicineID: medicineID
       });
+      alert('Added to cart');
+      fetchPrescriptions(0);
     } catch (err) {
       console.error(err);
     }
@@ -142,7 +174,13 @@ export default function PrescriptionSummary({
               </IconButton>
             </div>
           ) : (
-            <Typography variant="body1" gutterBottom onDoubleClick={() => setEditingDescription(true)}>
+            <Typography
+              variant="body1"
+              gutterBottom
+              onDoubleClick={() => {
+                if (user === 'Doctor' && !isSubmitted) setEditingDescription(true);
+              }}
+            >
               <strong>Description:</strong> {description}
             </Typography>
           )}
@@ -204,6 +242,9 @@ export default function PrescriptionSummary({
                     <Typography variant="body1">
                       <strong>Dosage:</strong> {medicineData.dosage}
                     </Typography>
+                    <Typography variant="body1">
+                      <strong>IsSubmitted:</strong> {medicineData.isSubmitted ? 'Yes' : 'No'}
+                    </Typography>
                   </Box>
                   {user === 'Doctor' && (
                     <div>
@@ -214,6 +255,7 @@ export default function PrescriptionSummary({
                           setEditingMedicineId(medicineData._id);
                           setEditedDosage(medicineData.dosage);
                         }}
+                        disabled={medicineData.isSubmitted || isSubmitted}
                       >
                         <EditIcon />
                       </IconButton>
@@ -221,6 +263,7 @@ export default function PrescriptionSummary({
                         aria-label="delete"
                         color="error"
                         onClick={() => handleDeleteMedicine(medicineData._id)}
+                        disabled={medicineData.isSubmitted || isSubmitted}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -231,7 +274,9 @@ export default function PrescriptionSummary({
                       <IconButton
                         aria-label="add"
                         color="primary"
-                        onClick={() => handleAddCartItem(medicineData.medicine)}
+                        onClick={() => handleAddCartItem(medicineData.medicine, medicineData._id)}
+                        // check if date is a week before
+                        disabled={medicineData.isSubmitted || checkDate()}
                       >
                         <AddCircleOutlineIcon />
                       </IconButton>
@@ -242,7 +287,7 @@ export default function PrescriptionSummary({
             </Box>
           ))}
         </Stack>
-        {user === 'Doctor' && (
+        {user === 'Doctor' && !isSubmitted && (
           <div>
             <Typography variant="h6">Add Medicine</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -259,14 +304,16 @@ export default function PrescriptionSummary({
               </Typography>
               <Typography variant="body1">
                 <label htmlFor="dosageInput">Dosage: </label>
-                <input
+                <Input
                   id="dosageInput"
                   onChange={(event) => {
                     setNewDosage(event.target.value);
                   }}
                 />
               </Typography>
-              <button onClick={handleAddMedicine}>Add Medicine</button>
+              <Button variant="contained" onClick={handleAddMedicine}>
+                Add Medicine
+              </Button>
             </Box>
           </div>
         )}
@@ -291,5 +338,6 @@ PrescriptionSummary.propTypes = {
   isFilled: PropTypes.bool.isRequired,
   isSubmitted: PropTypes.bool.isRequired,
   medicinesListNames: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-  sx: PropTypes.object
+  sx: PropTypes.object,
+  fetchPrescriptions: PropTypes.func.isRequired
 };

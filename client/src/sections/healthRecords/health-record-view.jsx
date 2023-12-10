@@ -22,20 +22,21 @@ export default function HealthRecordView({ patientID }) {
   const user = localStorage.getItem('userRole');
   console.log(user);
 
-  useEffect(() => {
-    const fetchHealthRecords = async () => {
-      try {
-        let res;
-        if (user === 'Doctor') {
-          res = await axiosInstance.get(`/patients/${patientID}/medicalhistory`);
-        } else {
-          res = await axiosInstance.get(`/me/medicalhistory`);
-        }
-        setHealthRecords(res.data.result);
-      } catch (err) {
-        console.log(err);
+  const fetchHealthRecords = async () => {
+    try {
+      let res;
+      if (user === 'Doctor') {
+        res = await axiosInstance.get(`/patients/${patientID}/medicalhistory`);
+      } else {
+        res = await axiosInstance.get(`/me/medicalhistory`);
       }
-    };
+      setHealthRecords(res.data.result);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
     fetchHealthRecords();
   }, []);
 
@@ -45,8 +46,7 @@ export default function HealthRecordView({ patientID }) {
         name: newName,
         medicalRecord: newRecord
       });
-      // Reload the page after successful submission
-      window.location.reload();
+      fetchHealthRecords();
     } catch (err) {
       console.error(err);
     }
