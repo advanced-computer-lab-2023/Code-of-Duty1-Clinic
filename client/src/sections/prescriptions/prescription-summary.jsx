@@ -179,9 +179,9 @@ export default function PrescriptionSummary({
 
   return (
     <div>
-      <div ref={printableContentRef}>
-        <Card sx={{ p: 2, maxWidth: 600, margin: 'auto', boxShadow: 3, ...sx }} {...other}>
-          <Stack spacing={2}>
+      <Card sx={{ p: 2, maxWidth: 600, margin: 'auto', boxShadow: 3, ...sx }} {...other}>
+        <Stack spacing={2}>
+          <div ref={printableContentRef}>
             <Typography variant="h6">Prescription Summary</Typography>
             <Box>
               {editingDescription ? (
@@ -313,39 +313,39 @@ export default function PrescriptionSummary({
                 </Box>
               ))}
             </Stack>
-            {user === 'Doctor' && !isSubmitted && (
-              <div>
-                <Typography variant="h6">Add Medicine</Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <Typography variant="body1">
-                    <label htmlFor="medicineInput">Medicine: </label>
-                    <select id="medicineInput" onChange={(event) => setNewMedicine(event.target.value)}>
-                      <option value="">Select Medicine</option>
-                      {medicinesListNames.map((medicineName, index) => (
-                        <option key={index} value={medicineName}>
-                          {medicineName}
-                        </option>
-                      ))}
-                    </select>
-                  </Typography>
-                  <Typography variant="body1">
-                    <label htmlFor="dosageInput">Dosage: </label>
-                    <Input
-                      id="dosageInput"
-                      onChange={(event) => {
-                        setNewDosage(event.target.value);
-                      }}
-                    />
-                  </Typography>
-                  <Button variant="contained" onClick={handleAddMedicine}>
-                    Add Medicine
-                  </Button>
-                </Box>
-              </div>
-            )}
-          </Stack>
-        </Card>
-      </div>
+          </div>
+          {user === 'Doctor' && !isSubmitted && (
+            <div>
+              <Typography variant="h6">Add Medicine</Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <Typography variant="body1">
+                  <label htmlFor="medicineInput">Medicine: </label>
+                  <select id="medicineInput" onChange={(event) => setNewMedicine(event.target.value)}>
+                    <option value="">Select Medicine</option>
+                    {medicinesListNames.map((medicineName, index) => (
+                      <option key={index} value={medicineName}>
+                        {medicineName}
+                      </option>
+                    ))}
+                  </select>
+                </Typography>
+                <Typography variant="body1">
+                  <label htmlFor="dosageInput">Dosage: </label>
+                  <Input
+                    id="dosageInput"
+                    onChange={(event) => {
+                      setNewDosage(event.target.value);
+                    }}
+                  />
+                </Typography>
+                <Button variant="contained" onClick={handleAddMedicine}>
+                  Add Medicine
+                </Button>
+              </Box>
+            </div>
+          )}
+        </Stack>
+      </Card>
       <button
         style={{
           padding: '10px 20px',
