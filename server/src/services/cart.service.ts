@@ -31,16 +31,17 @@ const addCartItem = async (userId: string, medID: string, prescriptionID: string
   }
   await cart.save();
 
-  const prescription = await Prescription.findById(prescriptionID);
-  let prescriptionMedicines = prescription?.medicines;
-  prescriptionMedicines?.forEach((medicine) => {
-    if (medicine?._id.toString() === medicineID) {
-      medicine.isSubmitted = true;
-    }
-  });
-  const updatedPrescription = await prescription?.updateOne({ medicines: prescriptionMedicines });
-  if (!updatedPrescription) throw new HttpError(StatusCodes.BAD_REQUEST, 'failed to update prescription');
-
+  if (prescriptionID && medicineID) {
+    const prescription = await Prescription.findById(prescriptionID);
+    let prescriptionMedicines = prescription?.medicines;
+    prescriptionMedicines?.forEach((medicine) => {
+      if (medicine?._id.toString() === medicineID) {
+        medicine.isSubmitted = true;
+      }
+    });
+    const updatedPrescription = await prescription?.updateOne({ medicines: prescriptionMedicines });
+    if (!updatedPrescription) throw new HttpError(StatusCodes.BAD_REQUEST, 'failed to update prescription');
+  }
   return {
     status: StatusCodes.OK,
     message: 'Item added successfully !',
