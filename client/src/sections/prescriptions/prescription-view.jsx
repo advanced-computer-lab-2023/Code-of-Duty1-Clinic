@@ -15,19 +15,6 @@ export default function PrescriptionView({ patientID }) {
   const user = localStorage.getItem('userRole');
   console.log(user);
 
-  const [patientName, setPatientName] = useState('');
-  useEffect(() => {
-    const fetchPatientName = async () => {
-      try {
-        const res = await axiosInstance.get(`/patients/${patientID}`);
-        console.log(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchPatientName();
-  }, []);
-
   const [prescriptions, setPrescriptions] = useState([]);
 
   const fetchPrescriptions = async () => {

@@ -2,6 +2,7 @@
   "dependencies": {
     "@mui/lab": "^5.0.0-alpha.152",
     "@mui/material": "^5.14.17",
-    "@mui/x-date-pickers": "^6.18.1"
+    "@mui/x-date-pickers": "^6.18.1",
+    "pdf-lib": "^1.17.1"
   }
 }
