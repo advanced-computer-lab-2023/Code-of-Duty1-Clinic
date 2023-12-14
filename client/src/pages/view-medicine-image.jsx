@@ -31,7 +31,7 @@ function ViewMedicineImage() {
 
       <button onClick={handleButtonClick}>Show Image</button>
 
-      {showImage && <MedicineImage medicineID={medicineID} />}
+      {showImage && <MedicineImage MedicineID={medicineID} />}
     </div>
   );
 }
