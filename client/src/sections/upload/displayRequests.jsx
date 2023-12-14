@@ -66,10 +66,10 @@ const Row = ({ text, doctorID, field, extension }) => {
 
 const AdditionalContent = ({ doctorID, text, field, extension }) => {
   const [comp, setComp] = useState(<p>{text}</p>);
-  const [url, setUrl] = useState(`http://localhost:3000/upload/doctor/registration/${doctorID}/${field}/${text}`);
+  const [url, setUrl] = useState(`http://localhost:3000/upload/registration/${doctorID}/${field}/${text}`);
 
   useEffect(() => {
-    setUrl(`http://localhost:3000/upload/doctor/registration/${doctorID}/${field}/${text}`);
+    setUrl(`http://localhost:3000/upload/registration/${doctorID}/${field}/${text}`);
   }, []);
 
   useEffect(() => {

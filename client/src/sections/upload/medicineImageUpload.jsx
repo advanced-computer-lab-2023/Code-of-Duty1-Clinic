@@ -37,7 +37,7 @@ const MedicineImageUpload = ({ medicineID }) => {
             Medicine Image
           </Typography>
           <Label sx={{ mt: 2, mb: 1 }}>Medicine Image</Label>
-          <Upload url={`upload/medicine/image/${medicineID}`} field="medicine" />
+          <Upload url={`/upload/medicine/image/${medicineID}`} field="medicine" />
           <Button sx={{ mt: 2 }} onClick={handleClose}>
             Close
           </Button>
