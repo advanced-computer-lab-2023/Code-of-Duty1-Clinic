@@ -35,12 +35,9 @@ export const PharmacistDocumentUploadPage = lazy(() => import('src/pages/pharmac
 export const MedicineImageUploadPage = lazy(() => import('src/pages/uploadMedicineImage'));
 export const ViewMedicineImage = lazy(() => import('src/pages/view-medicine-image'));
 export const AddressesPage = lazy(() => import('src/pages/addresses'));
-<<<<<<< HEAD
 export const ViewChat = lazy(() => import('src/pages/textChat'));
 
-=======
 export const ReportPage = lazy(() => import('src/pages/report'));
->>>>>>> main
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -83,11 +80,8 @@ export default function Router() {
         { path: 'upload-medicine-image', element: <MedicineImageUploadPage /> },
         { path: 'view-medicine-image', element: <ViewMedicineImage /> },
         { path: 'addresses', element: <AddressesPage /> },
-<<<<<<< HEAD
-        { path: 'chat', element: <ViewChat /> }
-=======
-        { path: 'report', element: <ReportPage /> }
->>>>>>> main
+        { path: 'chat', element: <ViewChat /> },
+        { path: 'report', element: <ReportPage /> },
       ]
     },
     {

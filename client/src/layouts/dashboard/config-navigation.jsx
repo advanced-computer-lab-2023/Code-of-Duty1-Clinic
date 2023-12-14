@@ -126,15 +126,15 @@ const navConfig = [
     icon: icon('ic_analytics')
   },
   {
-<<<<<<< HEAD
     title: 'chat',
     path: '/chat',
-=======
+    icon: icon('ic_analytics')
+  },
+  {
     title: 'report',
     path: '/report',
->>>>>>> main
     icon: icon('ic_analytics')
-  }
+  },
 ];
 
 export default navConfig;
