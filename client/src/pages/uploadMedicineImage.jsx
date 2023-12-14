@@ -20,7 +20,7 @@ function MedicineImageUploadPage() {
         <label htmlFor="medicineID">Medicine ID:</label>
         <input type="text" id="medicineID" value={medicineID} onChange={handleMedicineIDChange} />
       </div>
-
+      {console.log(medicineID, "M id")}
       <MedicineImageUpload medicineID={medicineID} />
       <MedicineList />
     </>

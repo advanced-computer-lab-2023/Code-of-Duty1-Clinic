@@ -43,7 +43,8 @@ function Upload({ url, field, handleUploadSuccess, fileName }) {
     setFeedback('');
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (e) => {
+    console.log(files, "vfvfvfvfvfvfvfvfvf");
     const formData = new FormData();
     let len = files.length;
     while (len > 0) {
@@ -66,18 +67,24 @@ function Upload({ url, field, handleUploadSuccess, fileName }) {
 
     try {
       formData.append('fileName', fileName);
+
       const res = await axiosInstance.post(url, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
+      console.log(url, "1111111111111111111111fvfvfvfvfvfvfvfvf");
+      console.log(res, "222225222vfvfvfvfvfvfvfvfvf");
+      console.log(res.status, res.status == 200, "99999999");
       if (res.status == 200) {
-        handleUploadSuccess(field);
+        if (handleUploadSuccess)
+          handleUploadSuccess(field);
       }
-      setLabelColor(res.status === 200 ? 'green' : 'red');
-      setFeedback(res.status === 200 ? 'Uploaded successfully' : 'Failed to upload');
+      setLabelColor((prev) => res.status || res.data.result.status == 200 ? 'green' : 'red');
+      setFeedback(res.status == 200 ? 'Uploaded successfully' : 'Failed to upload');
       setIsFileChanged(false);
     } catch (error) {
+      console.log(error, "vvvvvvvvvf,vlfsv,l,vfl,vf")
       setFeedback('Failed to upload');
       setLabelColor('red');
     }
