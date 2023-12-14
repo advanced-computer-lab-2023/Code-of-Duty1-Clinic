@@ -53,9 +53,10 @@ export default function LoginView() {
         const user = res.data.user;
         localStorage.setItem('token', user.name); // limited time token
         // setUser({ name: user.name, role: user.role });
-        localStorage.setItem('userRole', user.role);
+        localStorage.setItem('userID', user._id);
         localStorage.setItem('userName', user.name);
         localStorage.setItem('userId', user._id);
+        localStorage.setItem('userRole', user.role);
 
         router.push(destination);
       } else {

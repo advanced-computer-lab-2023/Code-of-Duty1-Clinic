@@ -20,15 +20,20 @@ const getMyPatients = async (query: any) => {
 const calculateTimeStamp = (slot: { hours: number; minutes: number }) => slot.hours * 60 + slot.minutes;
 
 const getDoctors = async (query: any) => {
-  let doctors: IDoctor[] = await Doctor.find(query); // .find({ isContractAccepted: true });
+  let { date, ...newQuery } = query;
+  if (newQuery.specialty) newQuery.specialty = new RegExp(newQuery.specialty, 'i');
+  if (newQuery.name) newQuery.name = new RegExp(newQuery.name, 'i');
 
-  if (query.date) {
-    const daysOfWeek = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    const day: string = daysOfWeek[query.date.getDay()];
-    const hours = query.date.getHours();
-    const minutes = query.date.getMinutes();
+  let doctors: IDoctor[] = await Doctor.find(newQuery); // .find({ isContractAccepted: true });
 
-    const inputTimeStamp = 60 * hours + minutes;
+  if (date) {
+    date = new Date(date);
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const day: string = daysOfWeek[date.getDay()];
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    const inputTimeStamp = calculateTimeStamp({ hours, minutes });
     doctors = doctors.filter((doctor: IDoctor) => {
       const slots = (doctor.weeklySlots as any)[day];
 
@@ -43,7 +48,11 @@ const getDoctors = async (query: any) => {
     });
   }
 
-  return { result: doctors, status: StatusCodes.OK };
+  return {
+    status: StatusCodes.OK,
+    message: 'Doctors retrieved successfully',
+    result: doctors
+  };
 };
 
 const viewAvailableAppointments = async (doctorID: string) => {
@@ -63,9 +72,7 @@ const viewAvailableAppointments = async (doctorID: string) => {
   const lastDay = currentDay + 6;
 
   // Get all doctor's appointments
-  const appointments = await Appointment.find({
-    doctorID: doctorID
-  });
+  const appointments = await Appointment.find({ doctorID, status: 'Upcoming' });
 
   for (let i = currentDay; i <= lastDay; i++) {
     const dayOfWeek = i % 7;
@@ -78,6 +85,11 @@ const viewAvailableAppointments = async (doctorID: string) => {
       const slotMinute = slot.from.minutes;
       const slotHourEnd = slot.to.hours;
       const slotMinuteEnd = slot.to.minutes;
+
+      if (dayOfWeek === currentDay) {
+        if (slotHour < new Date().getHours()) continue;
+        if (slotHour === new Date().getHours() && slotMinute < new Date().getMinutes()) continue;
+      }
 
       let isSlotAvailable = true;
       for (const appointment of appointments) {
@@ -130,8 +142,8 @@ const viewAvailableAppointments = async (doctorID: string) => {
         const slot = {
           status: 'Upcoming',
           sessionPrice: price,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate,
+          endDate,
           isFollowUp: false,
           _id: id
         };
@@ -145,28 +157,6 @@ const viewAvailableAppointments = async (doctorID: string) => {
     status: StatusCodes.OK,
     message: 'Available Appointments retrieved successfully',
     result: availableAppointments
-  };
-};
-// View the amount in my wallet req 67 for patient and doctor
-const viewWallet = async (userId: string, role: string) => {
-  let user = null;
-  let userType = '';
-
-  if (role === 'patient' || role === 'Patient') {
-    user = await Patient.findById(userId);
-    userType = 'Patients';
-  } else if (role === 'doctor' || role === 'Doctor') {
-    user = await Doctor.findById(userId);
-    userType = 'Doctor';
-  }
-  if (!user) {
-    throw new HttpError(StatusCodes.NOT_FOUND, `${userType} not found`);
-  }
-
-  return {
-    result: user.wallet,
-    status: StatusCodes.OK,
-    message: `Successfully retrieved ${userType}'s wallet`
   };
 };
 
@@ -189,9 +179,9 @@ const acceptContract = async (id: String) => {
 
   if (contract.result.length > 0 && contract.result[0].status === 'Pending') {
     const doctor: any = await Doctor.findOne({ _id: id });
-    console.log(doctor);
     doctor.isContractAccepted = true;
     await doctor.save();
+
     contract.result[0].status = 'Accepted';
     await contract.result[0].save();
 
@@ -240,54 +230,16 @@ const addSlots = async (doctorID: string, newSlots: any) => {
   };
 };
 
-const scheduleFollowUp = async (doctorID: String, appointmentDetails: any) => {
-  const doctor: any = await Doctor.findOne({ _id: doctorID });
+const getWeeklySlots = async (doctorID: string) => {
+  const doctor: any = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
-  if (!doctor.isContractAccepted) throw new HttpError(StatusCodes.BAD_REQUEST, 'Doctor has no contract');
 
-  const patient = await Patient.findOne({ email: appointmentDetails.email });
-  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
-
-  let sessionDiscount = 0;
-  if (patient.package) {
-    const pkg = await Package.findOne({ _id: patient.package.packageID });
-    if (pkg && patient.package!.endDate?.getTime() >= Date.now()) sessionDiscount = pkg.sessionDiscount;
-  }
-
-  const contract: any = await Contract.findOne({ doctorID: doctorID });
-
-  const time =
-    (new Date(appointmentDetails.endDate).getTime() - new Date(appointmentDetails.startDate).getTime()) /
-    (1000 * 60 * 60);
-  let price = doctor.hourRate * time * (1 + contract.markUpProfit / 100);
-  price -= price * (sessionDiscount / 100);
-
-  const followUpAppointment = new Appointment({
-    doctorID: doctorID,
-    patientID: patient._id,
-    status: 'Upcoming',
-    sessionPrice: price,
-    startDate: appointmentDetails.startDate,
-    endDate: appointmentDetails.endDate,
-    isFollowUp: true
-  });
-
-  await followUpAppointment.save();
-
+  const { _id, ...weeklySlots } = doctor.weeklySlots._doc;
   return {
     status: StatusCodes.OK,
-    message: 'Follow up appointment scheduled successfully',
-    result: followUpAppointment
+    message: 'Weekly slots retrieved successfully',
+    result: weeklySlots
   };
 };
 
-export {
-  getDoctors,
-  getMyPatients,
-  viewAvailableAppointments,
-  viewWallet,
-  viewContract,
-  acceptContract,
-  addSlots,
-  scheduleFollowUp
-};
+export { getDoctors, getMyPatients, viewAvailableAppointments, viewContract, acceptContract, addSlots, getWeeklySlots };

@@ -72,5 +72,12 @@ const cancelOrder = async (id: string) => {
     order
   };
 };
+const getAllOrders = async (query: Object) => {
+  const orders = await Order.find({ ...query });
+  return {
+    status: StatusCodes.OK,
+    orders
+  };
+};
 
-export { getOrders, addOrder, updateOrder, cancelOrder };
+export { getOrders, addOrder, updateOrder, cancelOrder, getAllOrders };

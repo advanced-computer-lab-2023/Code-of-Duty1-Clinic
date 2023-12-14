@@ -5,44 +5,29 @@ import { HttpError } from '../utils';
 import { Prescription, Appointment } from '../models';
 import path from 'path';
 import fs from 'fs';
-// Maybe we need to validate unique family member by userID or nationalID
+
 const addFamilyMember = async (id: string, body: any) => {
-  let userID;
-  if (body.userID) userID = body.userID;
-
-  if (body.email) {
-    userID = await Patient.findOne({ email: body.email }).select('_id');
-    let userID2 = userID?._id.toString();
-    if (userID2 === id) {
-      throw new HttpError(StatusCodes.BAD_REQUEST, 'Please enter an Email other than your Email');
-    }
-  }
-
-  if (body.phone) {
-    userID = await Patient.findOne({ phone: body.phone }).select('_id');
-    let userID2 = userID?._id.toString();
-    if (userID2 === id) {
-      throw new HttpError(StatusCodes.BAD_REQUEST, 'Please enter a Phone Number other than your Phone Number');
-    }
-  }
-
-  const { relation, name, age, gender, nationalID } = body;
+  const { relation, email, phone, name, age, gender, nationalID } = body;
   if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
 
+  const updatedUser = await Patient.findById(id);
+  if (!updatedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
+  const family = updatedUser.family!;
+
+  // Get the new family member info
   let newFamily;
-  if (userID) {
-    const familyUser = await Patient.findById(userID);
-    if (!familyUser) throw new HttpError(StatusCodes.NOT_FOUND, "User's new family member not found");
+  if (email || phone) {
+    const query = email ? { email } : { phone };
+
+    const familyUser = await Patient.findOne(query).select('_id');
+    if (!familyUser) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
+
+    let userID = familyUser._id;
+    if (userID === id) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please enter a user other than yourself');
 
     newFamily = { relation, userID };
   } else if (name && age && gender && nationalID) {
-    newFamily = {
-      relation,
-      name,
-      nationalID,
-      age,
-      gender
-    };
+    newFamily = { relation, name, nationalID, age, gender };
   } else {
     throw new HttpError(
       StatusCodes.BAD_REQUEST,
@@ -50,44 +35,48 @@ const addFamilyMember = async (id: string, body: any) => {
     );
   }
 
-  const update = {
-    $push: {
-      family: newFamily
-    }
-  };
-  const updatedUser = await Patient.findOneAndUpdate({ _id: id }, update, { new: true });
-  if (!updatedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
+  // Check if the user already exists in the family
+  family.forEach((member: any) => {
+    if (member.nationalID && member.nationalID == newFamily!.nationalID)
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'User already exists');
+    if (member.userID && member.userID == newFamily!.userID)
+      throw new HttpError(StatusCodes.BAD_REQUEST, 'User already exists');
+  });
+
+  family.push(newFamily);
+  updatedUser.family = family;
+  await updatedUser.save();
 
   return {
-    result: updatedUser,
     status: StatusCodes.OK,
-    message: 'Family member added successfully'
+    message: 'Family member added successfully',
+    result: updatedUser
   };
 };
 
 const getFamily = async (patientID: string) => {
-  const user: any = await Patient.findOne({
-    _id: patientID
-  }).select('family');
+  const user: any = await Patient.findOne({ _id: patientID }).select('family');
   if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'patient not found');
 
-  const family = user.family;
+  let family = user.family;
   if (!family) throw new HttpError(StatusCodes.NOT_FOUND, 'family not found');
 
-  family.forEach(async (member: any) => {
-    let info = { ...member.toObject() };
-    if (member.userID) {
-      const populateInfo = await Patient.findById(member.userID).select('name gender phone');
-      info = { ...info, ...populateInfo?.toObject() };
-    }
+  family = await Promise.all(
+    family.map(async (member: any) => {
+      let info = { ...member.toObject() };
+      if (member.userID) {
+        const populateInfo = await Patient.findById(member.userID).select('name gender phone');
+        info = populateInfo ? { ...info, ...populateInfo?.toObject() } : info;
+      }
 
-    return info;
-  });
+      return info;
+    })
+  );
 
   return {
-    result: family,
     status: StatusCodes.OK,
-    message: 'Family members retrieved successfully'
+    message: 'Family members retrieved successfully',
+    result: family
   };
 };
 
@@ -234,8 +223,6 @@ const getHealthRecords = async (patientID: String) => {
   //create a new array of objects where the medicalRecord is not a URL
   let filteredRecords = healthRecords.filter((record: any) => isNotURL(record.medicalRecord));
   if (!filteredRecords) throw new HttpError(StatusCodes.NOT_FOUND, 'health records not found');
-  // console.log(healthRecords);
-  // console.log(filteredRecords);
 
   return {
     result: filteredRecords,

@@ -13,7 +13,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 router.post('/', (req: Request, res: Response) => {
-  controller(res)(addCartItem)(req.decoded.id, req.body.medID);
+  controller(res)(addCartItem)(req.decoded.id, req.body.medID, req.body.prescriptionID, req.body.medicineID);
 });
 
 router.delete('/:id', (req: Request, res: Response) => {

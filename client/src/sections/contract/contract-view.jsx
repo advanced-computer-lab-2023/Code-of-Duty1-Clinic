@@ -89,8 +89,8 @@ const DoctorContract = () => {
             {contracts.map((contract) => (
               <TableRow key={contract.doctorID}>
                 <TableCell>{contract.status}</TableCell>
-                <TableCell>{contract.startDate}</TableCell>
-                <TableCell>{contract.endDate}</TableCell>
+                <TableCell>{new Date(contract.startDate).toLocaleDateString()}</TableCell>
+                <TableCell>{new Date(contract.endDate).toLocaleDateString()}</TableCell>
                 <TableCell>{contract.markUpProfit}</TableCell>
                 <TableCell>
                   {contract.status === 'Pending' && (

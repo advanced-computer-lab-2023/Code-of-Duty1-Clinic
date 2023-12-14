@@ -1,6 +1,7 @@
 import { Request } from '../models';
 import { HttpError } from '../utils';
 import StatusCodes from 'http-status-codes';
+
 const getPath = (files: any) => {
   console.log(files);
 

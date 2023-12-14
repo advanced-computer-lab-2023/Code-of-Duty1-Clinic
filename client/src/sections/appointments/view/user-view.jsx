@@ -20,6 +20,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Popover from '@mui/material/Popover';
 import Box from '@mui/material/Box';
+import Snackbar from '@mui/material/Snackbar';
 
 export default function AppointmentsView() {
   const [appointments, setAppointments] = useState([]);
@@ -28,6 +29,10 @@ export default function AppointmentsView() {
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('doctorID');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [message, setMessage] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  const myName = localStorage.getItem('userName');
 
   const [filterValues, setFilterValues] = useState({
     startDate: null,
@@ -39,22 +44,21 @@ export default function AppointmentsView() {
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      try {
-        let endpoint = '/me/appointments';
+      const params = {};
 
-        if (filterValues.startDate || filterValues.endDate || filterValues.status) {
-          endpoint += '?s=filter';
+      if (filterValues.startDate) params.startDate = new Date(filterValues.startDate).toISOString();
+      if (filterValues.endDate) params.endDate = new Date(filterValues.endDate).toISOString();
+      if (filterValues.status) params.status = filterValues.status;
 
-          if (filterValues.startDate) endpoint += `&startDate=${new Date(filterValues.startDate).toISOString()}`;
-          if (filterValues.endDate) endpoint += `&endDate=${new Date(filterValues.endDate).toISOString()}`;
-          if (filterValues.status) endpoint += `&status=${filterValues.status}`;
-        }
-
-        const response = await axiosInstance.get(endpoint);
-        setAppointments(response.data.result);
-      } catch (error) {
-        console.error('Error fetching appointments:', error);
-      }
+      const response = axiosInstance
+        .get('/me/appointments', { params })
+        .then((res) => {
+          setAppointments(res.data.result || []);
+        })
+        .catch((err) => {
+          setOpenSnackbar(true);
+          setMessage(err.response?.data.message || 'Network error');
+        });
     };
 
     fetchAppointments();
@@ -75,21 +79,6 @@ export default function AppointmentsView() {
     setSelected([]);
   };
 
-  const handleClick = (event, doctorID) => {
-    const selectedIndex = selected.indexOf(doctorID);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, doctorID);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -101,7 +90,7 @@ export default function AppointmentsView() {
 
   const handleGetUpcomingAppointments = async () => {
     try {
-      const response = await axiosInstance.get('/me/appointments?s=Upcoming');
+      const response = await axiosInstance.get('/me/appointments?status=Upcoming');
       setAppointments(response.data.result);
     } catch (error) {
       console.error('Error fetching upcoming appointments:', error);
@@ -110,7 +99,7 @@ export default function AppointmentsView() {
 
   const handleGetPastAppointments = async () => {
     try {
-      const response = await axiosInstance.get('/me/appointments?s=Completed');
+      const response = await axiosInstance.get('/me/appointments?status=Completed');
       setAppointments(response.data.result);
     } catch (error) {
       console.error('Error fetching past appointments:', error);
@@ -137,6 +126,14 @@ export default function AppointmentsView() {
   const handleApplyFilters = () => {
     fetchAppointments();
     handleFilterClose();
+  };
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackbar(false);
   };
 
   return (
@@ -234,7 +231,7 @@ export default function AppointmentsView() {
               </Button>
             )}
             <Autocomplete
-              options={['Upcoming', 'Completed', 'Cancelled', 'Rescheduled']}
+              options={['Upcoming', 'Completed', 'Cancelled', 'Pending']}
               renderInput={(params) => <TextField {...params} label="Status" fullWidth margin="normal" />}
               onChange={(e, value) => setFilterValues({ ...filterValues, status: value })}
               value={filterValues.status || ''}
@@ -255,34 +252,53 @@ export default function AppointmentsView() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'patientName', label: 'Doctor Name' },
-                  { id: 'doctorName', label: 'Patient Name' },
+                  { id: 'patientName', label: "Doctor's Name" },
+                  { id: 'doctorName', label: "Patient's Name" },
                   { id: 'status', label: 'Status' },
                   { id: 'sessionPrice', label: 'Session Price' },
-                  { id: 'startDate', label: 'Start Date' },
-                  { id: 'endDate', label: 'End Date' },
-                  { id: 'isFollowUp', label: 'Follow Up' },
+                  { id: 'day', label: 'Day' },
+                  { id: 'startDate', label: 'Start time' },
+                  { id: 'endDate', label: 'End time' },
+                  { id: 'isFollowUp', label: 'Is Follow up' },
                   { id: '' }
                 ]}
               />
               <TableBody>
-                {appointments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                  <UserTableRow
-                    key={row._id}
-                    _id={row._id}
-                    patientName={row.patientName}
-                    doctorName={row.doctorName}
-                    status={row.status}
-                    sessionPrice={row.sessionPrice}
-                    startDate={row.startDate}
-                    endDate={row.endDate}
-                    isFollowUp={row.isFollowUp}
-                    selected={selected.indexOf(row._id) !== -1}
-                    handleClick={(event) => handleClick(event, row._id)}
-                  />
-                ))}
+                {appointments
+                  .toReversed()
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    let startDate = new Date(row.startDate);
+                    startDate.setHours(startDate.getHours() - 2);
+                    const from = startDate.toTimeString().slice(0, 5);
 
-                <TableEmptyRows height={77} emptyRows={emptyRows(page, rowsPerPage, appointments.length)} />
+                    let endDate = new Date(row.endDate);
+                    endDate.setHours(endDate.getHours() - 2);
+                    const to = endDate.toTimeString().slice(0, 5);
+
+                    const day = startDate.toDateString();
+
+                    return (
+                      <UserTableRow
+                        key={row._id}
+                        _id={row._id}
+                        patientName={row.patientName == myName ? 'Me' : row.patientName}
+                        doctorID={row.doctorID._id}
+                        doctorName={row.doctorName == myName ? 'Me' : row.doctorName}
+                        status={row.status}
+                        sessionPrice={row.sessionPrice}
+                        day={day}
+                        startDate={from}
+                        endDate={to}
+                        isFollowUp={row.isFollowUp}
+                        selected={selected.indexOf(row._id) !== -1}
+                        setMessage={setMessage}
+                        setOpenSnackbar={setOpenSnackbar}
+                      />
+                    );
+                  })}
+
+                {appointments.length == 0 && <TableNoData />}
               </TableBody>
             </Table>
           </TableContainer>
@@ -298,6 +314,8 @@ export default function AppointmentsView() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
+
+      <Snackbar open={openSnackbar} autoHideDuration={5000} onClose={handleCloseSnackBar} message={message} />
     </Container>
   );
 }

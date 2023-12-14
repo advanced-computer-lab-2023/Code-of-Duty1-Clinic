@@ -37,8 +37,7 @@ const AddSlotsForm = () => {
       slots: [
         {
           from: timeStringToObject(data.startTime),
-          to: timeStringToObject(data.endTime),
-          maxPatients: data.maxPatients
+          to: timeStringToObject(data.endTime)
         }
       ]
     };
@@ -114,15 +113,6 @@ const AddSlotsForm = () => {
                 {...register('endTime', { required: 'End time is required' })}
                 error={Boolean(errors.endTime)}
                 helperText={errors.endTime?.message}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Max Patients"
-                type="number"
-                {...register('maxPatients', { required: 'Max patients is required' })}
-                error={Boolean(errors.maxPatients)}
-                helperText={errors.maxPatients?.message}
                 fullWidth
                 margin="normal"
               />

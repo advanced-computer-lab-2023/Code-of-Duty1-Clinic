@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import axios from 'axios';
-
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
 
 import { fCurrency } from 'src/utils/format-number';
 
@@ -14,12 +15,13 @@ import Label from 'src/components/label';
 // import { ColorPreview } from 'src/components/color-utils';
 import Iconify from 'src/components/iconify/iconify';
 import { toast } from 'react-toastify';
+import { MedicineImage } from '../upload/medicineImage';
 import 'react-toastify/dist/ReactToastify.css';
 // ----------------------------------------------------------------------
 
-export default function ShopProductCard({ product }) {
+export default function ShopProductCard({ product, onDetailsview }) {
+  const user = localStorage.getItem('userRole');
   let count = 1;
-
   const handleAddToCart = async (id, clickNumber) => {
     if (clickNumber === 1) {
       try {
@@ -55,6 +57,22 @@ export default function ShopProductCard({ product }) {
       {/* suppose here to be the product.status */}
     </Label>
   );
+  const renderArchive = (
+    <Label
+      variant="filled"
+      color={(product.status === 'sale' && 'error') || 'info'}
+      sx={{
+        zIndex: 9,
+        top: 16,
+        left: 16,
+        position: 'absolute',
+        textTransform: 'uppercase'
+      }}
+    >
+      {product.isArchived ? 'Archived' : 'not Archived'}
+      {/* suppose here to be the product.status */}
+    </Label>
+  );
 
   const renderImg = (
     <Box
@@ -69,6 +87,7 @@ export default function ShopProductCard({ product }) {
         position: 'absolute'
       }}
     />
+    // <MedicineImage MedicineID={product._id} />
   );
 
   const renderPrice = (
@@ -90,17 +109,25 @@ export default function ShopProductCard({ product }) {
       {fCurrency(product.price)}
     </Typography>
   );
-
   return (
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
         {product._id && renderStatus}
+        {user === 'Pharmacist' && renderArchive}
         {/* suppose here to be the product status */}
         {renderImg}
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
+        <Link
+          color="inherit"
+          underline="hover"
+          variant="subtitle2"
+          noWrap
+          onClick={() => {
+            onDetailsview(product);
+          }}
+        >
           {product.name}
         </Link>
 

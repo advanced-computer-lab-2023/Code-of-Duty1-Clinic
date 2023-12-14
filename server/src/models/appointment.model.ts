@@ -3,7 +3,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 interface IAppointment {
   doctorID: mongoose.Schema.Types.ObjectId;
   patientID: mongoose.Schema.Types.ObjectId;
-  status?: 'Upcoming' | 'Completed' | 'Cancelled' | 'Rescheduled';
+  patientName: String;
+  status?: 'Upcoming' | 'Completed' | 'Cancelled' | 'Pending';
   sessionPrice: number;
   startDate: Date;
   endDate: Date;
@@ -24,7 +25,11 @@ const appointmentSchema = new Schema<IAppointmentDocument>({
     ref: 'User',
     required: true
   },
-  status: { type: String, enum: ['Upcoming', 'Completed', 'Cancelled', 'Rescheduled'], default: 'Upcoming' },
+  patientName: {
+    type: String,
+    required: true
+  },
+  status: { type: String, enum: ['Upcoming', 'Completed', 'Cancelled', 'Pending'], default: 'Upcoming' },
   sessionPrice: { type: Number, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
@@ -34,6 +39,7 @@ const appointmentSchema = new Schema<IAppointmentDocument>({
 
 appointmentSchema.index({ doctorID: 1 });
 appointmentSchema.index({ patientID: 1 });
+appointmentSchema.index({ endDate: 1, status: 1 });
 
 const AppointmentModel = mongoose.model<IAppointmentDocument>('Appointment', appointmentSchema);
 

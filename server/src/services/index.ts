@@ -15,3 +15,5 @@ export * from './text-chat.service';
 // export * from './contract.service';
 export * from './notification.service';
 // export * from './chatroom.service';
+// export * from './contract.service';
+export * from './notification.service';

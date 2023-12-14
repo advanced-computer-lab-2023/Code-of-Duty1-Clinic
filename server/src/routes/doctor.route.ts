@@ -7,12 +7,12 @@ import { isAuthenticated, isAuthorized } from '../middlewares';
 const router = express.Router();
 router.use(isAuthenticated);
 
-router.get('/:id/availableAppointments', isAuthorized('Patient'), (req: Request, res: Response) => {
+router.get('/:id/availableAppointments', (req: Request, res: Response) => {
   controller(res)(viewAvailableAppointments)(req.params.id);
 });
 
 router.post('/:id/appointments', isAuthorized('Patient'), (req: Request, res: Response) => {
-  controller(res)(createAppointment)(req.decoded.id, req.params.id, req.body);
+  controller(res)(createAppointment)(req.params.id, req.body);
 });
 
 router.get('/:id', (req: Request, res: Response) => {

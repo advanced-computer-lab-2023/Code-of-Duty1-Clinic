@@ -28,7 +28,8 @@ export default function UserTableRow({
   status,
   handleClick,
   viewProfile,
-  viewHealthRecords
+  viewHealthRecords,
+  viewPrescriptions
 }) {
   const [open, setOpen] = useState(null);
 
@@ -94,6 +95,11 @@ export default function UserTableRow({
           <Iconify icon="" sx={{ mr: 2 }} />
           Health Records
         </MenuItem>
+
+        <MenuItem onClick={viewPrescriptions}>
+          <Iconify icon="" sx={{ mr: 2 }} />
+          Prescriptions
+        </MenuItem>
       </Popover>
     </>
   );
@@ -106,6 +112,7 @@ UserTableRow.propTypes = {
   handleClick: PropTypes.func,
   viewProfile: PropTypes.func,
   viewHealthRecords: PropTypes.func,
+  viewPrescriptions: PropTypes.func,
   isVerified: PropTypes.any,
   name: PropTypes.any,
   email: PropTypes.any,

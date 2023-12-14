@@ -18,16 +18,20 @@ export default function DoctorCard({ i, doctor }) {
   } = useQuery(
     `slots${i}`,
     () => axiosInstance.get(`/doctors/${doctor._id}/availableAppointments`).then((res) => res.data.result),
-    { refetchOnWindowFocus: false, refetchOnMount: false }
+    {
+      refetchOnWindowFocus: false
+      //  refetchOnMount: false }
+    }
   );
 
   if (isLoading) return null;
 
   if (error) return 'An error has occurred';
 
+  let ii = 0;
   return (
     <Card type="section">
-      <Stack direction={'row'} spacing={3} m={4}>
+      <Stack direction={'row'} spacing={0} mx={3} my={4}>
         <Box alignItems="center" justifyContent="center">
           <Avatar
             alt="User Img"
@@ -41,17 +45,18 @@ export default function DoctorCard({ i, doctor }) {
           />
         </Box>
 
-        <Stack spacing={0} alignItems="center" justifyContent="center">
-          <Typography variant="h5" color={'Highlight'} noWrap>
+        <Stack
+          sx={{ width: { xs: '100%', sm: '200px' }, ml: { xs: '0', sm: '40px' }, mr: { xs: '0', sm: '10px' } }}
+          spacing={0}
+          alignItems="baseline"
+          justifyContent="center"
+        >
+          <Typography variant="h5" color={'Highlight'} mb={1}>
             Dr. {doctor.name}
           </Typography>
-          <Typography variant="subtitle1" noWrap>
-            Specialty: {doctor.specialty}
-          </Typography>
-          <Typography variant="subtitle1" noWrap>
-            Education: {doctor.educationBackground}
-          </Typography>
-          <Typography variant="subtitle1" mb={1} noWrap>
+          <Typography variant="subtitle1">Specialty: {doctor.specialty}</Typography>
+          <Typography variant="subtitle1">Education: {doctor.educationBackground}</Typography>
+          <Typography variant="subtitle1" mb={1}>
             Hospital: {doctor.hospital}
           </Typography>
           <Typography variant="subtitle1" fontSize={18} fontFamily={'Segoe UI'}>
@@ -59,9 +64,15 @@ export default function DoctorCard({ i, doctor }) {
           </Typography>
         </Stack>
 
-        <Stack direction={'row'} spacing={0} alignItems="center" justifyContent="center">
+        <Stack direction={'row'} spacing={1} alignItems="center" justifyContent="center" sx={{ width: '100%' }}>
           {Object.keys(weekSlots).map((day) => (
-            <DoctorDaySlots key={day} day={day} slots={weekSlots[day]} doctorID={doctor._id} />
+            <DoctorDaySlots
+              key={ii++}
+              day={day}
+              slots={weekSlots[day]}
+              doctorID={doctor._id}
+              doctorName={doctor.name}
+            />
           ))}
         </Stack>
       </Stack>

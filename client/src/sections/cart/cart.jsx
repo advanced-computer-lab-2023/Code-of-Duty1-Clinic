@@ -239,11 +239,17 @@ export default function CartComponent() {
         <MenuItem value="" disabled>
           Select an address
         </MenuItem>
-        {addresses.map((address, index) => (
-          <MenuItem key={index} value={address}>
-            {address}
+        {addresses && addresses.length > 0 ? (
+          addresses.map((address, index) => (
+            <MenuItem key={index} value={address}>
+              {address}
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem disabled value="">
+            No addresses available
           </MenuItem>
-        ))}
+        )}
       </Select>
     </>
   );

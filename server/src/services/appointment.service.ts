@@ -1,44 +1,61 @@
-import { Appointment, Doctor, Patient } from '../models';
+import { Appointment, Doctor, Patient, User } from '../models';
 import { StatusCodes } from 'http-status-codes';
-import mongoose from 'mongoose';
 import { HttpError } from '../utils';
 
 const getAppointments = async (query: any) => {
-  // Update the query based on startDate and endDate if provided
   if (query.startDate) query.startDate = { $gte: query.startDate };
   if (query.endDate) query.endDate = { $lte: query.endDate };
 
-  // Fetch appointments with populated doctor and patient names
-  const appointments = await Appointment.find(query)
-    .populate('doctorID', 'name') // Assuming 'name' is the field in the Doctor model
-    .populate('patientID', 'name'); // Assuming 'name' is the field in the Patient model
+  const now = new Date(Date.now() + 2 * 60 * 60 * 1000);
+  await Appointment.updateMany({ endDate: { $lt: now }, status: 'Upcoming' }, { status: 'Completed' }); // Not scalable but will do
+
+  let appointments = await Appointment.find(query).populate('doctorID', 'name');
+
+  // I should be able to view my family's appointments
+  if (query.patientID) {
+    const { patientID, ...restQuery } = query;
+    const user = await Patient.findById(patientID).select('family');
+
+    let family = user?.family || [];
+    const familyIDs = family.reduce((acc: any, member: any) => {
+      if (member.userID) acc.push(member.userID);
+      return acc;
+    }, []);
+
+    const familyAppointments = await Appointment.find({ patientID: { $in: familyIDs }, ...restQuery }).populate(
+      'doctorID',
+      'name'
+    );
+
+    appointments = appointments.concat(familyAppointments);
+  }
 
   // Transform the result to the desired format
   const formattedAppointments = appointments.map((appointment) => ({
-    patientName: (appointment.patientID as any).name,
     doctorName: (appointment.doctorID as any).name,
-    _id: appointment._id,
-    status: appointment.status,
-    sessionPrice: appointment.sessionPrice,
-    startDate: appointment.startDate,
-    endDate: appointment.endDate,
-    isFollowUp: appointment.isFollowUp,
-    __v: appointment.__v
+    ...appointment.toJSON()
   }));
+
   return {
     status: StatusCodes.OK,
     message: 'Appointments retrieved successfully',
-    result: formattedAppointments || [] // Return an empty array if appointments is falsy
+    result: formattedAppointments
   };
 };
 
-const createAppointment = async (patientID: String, doctorID: String, body: any) => {
+const createAppointment = async (doctorID: String, body: any) => {
   const doctor = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
-  body.patientID = patientID;
+  // A local time zone issue
+  if (new Date(body.startDate) < new Date(Date.now() + 2 * 60 * 60 * 1000))
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot schedule an appointment in the past');
+
   body.doctorID = doctorID;
   const newAppointment = await Appointment.create(body);
+
+  doctor.wallet! += newAppointment.sessionPrice;
+  await doctor.save();
 
   return {
     status: StatusCodes.CREATED,
@@ -47,100 +64,127 @@ const createAppointment = async (patientID: String, doctorID: String, body: any)
   };
 };
 
-// Function to get upcoming or past appointments for a user (patient or doctor) req 45
-const getUpcoming_Past_Appointments = async (userId: string, role: string, status: string) => {
-  let query: any = {};
-  let model: any;
+const rescheduleAppointment = async (userID: string, appointmentID: any, newBody: any) => {
+  const appointment = await validateAppointment(userID, appointmentID);
+  if (appointment.status !== 'Upcoming' || appointment.startDate < new Date(Date.now() + 2 * 60 * 60 * 1000))
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot reschedule a non-upcoming appointment');
 
-  if ((role === 'doctor' || role === 'Doctor') && (await Doctor.exists({ _id: userId }))) {
-    query = {
-      doctorID: userId,
-      startDate: status === 'Upcoming' ? { $gte: new Date() } : { $lt: new Date() }
-    };
-    model = Doctor;
-  } else if ((role === 'patient' || role === 'Patient') && (await Patient.exists({ _id: userId }))) {
-    query = {
-      patientID: userId,
-      startDate: status === 'Upcoming' ? { $gte: new Date() } : { $lt: new Date() }
-    };
-    model = Patient;
-  } else {
-    throw new HttpError(StatusCodes.BAD_REQUEST, 'Role is neither a doctor nor a patient or wrong user id');
-  }
+  const newAppointment = { ...appointment.toJSON(), ...newBody }; // newBody will override some of the old values
+  appointment.set(newAppointment);
+  appointment.save();
 
-  const appointments = await Appointment.find(query).populate('patientID', 'name').populate('doctorID', 'name');
-
-  if (model) {
-    const formattedAppointments = appointments.map((appointment) => ({
-      patientName: (appointment.patientID as any)?.name,
-      doctorName: (appointment.doctorID as any)?.name,
-      _id: appointment._id,
-      status: appointment.status,
-      sessionPrice: appointment.sessionPrice,
-      startDate: appointment.startDate,
-      endDate: appointment.endDate,
-      isFollowUp: appointment.isFollowUp,
-      __v: appointment.__v
-    }));
-
-    return {
-      status: StatusCodes.OK,
-      message: 'Appointments retrieved successfully',
-      result: formattedAppointments
-    };
-  }
+  return {
+    status: StatusCodes.OK,
+    message: 'Appointment rescheduled successfully'
+  };
 };
 
-// Function to filter appointments by date or status (upcoming, completed, cancelled, rescheduled) req 46
-const filterAppointments = async (query: any) => {
-  const startDate = query.startDate ? new Date(query.startDate) : new Date('1000-01-01T00:00:00.000Z');
-  const endDate = query.endDate ? new Date(query.endDate) : new Date('9999-01-01T00:00:00.000Z');
-  const status = query.status ? query.status : { $in: ['Upcoming', 'Completed', 'Cancelled', 'Rescheduled'] };
+const cancelAppointment = async (userID: string, appointmentID: string) => {
+  const appointment = await validateAppointment(userID, appointmentID);
+  if (appointment.status === 'Completed' || appointment.startDate < new Date(Date.now() + 2 * 60 * 60 * 1000))
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot cancel a completed appointment');
 
-  let model: any;
-  let roleQuery: any;
+  const patient = await Patient.findById(appointment.patientID);
+  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
 
-  if ((query.role === 'doctor' || query.role === 'Doctor') && (await Doctor.exists({ _id: query.doctorID }))) {
-    model = Doctor;
-    roleQuery = { doctorID: query.doctorID };
-  } else if (
-    (query.role === 'patient' || query.role === 'Patient') &&
-    (await Patient.exists({ _id: query.patientID }))
-  ) {
-    model = Patient;
-    roleQuery = { patientID: query.patientID };
-  } else {
-    throw new HttpError(StatusCodes.BAD_REQUEST, 'User is neither a doctor nor a patient');
+  // Because follow ups are free, we don't need to refund the patient
+  if (appointment.status !== 'Pending') {
+    // if the appointment was cancelled by the doctor or by patient less than 24 hours before now, the patient will be refunded
+    if (
+      appointment.doctorID.toString() == userID ||
+      new Date(appointment.startDate) >= new Date(Date.now() + 26 * 60 * 60 * 1000)
+    ) {
+      patient.wallet! += appointment.sessionPrice;
+      patient.save();
+
+      Doctor.findByIdAndUpdate(appointment.doctorID, { $inc: { wallet: -appointment.sessionPrice } }); // Maybe he will be indebted
+    }
+
+    // here it should send a notification and email to the doctor and patient
   }
 
-  const appointments = await Appointment.find({
-    ...roleQuery,
-    startDate: { $gte: startDate },
-    endDate: { $lte: endDate },
-    status: status
-  })
-    .populate('patientID', 'name') // Assuming 'name' is the field in the Patient model
-    .populate('doctorID', 'name'); // Assuming 'name' is the field in the Doctor model
+  appointment.status = 'Cancelled';
+  appointment.save();
 
-  if (model) {
-    const formattedAppointments = appointments.map((appointment) => ({
-      patientName: (appointment.patientID as any)?.name,
-      doctorName: (appointment.doctorID as any)?.name,
-      _id: appointment._id,
-      status: appointment.status,
-      sessionPrice: appointment.sessionPrice,
-      startDate: appointment.startDate,
-      endDate: appointment.endDate,
-      isFollowUp: appointment.isFollowUp,
-      __v: appointment.__v
-    }));
-
-    return {
-      status: StatusCodes.OK,
-      message: 'Appointments retrieved successfully',
-      result: formattedAppointments
-    };
-  }
+  return {
+    status: StatusCodes.OK,
+    message: 'Appointment cancelled successfully'
+  };
 };
 
-export { getAppointments, createAppointment, getUpcoming_Past_Appointments, filterAppointments };
+// if user is doctor, status will be upcoming, if user is patient, status will be pending
+const scheduleFollowUp = async (userID: string, prevAppointmentID: string, appointmentDetails: any) => {
+  const appointment = await validateAppointment(userID, prevAppointmentID);
+
+  if (appointment.status !== 'Completed')
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot schedule a follow up');
+
+  const { _id, ...prevAppointment } = appointment.toJSON();
+  const newAppointment = {
+    ...prevAppointment,
+    ...appointmentDetails,
+    isFollowUp: true,
+    previousAppointment: prevAppointmentID,
+    status: userID === appointment.doctorID.toString() ? 'Upcoming' : 'Pending'
+  };
+
+  const newAppointmentDoc = await Appointment.create(newAppointment);
+
+  return {
+    status: StatusCodes.CREATED,
+    message: 'Follow up appointment scheduled successfully',
+    result: newAppointmentDoc
+  };
+};
+
+const approveDisapproveAppointment = async (userID: string, appointmentID: string, isApproved: boolean) => {
+  const appointment = await Appointment.findById(appointmentID);
+  if (!appointment) throw new HttpError(StatusCodes.NOT_FOUND, 'Appointment not found');
+
+  if (appointment.status !== 'Pending')
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot approve/disapprove this appointment');
+
+  if (appointment.doctorID.toString() !== userID)
+    throw new HttpError(StatusCodes.FORBIDDEN, 'You are not authorized to do this');
+
+  appointment.status = isApproved ? 'Upcoming' : 'Cancelled';
+  appointment.save();
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Appointment approved/disapproved successfully'
+  };
+};
+
+// helper function
+async function validateAppointment(userID: string, appointmentID: string) {
+  const appointment = await Appointment.findById(appointmentID);
+  if (!appointment) throw new HttpError(StatusCodes.NOT_FOUND, 'Appointment not found');
+
+  const status = appointment.status;
+  if (status === 'Cancelled')
+    throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot change this appointment because it was cancelled');
+
+  if (appointment.patientID.toString() != userID) {
+    const patient: any = await User.findById(userID);
+    if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
+
+    // I should also be able to cancel my family appointments
+    let userFamily = patient.family || [];
+    const isFamily = userFamily.some((member: any) => member.userID == appointment.patientID.toString());
+
+    if (!isFamily && appointment.doctorID.toString() != userID)
+      throw new HttpError(StatusCodes.FORBIDDEN, 'You are not authorized to do this');
+  }
+
+  return appointment;
+}
+
+export {
+  getAppointments,
+  createAppointment,
+  rescheduleAppointment,
+  cancelAppointment,
+  scheduleFollowUp,
+  approveDisapproveAppointment
+};

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Tab, Tabs } from '@mui/material';
 import AddSlots from '../AddSlots';
-import ScheduleFollowUp from '../ScheduleApp';
+import ViewSlots from '../view-slots';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -31,14 +31,14 @@ const SwitchComponent = () => {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tabValue} onChange={handleTabChange} aria-label="basic tabs example">
           <Tab label="Add Slots" />
-          <Tab label="Schedule Follow-Up" />
+          <Tab label="View my slots" />
         </Tabs>
       </Box>
       <TabPanel value={tabValue} index={0}>
         <AddSlots />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
-        <ScheduleFollowUp />
+        <ViewSlots />
       </TabPanel>
     </Box>
   );

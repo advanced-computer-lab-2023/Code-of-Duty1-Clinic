@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { Doctor, Admin, Request, User } from '../models';
+import { Doctor, Admin, Request, User, Contract } from '../models';
 import { HttpError } from '../utils';
 
 const getRequests = async (query: Object) => {
@@ -47,14 +47,23 @@ const deleteUsers = async (query: any) => {
 };
 
 const acceptRequest = async (email: string) => {
-  const doctor: any = await User.findOne({ email: email });
+  const doctor = await User.findOne({ email });
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
-  const request = await Request.findOne({ medicID: doctor._id });
+  const request = await Request.findOneAndUpdate({ medicID: doctor._id }, { status: 'Approved' });
   if (!request) throw new HttpError(StatusCodes.NOT_FOUND, 'Request not found');
   if (request.status !== 'Pending') throw new HttpError(StatusCodes.BAD_REQUEST, 'Request is handled before');
-  request.status = 'Approved';
-  await request.save();
+
+  let endDate = new Date();
+  endDate.setFullYear(endDate.getFullYear() + 1);
+
+  const contract = new Contract({
+    doctorID: doctor._id,
+    startDate: new Date(),
+    endDate,
+    markUpProfit: 15
+  });
+  await contract.save();
 
   return {
     status: StatusCodes.OK,

@@ -41,7 +41,7 @@ const navConfig = [
     icon: icon('ic_contract')
   },
   {
-    title: 'add Slots Or Appointment',
+    title: 'Weekly slots',
     path: '/addSlotsOrAppointment',
     icon: icon('ic_add')
   },
@@ -86,9 +86,19 @@ const navConfig = [
     icon: icon('ic_analytics')
   },
   {
+    title: 'My Prescriptions',
+    path: '/prescription',
+    icon: icon('ic_analytics')
+  },
+  {
     title: 'Not found',
     path: '/404',
     icon: icon('ic_disabled')
+  },
+  {
+    title: 'Family Members',
+    path: '/family',
+    icon: icon('ic_user')
   },
   {
     title: 'Add Family Member',
@@ -116,8 +126,13 @@ const navConfig = [
     icon: icon('ic_analytics')
   },
   {
+<<<<<<< HEAD
     title: 'chat',
     path: '/chat',
+=======
+    title: 'report',
+    path: '/report',
+>>>>>>> main
     icon: icon('ic_analytics')
   }
 ];
