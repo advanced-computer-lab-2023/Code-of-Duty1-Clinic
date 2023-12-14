@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
-import DoctorView from 'src/sections/textChat/doctor-patient/view/doctorView';
-import PatientView from 'src/sections/textChat/doctor-patient/view/patientView';
-
+import DoctorView from 'src/sections/textChat/view/patient-doctor/patientForDoctorView';
+import PatientView from 'src/sections/textChat/view/patient-doctor/doctorForPatientView';
+import Landing from 'src/sections/textChat/view/chatLandingView';
 // ----------------------------------------------------------------------
 
 export default function ViewChat() {
@@ -24,7 +24,7 @@ export default function ViewChat() {
         <title> User </title>
       </Helmet>
 
-      {content}
+      <Landing />
     </>
   );
 }

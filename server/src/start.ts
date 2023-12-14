@@ -30,6 +30,8 @@ mongoose
     });
     const DoctorPatientSocket = new SocketManager(io, '/chat/doctor/patient');
     const pharmacistPatientSocket = new SocketManager(io, '/chat/pharmacist/patient');
+    const pharmacistDoctorSocket = new SocketManager(io, '/chat/pharmacist/doctor');
+    
     const notificationSocket = new NotificationManager(io, '/notification');
   })
   .catch((err) => console.log(err.message));

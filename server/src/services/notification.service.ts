@@ -19,11 +19,11 @@ const getNotifications = async (userID: string) => {
 };
 
 const seeNotification = async (filter: object) => {
-  console.log(JSON.stringify(filter), ' 7887 f f');
+  console.log(filter, ' 7887 f f');
   return await Notification.updateOne(filter, { isSeen: true }, { new: true });
 };
 const deleteNotification = async (notificationId: string) => {
-  return await Notification.deleteOne({ _id: notificationId });
+  return await Notification.deleteOne([{ _id: notificationId }]);
 };
 
 export { pushNotification, getNotifications, seeNotification, deleteNotification };

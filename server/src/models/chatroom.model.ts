@@ -39,8 +39,8 @@ const chatRoomSchema = new Schema<IChatRoomDocument>({
   }
 });
 
-chatRoomSchema.index({ user1ID: 1 });
-chatRoomSchema.index({ user2ID: 1 });
+// chatRoomSchema.index({ user1ID: 1 });
+// chatRoomSchema.index({ user2ID: 1 });
 chatRoomSchema.index({ 'messages._id': 1 });
 const ChatRoom = mongoose.model<IChatRoomDocument>('ChatRoom', chatRoomSchema);
 

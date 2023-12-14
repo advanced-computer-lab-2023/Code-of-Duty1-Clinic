@@ -47,7 +47,9 @@ export default function NotificationsPopover() {
     const fetchNotification = async () => {
       try {
         const response = await axiosInstance.get(`/notifications/${userID}`);
-        setNotifications(response.data);
+        const sortedNotifications = response.data.sort((a, b) => new Date(a.date) - new Date(b.date));
+        setNotifications(sortedNotifications);
+        // setNotifications(response.data);
       } catch (error) {
         console.error('Error when fetching notifications', error);
       }
@@ -188,7 +190,7 @@ export default function NotificationsPopover() {
                 <NotificationItem
                   key={notification._id}
                   notification={notification}
-                  // onClick={() => handleNotificationClick(notification._id)}
+                // onClick={() => handleNotificationClick(notification._id)}
                 />
               );
             })}
@@ -260,7 +262,7 @@ function NotificationItem({ notification, onClick, isUnseen }) {
 function renderContent(notification) {
   const title = (
     <Typography variant="subtitle2">
-      {notification.title === localStorage.getItem('userID') ? localStorage.getItem('userName') : notification.title}
+      {notification.title}
       <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
         &nbsp; {notification.content}
       </Typography>
