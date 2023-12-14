@@ -45,7 +45,7 @@ export default function DoctorsView() {
     if (filters.specialty) params.specialty = filters.specialty;
     if (filters.date) params.date = filters.date;
 
-    await axiosInstance
+    axiosInstance
       .get(`/doctors`, { params })
       .then((res) => setFilteredDoctors(res.data.result))
       .catch((err) => console.log(err));

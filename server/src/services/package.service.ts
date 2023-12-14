@@ -3,7 +3,7 @@ import { HttpError } from '../utils';
 import { Patient, Package } from '../models';
 
 const getPackages = async (query: Object) => {
-  const packages = await Package.find(query);
+  const packages = await Package.find(query).sort({ price: 1 });
   if (!packages) throw new HttpError(StatusCodes.NOT_FOUND, 'No packages found');
 
   return {

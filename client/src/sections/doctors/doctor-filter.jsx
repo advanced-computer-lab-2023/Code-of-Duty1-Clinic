@@ -62,7 +62,7 @@ export default function DoctorFilter({ onSearch }) {
 
       <Stack sx={{ mr: 6 }}>
         <TextField
-          name={'date'}
+          name="date"
           onChange={handleChange}
           placeholder="Search by date..."
           type="datetime-local"
@@ -72,6 +72,9 @@ export default function DoctorFilter({ onSearch }) {
                 <TodayIcon />
               </InputAdornment>
             )
+          }}
+          inputProps={{
+            step: 60 // Set step to 60 (minutes) to use a 24-hour format
           }}
         />
       </Stack>

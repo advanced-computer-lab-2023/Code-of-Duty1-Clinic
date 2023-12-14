@@ -236,51 +236,42 @@ const isNotURL = (str: String) => {
 };
 
 const getHealthPackage = async (userID: string) => {
-  const user = await Patient.findOne({ _id: userID });
+  const patient = await Patient.findOne({ _id: userID });
+  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
 
-  if (user?.package) {
-    if (user?.package.packageStatus === 'Subscribed') {
-      const userPackage = await Package.findOne({ _id: user?.package.packageID }).select('-_id -isLatest');
+  let family: any = patient.family!.filter((member: any) => member.userID != null);
+  family = await Promise.all(family.map(async (member: any) => await Patient.findById(member.userID)));
 
-      let renewalDate = user?.package.endDate as Date;
-      renewalDate.setDate(renewalDate.getDate() + 1);
+  const subscriptions = await Promise.all(
+    family.concat(patient).map(async (user: any) => {
+      const userPackage = user.package ? await Package.findById(user.package.packageID) : null;
 
       return {
-        status: StatusCodes.OK,
-        userPackage: userPackage,
-        packageStatus: 'Subscribed',
-        renewalDate: renewalDate
+        user,
+        status: user?.package?.packageStatus || 'Unsubscribed',
+        package: userPackage,
+        endDate: user?.package?.endDate
       };
-    }
-
-    if (user?.package.packageStatus === 'Cancelled') {
-      return {
-        status: StatusCodes.OK,
-        packageStatus: 'Cancelled',
-        endDate: user?.package.endDate
-      };
-    }
-  }
+    })
+  );
 
   return {
     status: StatusCodes.OK,
-    message: 'You are not subscribed to a health package',
-    packageStatus: 'UnSubscribed'
+    result: subscriptions
   };
 };
 
-const cancelSubscribtion = async (userID: string) => {
+const cancelSubscription = async (userID: string) => {
   const user = await Patient.findById(userID);
+  if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
 
-  if (!user?.package) {
-    throw new HttpError(StatusCodes.BAD_REQUEST, "You're not subscribed to any packages");
-  }
+  if (!user.package) throw new HttpError(StatusCodes.BAD_REQUEST, 'You have not subscribed to any packages');
 
   await Patient.findByIdAndUpdate(userID, { $set: { 'package.packageStatus': 'Cancelled' } });
 
   return {
     status: StatusCodes.OK,
-    message: 'Cancelled Subscribtion sucessfully'
+    message: 'Cancelled Subscription sucessfully'
   };
 };
 
@@ -313,6 +304,6 @@ export {
   getMedicalHistoryURL,
   getMedicalHistory,
   getHealthPackage,
-  cancelSubscribtion,
+  cancelSubscription as cancelSubscribtion,
   subscribe
 };

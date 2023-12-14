@@ -116,11 +116,10 @@ router.get('/package', (req: Request, res: Response) => {
 });
 
 router.post('/package', (req: Request, res: Response) => {
-  if (req.body.cancel) {
-    controller(res)(cancelSubscribtion)(req.decoded.id);
-  } else {
-    controller(res)(subscribe)(req.decoded.id, req.body.packageID);
-  }
+  controller(res)(subscribe)(req.body.patientID, req.body.packageID);
+});
+router.delete('/package', (req: Request, res: Response) => {
+  controller(res)(cancelSubscribtion)(req.body.patientID);
 });
 
 // router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));

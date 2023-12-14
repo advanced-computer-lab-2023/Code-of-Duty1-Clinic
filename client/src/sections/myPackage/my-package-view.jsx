@@ -1,88 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { axiosInstance } from 'src/utils/axiosInstance';
+import { useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
+
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
-import LoadingButton from '@mui/lab/LoadingButton';
-import { useQuery, useMutation } from 'react-query';
-import { useNavigate } from 'react-router-dom';
+import Stack from '@mui/material/Stack';
+import Container from '@mui/material/Container';
+import Snackbar from '@mui/material/Snackbar';
 
-export default function MyPackageView() {
-  const navigate = useNavigate();
-  const [userPackage, setUserPackage] = useState({ name: '' });
-  const [packageStatus, setPackageStatus] = useState('Cancelled');
+import PlanCard from './plan-view';
 
-  const { isLoading: isLoadingPackage } = useQuery(
-    'myPackages',
+import { axiosInstance } from 'src/utils/axiosInstance';
+
+export default function PackageView() {
+  const {
+    isLoading,
+    error,
+    data: ourPackages
+  } = useQuery(
+    'packages',
     () =>
       axiosInstance
-        .get('/me/package')
-        .then((res) => {
-          console.log(res.data);
-          setUserPackage(res.data.userPackage || { name: '' });
-          setPackageStatus(res.data.packageStatus || 'Cancelled');
-        })
-        .catch((error) => console.log(error.message)),
+        .get('me/package')
+        .then((res) => res.data.result)
+        .catch(),
     {
-      refetchOnMount: false,
       refetchOnWindowFocus: false
     }
   );
 
-  const { isLoading, mutate: unsubscribe } = useMutation(() => axiosInstance.post('me/package', { cancel: true }), {
-    onSuccess: () => {
-      navigate('/packages');
-    }
-  });
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [message, setMessage] = useState('');
 
-  if (isLoadingPackage) return 'Loading...';
-  console.log(userPackage);
+  if (isLoading) return 'Loading...';
+  if (error) return 'An error has occurred: ' + error.message;
 
-  const StyledPackageContainer = styled(Grid)(({ theme }) => ({
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(2),
-    textAlign: 'center',
-    color: theme.palette.text.secondary
-  }));
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === 'clickaway') return;
+
+    setOpenSnackbar(false);
+  };
 
   return (
-    <Container>
-      <Typography variant="h4" sx={{ mb: 3 }}>
-        Packages
-      </Typography>
+    <>
+      <Container maxWidth="md">
+        <Stack spacing={3} alignItems="center">
+          <div style={{ width: '100%' }}>
+            <Grid container spacing={3} pt={4}>
+              {ourPackages.reverse().map((plan, i) => {
+                const cols = i == 0 ? 12 : 6;
 
-      <Grid container spacing={3} direction="row" justifyContent="center" alignItems="center" sx={{ mb: 3, mt: 5 }}>
-        <StyledPackageContainer key={userPackage._id}>
-          <Typography sx={{ mb: 2 }}>Status: {packageStatus || ''}</Typography>
-          {userPackage.name ? (
-            <>
-              <Typography variant="h6" sx={{ mt: -2, mb: 3, textAlign: 'center' }}>
-                {userPackage.name || ' '}
-              </Typography>
-              <Typography sx={{ mb: 2 }}>Price: {userPackage.price || ''}</Typography>
-              <Typography sx={{ mb: 2 }}>Session Discount: {userPackage.sessionDiscount || ''}</Typography>
-              <Typography sx={{ mb: 2 }}>Medicine Discount: {userPackage.medicineDiscount || ''}</Typography>
-              <Typography sx={{ mb: 2 }}>Family Discount: {userPackage.familyDiscount || ''}</Typography>
+                return (
+                  <Grid item xs={cols} sm={cols} md={cols} key={i}>
+                    <PlanCard plan={plan} setOpenSnackbar={setOpenSnackbar} setMessage={setMessage} />
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </div>
+        </Stack>
 
-              <LoadingButton
-                onClick={unsubscribe}
-                loading={isLoading}
-                loadingIndicator="Loading…"
-                fullWidth
-                size="large"
-                type="submit"
-                variant="contained"
-                color="inherit"
-              >
-                Cancel
-              </LoadingButton>
-            </>
-          ) : (
-            <></>
-          )}
-        </StyledPackageContainer>
-      </Grid>
-    </Container>
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={openSnackbar}
+          autoHideDuration={5000}
+          onClose={handleCloseSnackBar}
+          message={message}
+        />
+      </Container>
+    </>
   );
 }

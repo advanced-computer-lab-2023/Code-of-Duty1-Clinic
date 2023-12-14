@@ -67,15 +67,15 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
     });
   };
 
-  const handleReserve = () => {
+  const handleReserve = async () => {
     if (!alignment || !selectedUser.id) {
       setMessage('Some fields are not filled correctly');
       return setOpenSnackbar(true);
     }
 
-    if (alignment === 'Card')
-      axiosInstance
-        .post(`/payment/session/oneTimePayment`, {
+    try {
+      if (alignment === 'Card') {
+        const res = await axiosInstance.post(`/payment/session/oneTimePayment`, {
           products: [
             {
               name: `Appointment with Dr. ${doctorName} on ${new Date(slot.startDate).toString().slice(0, 16)}
@@ -86,24 +86,24 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
               quantity: 1
             }
           ]
-        })
-        .then((res) => createAppointment().then((res1) => res))
-        .then((res) => window.location.replace(res.data.url))
-        .catch((err) => {
-          setMessage(err.response?.data.message || 'Network error');
-          setOpenSnackbar(true);
         });
-    else
-      axiosInstance
-        .put(`/me/wallet`, {
-          amount: -slot.sessionPrice
-        })
-        .then((res) => createAppointment())
-        .then((res) => window.location.reload())
-        .catch((err) => {
-          setMessage(err.response?.data.message || 'Network error');
-          setOpenSnackbar(true);
+
+        await createAppointment();
+
+        window.location.href = res.data.url;
+      } else {
+        await axiosInstance.put(`/me/wallet`, {
+          amount: -selectedPackage.sessionPrice
         });
+
+        await createAppointment();
+
+        window.location.reload();
+      }
+    } catch (err) {
+      setMessage(err.response?.data.message || 'Network error');
+      setOpenSnackbar(true);
+    }
   };
 
   const handleCloseSnackBar = (event, reason) => {
@@ -117,15 +117,13 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
     <>
       <Stack
         key={day}
+        alignItems="center"
+        justifyContent="center"
         sx={{
           border: 1,
-          borderColor: 'primary.main',
+          // borderColor: 'primary.main',
           height: '150px',
-          overflowY: 'hidden',
-          overflowX: 'hidden',
-          '&:hover': {
-            overflowY: 'auto'
-          }
+          width: '80%'
         }}
       >
         <Typography variant="h5" sx={{ mx: 1 }}>
@@ -133,15 +131,48 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
         </Typography>
         <Divider sx={{ border: 1, borderColor: 'primary.gray' }}></Divider>
 
-        <Stack alignItems="center" justifyContent="center" sx={{}}>
+        <Stack
+          sx={{
+            border: 1,
+            borderColor: 'primary.gray',
+            height: '180px',
+            width: '100%',
+            overflowY: 'hidden',
+            overflowX: 'hidden',
+            '&::-webkit-scrollbar': {
+              width: '6px'
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'primary.light'
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: 'transparent'
+            },
+            '&:hover': {
+              overflowY: 'auto'
+            }
+          }}
+        >
           {slots.map((slot) => {
-            const from = `${new Date(slot.startDate).getUTCHours()}:${new Date(slot.startDate).getUTCMinutes()}`;
-            const to = `${new Date(slot.endDate).getUTCHours()}:${new Date(slot.endDate).getUTCMinutes()}`;
+            // const from = `${new Date(slot.startDate).getUTCHours()}:${new Date(slot.startDate).getUTCMinutes()}`;
+            // const to = `${new Date(slot.endDate).getUTCHours()}:${new Date(slot.endDate).getUTCMinutes()}`;
+            const startDate = new Date(slot.startDate);
+            const endDate = new Date(slot.endDate);
+            startDate.setHours(startDate.getHours() - 2);
+            endDate.setHours(endDate.getHours() - 2);
+            const from = startDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+            const to = endDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
 
             return (
               <Stack key={i++}>
-                <Button onClick={() => handleClick(slot)} color="inherit" underline="hover" variant="subtitle2">
-                  {from} - {to}
+                <Button
+                  onClick={() => handleClick(slot)}
+                  color="inherit"
+                  underline="hover"
+                  variant="subtitle2"
+                  sx={{ whiteSpace: 'pre-line' }}
+                >
+                  {`${from}\n- ${to}`}
                 </Button>
                 <Divider></Divider>
               </Stack>
