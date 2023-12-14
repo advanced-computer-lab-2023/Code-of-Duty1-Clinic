@@ -21,8 +21,8 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         p: (theme) => theme.spacing(0, 1, 0, 3),
         ...(numSelected > 0 && {
           color: 'primary.main',
-          bgcolor: 'primary.lighter',
-        }),
+          bgcolor: 'primary.lighter'
+        })
       }}
     >
       {numSelected > 0 ? (
@@ -36,10 +36,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
           placeholder="Search user..."
           startAdornment={
             <InputAdornment position="start">
-              <Iconify
-                icon="eva:search-fill"
-                sx={{ color: 'text.disabled', width: 20, height: 20 }}
-              />
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
             </InputAdornment>
           }
         />
@@ -65,5 +62,5 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
 UserTableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
-  onFilterName: PropTypes.func,
+  onFilterName: PropTypes.func
 };

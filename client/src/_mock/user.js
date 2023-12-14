@@ -20,6 +20,6 @@ export const users = [...Array(24)].map((_, index) => ({
     'Backend Developer',
     'Full Stack Designer',
     'Front End Developer',
-    'Full Stack Developer',
-  ]),
+    'Full Stack Developer'
+  ])
 }));

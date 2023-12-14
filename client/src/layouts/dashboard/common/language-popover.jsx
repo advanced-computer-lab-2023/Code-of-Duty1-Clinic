@@ -11,18 +11,18 @@ const LANGS = [
   {
     value: 'en',
     label: 'English',
-    icon: '/assets/icons/ic_flag_en.svg',
+    icon: '/assets/icons/ic_flag_en.svg'
   },
   {
     value: 'de',
     label: 'German',
-    icon: '/assets/icons/ic_flag_de.svg',
+    icon: '/assets/icons/ic_flag_de.svg'
   },
   {
     value: 'fr',
     label: 'French',
-    icon: '/assets/icons/ic_flag_fr.svg',
-  },
+    icon: '/assets/icons/ic_flag_fr.svg'
+  }
 ];
 
 // ----------------------------------------------------------------------
@@ -46,8 +46,8 @@ export default function LanguagePopover() {
           width: 40,
           height: 40,
           ...(open && {
-            bgcolor: 'action.selected',
-          }),
+            bgcolor: 'action.selected'
+          })
         }}
       >
         <img src={LANGS[0].icon} alt={LANGS[0].label} />
@@ -64,8 +64,8 @@ export default function LanguagePopover() {
             p: 0,
             mt: 1,
             ml: 0.75,
-            width: 180,
-          },
+            width: 180
+          }
         }}
       >
         {LANGS.map((option) => (

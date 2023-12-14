@@ -25,8 +25,8 @@ export default function AnalyticsOrderTimeline({ title, subheader, list, ...othe
           p: 3,
           [`& .${timelineItemClasses.root}:before`]: {
             flex: 0,
-            padding: 0,
-          },
+            padding: 0
+          }
         }}
       >
         {list.map((item, index) => (
@@ -40,7 +40,7 @@ export default function AnalyticsOrderTimeline({ title, subheader, list, ...othe
 AnalyticsOrderTimeline.propTypes = {
   list: PropTypes.array,
   subheader: PropTypes.string,
-  title: PropTypes.string,
+  title: PropTypes.string
 };
 
 // ----------------------------------------------------------------------
@@ -75,5 +75,5 @@ function OrderItem({ item, lastTimeline }) {
 
 OrderItem.propTypes = {
   item: PropTypes.object,
-  lastTimeline: PropTypes.bool,
+  lastTimeline: PropTypes.bool
 };

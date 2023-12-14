@@ -21,7 +21,8 @@ import {
   orderRouter,
   medicineRouter,
   prescriptionRouter,
-  reportRouter
+  reportRouter,
+  notificationRouter
 } from './routes';
 import { StatusCodes } from 'http-status-codes';
 
@@ -63,11 +64,12 @@ app.use('/orders', orderRouter);
 app.use('/medicine', medicineRouter);
 app.use('/requests', requestRouter);
 app.use('/packages', packageRouter);
-app.use('/chatrooms', chatroomRouter);
+app.use('/chat', chatroomRouter);
 app.use('/payment', paymentRouter);
 app.use('/upload', uploadRouter);
 app.use('/prescription', prescriptionRouter);
 app.use('/report', reportRouter);
+app.use('/notifications', notificationRouter);
 
 app.all('*', (req: Request, res: Response) => res.status(404).send('Path Not Found'));
 

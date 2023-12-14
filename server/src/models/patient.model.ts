@@ -122,5 +122,15 @@ const patientSchema = new Schema(
 
 const patientModel: mongoose.Model<IPatientDocument> = User.discriminator('Patient', patientSchema);
 
+<<<<<<< HEAD
+// patientModel.collection.indexExists('family.userID_1').then((exists) => {
+//   if (exists) patientModel.collection.dropIndex('family.userID_1').then();
+// });
+// patientModel.collection.indexExists('family.nationalID_1').then((exists) => {
+//   if (exists) patientModel.collection.dropIndex('family.nationalID_1').then();
+// });
+
+=======
+>>>>>>> main
 export default patientModel;
 export { IPatient, FamilyMember };

@@ -126,8 +126,13 @@ const navConfig = [
     icon: icon('ic_analytics')
   },
   {
+<<<<<<< HEAD
+    title: 'chat',
+    path: '/chat',
+=======
     title: 'report',
     path: '/report',
+>>>>>>> main
     icon: icon('ic_analytics')
   }
 ];

@@ -19,7 +19,7 @@ export default function NotFoundView() {
         width: 1,
         lineHeight: 0,
         position: 'fixed',
-        p: (theme) => ({ xs: theme.spacing(3, 3, 0), sm: theme.spacing(5, 5, 0) }),
+        p: (theme) => ({ xs: theme.spacing(3, 3, 0), sm: theme.spacing(5, 5, 0) })
       }}
     >
       <Logo />
@@ -41,7 +41,7 @@ export default function NotFoundView() {
             textAlign: 'center',
             alignItems: 'center',
             flexDirection: 'column',
-            justifyContent: 'center',
+            justifyContent: 'center'
           }}
         >
           <Typography variant="h3" sx={{ mb: 3 }}>
@@ -49,8 +49,8 @@ export default function NotFoundView() {
           </Typography>
 
           <Typography sx={{ color: 'text.secondary' }}>
-            Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be
-            sure to check your spelling.
+            Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be sure to check your
+            spelling.
           </Typography>
 
           <Box
@@ -59,7 +59,7 @@ export default function NotFoundView() {
             sx={{
               mx: 'auto',
               height: 260,
-              my: { xs: 5, sm: 10 },
+              my: { xs: 5, sm: 10 }
             }}
           />
 

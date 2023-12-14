@@ -23,14 +23,12 @@ export default function ColorPreview({ colors, limit = 3, sx }) {
             bgcolor: color,
             borderRadius: '50%',
             border: (theme) => `solid 2px ${theme.palette.background.paper}`,
-            boxShadow: (theme) => `inset -1px 1px 2px ${alpha(theme.palette.common.black, 0.24)}`,
+            boxShadow: (theme) => `inset -1px 1px 2px ${alpha(theme.palette.common.black, 0.24)}`
           }}
         />
       ))}
 
-      {colors.length > limit && (
-        <Box component="span" sx={{ typography: 'subtitle2' }}>{`+${remainingColor}`}</Box>
-      )}
+      {colors.length > limit && <Box component="span" sx={{ typography: 'subtitle2' }}>{`+${remainingColor}`}</Box>}
     </Stack>
   );
 }
@@ -38,5 +36,5 @@ export default function ColorPreview({ colors, limit = 3, sx }) {
 ColorPreview.propTypes = {
   colors: PropTypes.arrayOf(PropTypes.string),
   limit: PropTypes.number,
-  sx: PropTypes.object,
+  sx: PropTypes.object
 };

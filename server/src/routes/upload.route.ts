@@ -82,7 +82,11 @@ uploadRouter.get('/pharmacist/registration/:doctorID/:type/:fileIDX', async (req
   res.status(StatusCodes.OK).sendFile(url!);
 });
 
+<<<<<<< HEAD
+// uploadRouter.use(isAuthorized("Pharmacist"));
+=======
 // uploadRouter.use(isAuthorized('Pharmacist'));
+>>>>>>> main
 uploadRouter.post(
   '/pharmacist/registration',
   registrationUpload.fields(allowedRegistrationFields as any[]),

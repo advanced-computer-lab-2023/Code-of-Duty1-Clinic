@@ -22,9 +22,13 @@ import {
   addSlots,
   viewContract,
   acceptContract,
+<<<<<<< HEAD
+  addNewDeliveryAddress
+=======
   addNewDeliveryAddress,
   getMyPrescriptions,
   getWeeklySlots
+>>>>>>> main
 } from '../services';
 
 const router = express.Router();
@@ -122,8 +126,12 @@ router.post('/package', (req: Request, res: Response) => {
     controller(res)(subscribe)(req.decoded.id, req.body.packageID);
   }
 });
+<<<<<<< HEAD
+router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));
+=======
 
 // router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));
+>>>>>>> main
 
 router.post('/addNewAddress', (req: Request, res: Response) => {
   console.log('i got here ');

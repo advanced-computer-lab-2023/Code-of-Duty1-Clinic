@@ -14,8 +14,8 @@ export default function TableEmptyRows({ emptyRows, height }) {
     <TableRow
       sx={{
         ...(height && {
-          height: height * emptyRows,
-        }),
+          height: height * emptyRows
+        })
       }}
     >
       <TableCell colSpan={9} />
@@ -25,5 +25,5 @@ export default function TableEmptyRows({ emptyRows, height }) {
 
 TableEmptyRows.propTypes = {
   emptyRows: PropTypes.number,
-  height: PropTypes.number,
+  height: PropTypes.number
 };

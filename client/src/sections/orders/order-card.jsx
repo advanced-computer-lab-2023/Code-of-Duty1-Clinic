@@ -36,8 +36,7 @@ export default function OrderCard({ order, onCancelOrder }) {
         <React.Fragment>
           <CardContent>
             <Typography sx={{ fontSize: 14 }} color={color} gutterBottom>
-              your order is {status}{' '}
-              {status != 'Processing' && status != 'Not Processed' ? formattedDate : ''}
+              your order is {status} {status != 'Processing' && status != 'Not Processed' ? formattedDate : ''}
             </Typography>
             <Stack direction="row" spacing={2}>
               {status === 'Cancelled' ? (
@@ -48,7 +47,7 @@ export default function OrderCard({ order, onCancelOrder }) {
                     width: 30,
                     height: 30,
                     border: 0,
-                    borderColor: 'primary.main',
+                    borderColor: 'primary.main'
                   }}
                 ></Avatar>
               ) : status === 'Delivered' ? (
@@ -59,7 +58,7 @@ export default function OrderCard({ order, onCancelOrder }) {
                     width: 30,
                     height: 30,
                     border: 0,
-                    borderColor: 'primary.main',
+                    borderColor: 'primary.main'
                   }}
                 ></Avatar>
               ) : (
@@ -70,7 +69,7 @@ export default function OrderCard({ order, onCancelOrder }) {
                     width: 30,
                     height: 30,
                     border: 0,
-                    borderColor: 'primary.main',
+                    borderColor: 'primary.main'
                   }}
                 ></Avatar>
               )}
@@ -88,7 +87,7 @@ export default function OrderCard({ order, onCancelOrder }) {
                     backgroundColor: color === 'red' ? lightRed : lightGreen, // Light red color
                     padding: '10px',
                     borderRadius: '8px',
-                    color: color,
+                    color: color
                   }}
                 >
                   {status}

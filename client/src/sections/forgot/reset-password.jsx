@@ -57,7 +57,7 @@ export default function ResetPassword({ email, handleFinish }) {
                 <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
               </IconButton>
             </InputAdornment>
-          ),
+          )
         }}
       />
       {!isPasswordValid && (

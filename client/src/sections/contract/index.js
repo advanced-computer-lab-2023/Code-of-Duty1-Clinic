@@ -1,1 +1,1 @@
-export { default as DoctorContract } from "./contract-view";
+export { default as DoctorContract } from './contract-view';

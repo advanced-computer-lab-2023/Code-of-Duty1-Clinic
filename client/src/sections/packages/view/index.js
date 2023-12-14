@@ -1,1 +1,1 @@
-export {default as PackageView} from './package-view'
+export { default as PackageView } from './package-view';

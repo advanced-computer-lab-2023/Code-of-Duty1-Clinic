@@ -13,7 +13,7 @@ export default function TableNoData({ query }) {
       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
         <Paper
           sx={{
-            textAlign: 'center',
+            textAlign: 'center'
           }}
         >
           <Typography variant="h6" paragraph>
@@ -32,5 +32,5 @@ export default function TableNoData({ query }) {
 }
 
 TableNoData.propTypes = {
-  query: PropTypes.string,
+  query: PropTypes.string
 };
