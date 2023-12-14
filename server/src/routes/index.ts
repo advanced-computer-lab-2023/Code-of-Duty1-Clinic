@@ -11,13 +11,10 @@ import uploadRouter from './upload.route';
 import cartRouter from './cart.route';
 import orderRouter from './order.route';
 import medicineRouter from './medicine.route';
-<<<<<<< HEAD
 import notificationRouter from './notification.route';
-=======
 import prescriptionRouter from './prescription.route';
 import reportRouter from './report.route';
 
->>>>>>> main
 export {
   authRouter,
   meRouter,
@@ -32,12 +29,9 @@ export {
   cartRouter,
   orderRouter,
   medicineRouter,
-<<<<<<< HEAD
-  notificationRouter
-=======
+  notificationRouter,
   prescriptionRouter,
-  reportRouter
->>>>>>> main
+  reportRouter,
 };
 
 // export * from './auth.route';
