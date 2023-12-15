@@ -12,7 +12,13 @@ import {
   Stack,
   Select,
   MenuItem,
-  InputLabel
+  InputLabel,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  Modal,
+  Dialog
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -26,6 +32,8 @@ export default function CartComponent() {
   const [cartItems, setCartItems] = useState([]);
   const [outOfStockItems, setOutOfStockItems] = useState({});
   const [addresses, setAddresses] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newAddress, setNewAddress] = useState('');
   const url = `http://localhost:3000/cart`;
   const fetchCartData = async () => {
     try {
@@ -62,6 +70,13 @@ export default function CartComponent() {
     const total = cartItems.reduce((acc, item) => acc + item.count * item.price, 0);
     setTotalPrice(total);
   }, [cartItems]);
+
+  useEffect(() => {
+    // Update the address when the modal is closed
+    if (!isModalOpen) {
+      setAddress(newAddress);
+    }
+  }, [isModalOpen, newAddress]);
 
   const handleRemoveItem = async (itemId) => {
     try {
@@ -150,6 +165,32 @@ export default function CartComponent() {
       })
       .then((res) => navigate('/orders'));
   };
+  const handleAddNewAddress = () => {
+    // Add logic to save the new address (e.g., send to the server)
+    setAddresses((prevAddresses) => [...prevAddresses, newAddress]);
+    setIsModalOpen(false);
+  };
+  const NewAddressModal = (
+    <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <DialogTitle>Add New Address</DialogTitle>
+      <DialogContent>
+        <TextField
+          label="New Address"
+          variant="outlined"
+          fullWidth
+          value={newAddress}
+          onChange={(e) => setNewAddress(e.target.value)}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
+        <Button onClick={handleAddNewAddress} color="primary">
+          Add
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
     <>
       <Table
@@ -228,14 +269,18 @@ export default function CartComponent() {
           </TableRow>
         </TableBody>
         <Stack direction={'row'} spacing={2}>
-          <Button onClick={handleCheckout}>pay with credit</Button>
-          <Button>pay with wallet</Button>
-          <Button onClick={handleCashPayment}>pay with cash</Button>
+          <Button onClick={handleCheckout} disabled={!address || address == 'Add New Address'}>
+            pay with credit
+          </Button>
+          <Button disabled={!address || address == 'Add New Address'}>pay with wallet</Button>
+          <Button onClick={handleCashPayment} disabled={!address || address == 'Add New Address'}>
+            pay with cash
+          </Button>
         </Stack>
       </Table>
       <br />
       <InputLabel>Select Address</InputLabel>
-      <Select label="Select Address" onChange={handleSelectChange} displayEmpty>
+      <Select label="Select Address" value={address} onChange={handleSelectChange} displayEmpty>
         <MenuItem value="" disabled>
           Select an address
         </MenuItem>
@@ -250,7 +295,11 @@ export default function CartComponent() {
             No addresses available
           </MenuItem>
         )}
+        <MenuItem value="addNew" onClick={() => setIsModalOpen(true)} style={{ fontWeight: 'bold', color: 'blue' }}>
+          <AddIcon /> Add New Address
+        </MenuItem>
       </Select>
+      {NewAddressModal}
     </>
   );
 }
