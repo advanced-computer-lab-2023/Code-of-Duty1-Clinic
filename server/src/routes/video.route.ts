@@ -40,8 +40,6 @@ router.get('/google', async (req,res) => {
 });
 
 router.get('/schedule-videoCall', async (req,res) =>{
-    const {caller_gmail , callee_gmail} = req.body;
-
     await calendar.events.insert({
         calendarId : 'primary',
         auth:oauth2Client,
