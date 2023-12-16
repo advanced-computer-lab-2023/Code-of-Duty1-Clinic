@@ -38,6 +38,7 @@ export const AddressesPage = lazy(() => import('src/pages/addresses'));
 export const ViewChat = lazy(() => import('src/pages/textChat'));
 export const UsersPage = lazy(() => import('src/pages/users'));
 export const ReportPage = lazy(() => import('src/pages/report'));
+export const AddAdminPage = lazy(() => import('src/pages/addAdmin'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -83,6 +84,7 @@ export default function Router() {
         { path: 'chat', element: <ViewChat /> },
         { path: 'report', element: <ReportPage /> },
         { path: 'users', element: <UsersPage /> },
+        { path: 'add-admin', element: <AddAdminPage /> }
 
       ]
     },

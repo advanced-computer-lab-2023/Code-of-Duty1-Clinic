@@ -140,6 +140,12 @@ const navConfig = [
     path: '/users',
     icon: icon('ic_analytics')
   },
+  {
+    title: 'add-admin',
+    path: '/add-admin',
+    icon: icon('ic_analytics')
+  },
+
 ];
 
 export default navConfig;

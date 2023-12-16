@@ -21,7 +21,7 @@ import {
     Select,
     MenuItem,
 } from '@mui/material';
-import { axiosInstance } from 'src/utils/axiosInstance'; // Adjust the import based on your project structure
+import { axiosInstance } from 'src/utils/axiosInstance';
 import { DisplayRequests } from 'src/sections/upload/displayRequests';
 
 const UsersTable = () => {
@@ -192,19 +192,22 @@ const UsersTable = () => {
                             }}>
                                 <Typography variant="body1">
 
-                                    <strong>Gender:</strong> {selectedUser.gender}
-                                    <br />
+                                    {selectedUser.role !== 'Admin' && (
+                                        <>
+                                            <strong>Gender:</strong> {selectedUser.gender}
+                                            <br />
+                                            <strong>Birth Date:</strong> {new Date(selectedUser.birthDate).toLocaleDateString()}
+                                            <br />
+                                        </>
+                                    )}
                                     <strong>Role:</strong> {selectedUser.role}
-                                    <br />
-                                    <strong>Birth Date:</strong> {new Date(selectedUser.birthDate).toLocaleDateString()}
                                     <br />
                                 </Typography>
                             </div>
-                            {selectedUser.role != 'Patient' && <div>
+                            {(selectedUser.role == 'Doctor' || selectedUser.role == 'Pharmacist') && <div>
                                 <Typography variant="body1">
 
-                                    {/* <strong>Status:</strong> {selectedUser.status}
-                                    <br /> */}
+
                                     <strong>Contract Accepted:</strong> {selectedUser.isContractAccepted ? 'Yes' : 'No'}
                                     <br />
 
@@ -212,15 +215,19 @@ const UsersTable = () => {
                                     <br />
                                     <strong>Hospital:</strong> {selectedUser.hospital}
                                     <br />
-                                    <strong>Specialty:</strong> {selectedUser.specialty}
-                                    <br />
+                                    {selectedUser.role != 'Pharmacist' &&
+                                        (<>
+                                            <strong>Specialty:</strong> {selectedUser.specialty}
+                                            <br />
+                                        </>)
+                                    }
                                 </Typography>
                             </div>}
                         </div><div>
                                 {selectedUser.role && (selectedUser.role.toLowerCase() === 'doctor' || selectedUser.role.toLowerCase() === 'pharmacist') ? (
 
                                     <div style={{
-                                        padding: '5px', alignItems: 'center',
+                                        padding: '50px', alignItems: 'center',
                                         justifyContent: 'center',
                                     }}>
                                         <DisplayRequests doctorID={selectedUser._id} />
