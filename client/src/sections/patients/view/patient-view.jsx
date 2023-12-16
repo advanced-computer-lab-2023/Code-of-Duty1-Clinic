@@ -32,18 +32,28 @@ export default function UserPage() {
   const user = localStorage.getItem('userRole');
 
   const [patients, setPatients] = useState([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState(false);
 
-  useEffect(() => {
-    const fetchMyPatients = async () => {
+  const fetchMyPatients = async () => {
+    if (upcomingAppointments) {
+      try {
+        const res = await axiosInstance.get(`/patients/?status=Upcoming`);
+        setPatients(res.data.result);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
       try {
         const res = await axiosInstance.get(`/patients`);
         setPatients(res.data.result);
       } catch (err) {
         console.log(err);
       }
-    };
+    }
+  };
+  useEffect(() => {
     fetchMyPatients();
-  }, []);
+  }, [upcomingAppointments]);
 
   //'/assets/images/avatars/avatar_1.jpg'
   //console.log(users);
@@ -131,7 +141,14 @@ export default function UserPage() {
         </Stack>
 
         <Card>
-          <UserTableToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          <UserTableToolbar
+            numSelected={selected.length}
+            filterName={filterName}
+            onFilterName={handleFilterByName}
+            upcomingAppointments={upcomingAppointments}
+            setUpcomingAppointments={setUpcomingAppointments}
+            fetchMyPatients={fetchMyPatients}
+          />
 
           <Scrollbar>
             <TableContainer sx={{ overflow: 'unset' }}>

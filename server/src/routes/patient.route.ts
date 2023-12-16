@@ -19,7 +19,7 @@ router.get('/:id', (req: Request, res: Response) => {
   controller(res)(getMyPatients)({ doctorID: req.decoded.id, patientID: req.params.id });
 });
 router.get('/', (req: Request, res: Response) => {
-  controller(res)(getMyPatients)({ doctorID: req.decoded.id });
+  controller(res)(getMyPatients)({ doctorID: req.decoded.id, ...req.query });
 });
 
 router.get('/:id/medicalhistory', isAuthorized('Doctor'), (req: Request, res: Response) => {
