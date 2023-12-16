@@ -57,8 +57,12 @@ export default function LoginView() {
         localStorage.setItem('userName', user.name);
         localStorage.setItem('userId', user._id);
         localStorage.setItem('userRole', user.role);
-
-        router.push(destination);
+        let response = await axiosInstance.get('upload/uploads');
+        if (response.data.result == 0) {
+          router.push('/upload-document');
+        }
+        else
+          router.push(destination);
       } else {
         setError(res.data.message);
       }
