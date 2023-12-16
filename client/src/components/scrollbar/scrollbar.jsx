@@ -24,7 +24,7 @@ const Scrollbar = forwardRef(({ children, sx, ...other }, ref) => {
     <StyledRootScrollbar>
       <StyledScrollbar
         scrollableNodeProps={{
-          ref,
+          ref
         }}
         clickOnTrack={false}
         sx={sx}
@@ -38,7 +38,7 @@ const Scrollbar = forwardRef(({ children, sx, ...other }, ref) => {
 
 Scrollbar.propTypes = {
   children: PropTypes.node,
-  sx: PropTypes.object,
+  sx: PropTypes.object
 };
 
 export default memo(Scrollbar);

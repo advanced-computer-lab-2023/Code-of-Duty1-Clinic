@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField';
 
 PostSort.propTypes = {
   options: PropTypes.array,
-  onSort: PropTypes.func,
+  onSort: PropTypes.func
 };
 
 export default function PostSort({ options, onSort }) {

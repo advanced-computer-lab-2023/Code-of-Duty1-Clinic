@@ -17,7 +17,7 @@ const SvgColor = forwardRef(({ src, sx, ...other }, ref) => (
       bgcolor: 'currentColor',
       mask: `url(${src}) no-repeat center / contain`,
       WebkitMask: `url(${src}) no-repeat center / contain`,
-      ...sx,
+      ...sx
     }}
     {...other}
   />
@@ -25,7 +25,7 @@ const SvgColor = forwardRef(({ src, sx, ...other }, ref) => (
 
 SvgColor.propTypes = {
   src: PropTypes.string,
-  sx: PropTypes.object,
+  sx: PropTypes.object
 };
 
 export default SvgColor;

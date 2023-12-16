@@ -7,7 +7,6 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import Modal from '@mui/material/Modal';
 
 import { fCurrency } from 'src/utils/format-number';
 
@@ -74,7 +73,7 @@ export default function ShopProductCard({ product, onDetailsview }) {
     </Label>
   );
 
-  const renderImg = (
+  const renderImg = !product.image ? (
     <Box
       component="img"
       alt={product.name}
@@ -87,7 +86,18 @@ export default function ShopProductCard({ product, onDetailsview }) {
         position: 'absolute'
       }}
     />
-    // <MedicineImage MedicineID={product._id} />
+  ) : (
+    <Box
+      sx={{
+        top: 0,
+        width: 1,
+        height: 1,
+        objectFit: 'cover',
+        position: 'absolute'
+      }}
+    >
+      <MedicineImage MedicineID={product._id} />
+    </Box>
   );
 
   const renderPrice = (

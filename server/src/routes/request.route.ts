@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 
 import controller from '../controllers';
-import { getRequests, acceptRequest, rejectRequest} from '../services';
+import { getRequests, acceptRequest, rejectRequest } from '../services';
 import { isAuthenticated, isAuthorized } from '../middlewares';
 
 const router = express.Router();
@@ -20,6 +20,5 @@ router.put('/accept', (req: Request, res: Response) => {
 router.put('/reject', (req: Request, res: Response) => {
   controller(res)(rejectRequest)(req.body.email);
 });
-
 
 export default router;

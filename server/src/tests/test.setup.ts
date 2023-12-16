@@ -22,7 +22,9 @@ const connectDB = async (): Promise<MongoMemoryServer> => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
 
-  await mongoose.connect("mongodb+srv://mark:s89sQCSg94VI3oO9@cluster0.hqmqtq1.mongodb.net/clinic?retryWrites=true&w=majority");
+  await mongoose.connect(
+    'mongodb+srv://mark:s89sQCSg94VI3oO9@cluster0.hqmqtq1.mongodb.net/clinic?retryWrites=true&w=majority'
+  );
 
   return mongoServer; // Return the instance
 };

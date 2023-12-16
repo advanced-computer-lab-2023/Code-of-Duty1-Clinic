@@ -20,15 +20,11 @@ export default function AppTrafficBySite({ title, subheader, list, ...other }) {
           p: 3,
           gap: 2,
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
+          gridTemplateColumns: 'repeat(2, 1fr)'
         }}
       >
         {list.map((site) => (
-          <Paper
-            key={site.name}
-            variant="outlined"
-            sx={{ py: 2.5, textAlign: 'center', borderStyle: 'dashed' }}
-          >
+          <Paper key={site.name} variant="outlined" sx={{ py: 2.5, textAlign: 'center', borderStyle: 'dashed' }}>
             <Box sx={{ mb: 0.5 }}>{site.icon}</Box>
 
             <Typography variant="h6">{fShortenNumber(site.value)}</Typography>
@@ -46,5 +42,5 @@ export default function AppTrafficBySite({ title, subheader, list, ...other }) {
 AppTrafficBySite.propTypes = {
   title: PropTypes.string,
   subheader: PropTypes.string,
-  list: PropTypes.array.isRequired,
+  list: PropTypes.array.isRequired
 };

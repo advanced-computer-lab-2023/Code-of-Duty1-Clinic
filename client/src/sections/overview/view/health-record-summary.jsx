@@ -13,7 +13,7 @@ export default function HealthRecordSummary({ name, medicalRecord, sx, ...other 
         px: 3,
         py: 5,
         borderRadius: 2,
-        ...sx,
+        ...sx
       }}
       {...other}
     >
@@ -30,5 +30,5 @@ export default function HealthRecordSummary({ name, medicalRecord, sx, ...other 
 HealthRecordSummary.propTypes = {
   name: PropTypes.string.isRequired,
   medicalRecord: PropTypes.string.isRequired,
-  sx: PropTypes.object,
+  sx: PropTypes.object
 };

@@ -36,7 +36,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
         width: 40,
         height: 40,
         display: 'inline-flex',
-        ...sx,
+        ...sx
       }}
       {...other}
     >
@@ -89,7 +89,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
 
 Logo.propTypes = {
   disabledLink: PropTypes.bool,
-  sx: PropTypes.object,
+  sx: PropTypes.object
 };
 
 export default Logo;

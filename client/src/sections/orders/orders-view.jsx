@@ -47,9 +47,19 @@ export default function OrdersView() {
     setOpenFilter(false);
   };
   const handleCancelOrder = async (id) => {
-    console.log(id);
     try {
       await axios.put(`http://localhost:3000/orders/${id}/cancel`, null, { withCredentials: true });
+    } catch (err) {
+      console.log(`the error happening is${err.message}`);
+    }
+
+    const response = await axios.get('http://localhost:3000/orders', { withCredentials: true });
+    setOrders(response.data.order);
+  };
+  const handleChangeOrderState = async ({ orderID, newStatus }) => {
+    console.log('does i got to the handle change order state part or not ');
+    try {
+      await axios.put(`http://localhost:3000/orders/${orderID}`, { status: newStatus }, { withCredentials: true });
     } catch (err) {
       console.log(`the error happening is${err.message}`);
     }
@@ -69,19 +79,9 @@ export default function OrdersView() {
         Previous Orders
       </Typography>
 
-      <Stack
-        direction="row"
-        alignItems="center"
-        flexWrap="wrap-reverse"
-        justifyContent="flex-end"
-        sx={{ mb: 5 }}
-      >
+      <Stack direction="row" alignItems="center" flexWrap="wrap-reverse" justifyContent="flex-end" sx={{ mb: 5 }}>
         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters
-            openFilter={openFilter}
-            onOpenFilter={handleOpenFilter}
-            onCloseFilter={handleCloseFilter}
-          />
+          <ProductFilters openFilter={openFilter} onOpenFilter={handleOpenFilter} onCloseFilter={handleCloseFilter} />
 
           <ProductSort />
         </Stack>
@@ -94,6 +94,7 @@ export default function OrdersView() {
               order={order}
               key={order.id}
               onCancelOrder={() => handleCancelOrder(order._id)}
+              onChangeOrderStatus={(newStatus) => handleChangeOrderState({ orderID: order._id, newStatus })}
             />
           ))}
         </Box>

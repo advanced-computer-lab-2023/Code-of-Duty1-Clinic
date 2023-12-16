@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
-import { Cart, User } from '../models';
+import { Cart, Prescription, User } from '../models';
 import { Types } from 'mongoose';
 import Medicine, { IMedicine } from '../models/medicine.model';
 
@@ -14,7 +14,7 @@ const getCart = async (userId: string) => {
     result: cart
   };
 };
-const addCartItem = async (userId: string, medID: string) => {
+const addCartItem = async (userId: string, medID: string, prescriptionID: string, medicineID: string) => {
   let cart = await Cart.findOne({ userID: userId });
   const medicine = await Medicine.findOne({ _id: medID });
   if (!medicine) throw new HttpError(StatusCodes.NOT_FOUND, 'Medicine are out of Stock');
@@ -30,6 +30,18 @@ const addCartItem = async (userId: string, medID: string) => {
     cart.items.push({ id: new Types.ObjectId(medID), count: 1 });
   }
   await cart.save();
+
+  if (prescriptionID && medicineID) {
+    const prescription = await Prescription.findById(prescriptionID);
+    let prescriptionMedicines = prescription?.medicines;
+    prescriptionMedicines?.forEach((medicine) => {
+      if (medicine?._id.toString() === medicineID) {
+        medicine.isSubmitted = true;
+      }
+    });
+    const updatedPrescription = await prescription?.updateOne({ medicines: prescriptionMedicines });
+    if (!updatedPrescription) throw new HttpError(StatusCodes.BAD_REQUEST, 'failed to update prescription');
+  }
   return {
     status: StatusCodes.OK,
     message: 'Item added successfully !',

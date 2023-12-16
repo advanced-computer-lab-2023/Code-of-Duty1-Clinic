@@ -26,7 +26,7 @@ export const AddFamilyPage = lazy(() => import('src/pages/addFamily'));
 export const FamilyPage = lazy(() => import('src/pages/family'));
 export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
-export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
+// export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
 export const MedicalHistoryPage = lazy(() => import('src/pages/medical-history'));
 
 export const CartPage = lazy(() => import('src/pages/cart'));
@@ -35,6 +35,8 @@ export const PharmacistDocumentUploadPage = lazy(() => import('src/pages/pharmac
 export const MedicineImageUploadPage = lazy(() => import('src/pages/uploadMedicineImage'));
 export const ViewMedicineImage = lazy(() => import('src/pages/view-medicine-image'));
 export const AddressesPage = lazy(() => import('src/pages/addresses'));
+export const ViewChat = lazy(() => import('src/pages/textChat'));
+
 export const ReportPage = lazy(() => import('src/pages/report'));
 // ----------------------------------------------------------------------
 
@@ -58,7 +60,7 @@ export default function Router() {
         { path: 'requests', element: <RequestsPage /> },
         { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
         { path: '/medical-history', element: <MedicalHistoryPage /> },
-        { path: 'requests-list', element: <RequestsListPage /> },
+        // { path: 'requests-list', element: <RequestsListPage /> },
         { path: 'patients', element: <PatientsPage /> },
         { path: 'health-record/:patientID', element: <HealthRecordPage /> },
         { path: 'health-record', element: <HealthRecordPage /> },
@@ -78,7 +80,8 @@ export default function Router() {
         { path: 'upload-medicine-image', element: <MedicineImageUploadPage /> },
         { path: 'view-medicine-image', element: <ViewMedicineImage /> },
         { path: 'addresses', element: <AddressesPage /> },
-        { path: 'report', element: <ReportPage /> }
+        { path: 'chat', element: <ViewChat /> },
+        { path: 'report', element: <ReportPage /> },
       ]
     },
     {

@@ -19,7 +19,7 @@ const HEADER_DESKTOP = 92;
 
 const StyledSearchbar = styled('div')(({ theme }) => ({
   ...bgBlur({
-    color: theme.palette.background.default,
+    color: theme.palette.background.default
   }),
   top: 0,
   left: 0,
@@ -33,8 +33,8 @@ const StyledSearchbar = styled('div')(({ theme }) => ({
   boxShadow: theme.customShadows.z8,
   [theme.breakpoints.up('md')]: {
     height: HEADER_DESKTOP,
-    padding: theme.spacing(0, 5),
-  },
+    padding: theme.spacing(0, 5)
+  }
 }));
 
 // ----------------------------------------------------------------------
@@ -68,10 +68,7 @@ export default function Searchbar() {
               placeholder="Search…"
               startAdornment={
                 <InputAdornment position="start">
-                  <Iconify
-                    icon="eva:search-fill"
-                    sx={{ color: 'text.disabled', width: 20, height: 20 }}
-                  />
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
                 </InputAdornment>
               }
               sx={{ mr: 1, fontWeight: 'fontWeightBold' }}

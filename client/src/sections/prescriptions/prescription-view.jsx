@@ -15,36 +15,25 @@ export default function PrescriptionView({ patientID }) {
   const user = localStorage.getItem('userRole');
   console.log(user);
 
-  const [patientName, setPatientName] = useState('');
-  useEffect(() => {
-    const fetchPatientName = async () => {
-      try {
-        const res = await axiosInstance.get(`/patients/${patientID}`);
-        console.log(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchPatientName();
-  }, []);
-
   const [prescriptions, setPrescriptions] = useState([]);
 
-  useEffect(() => {
-    const fetchPrescriptions = async () => {
-      try {
-        let res;
-        if (user === 'Doctor') {
-          res = await axiosInstance.get(`/patients/${patientID}/prescription`);
-          setPrescriptions(res.data.prescriptions);
-        } else {
-          res = await axiosInstance.get(`/me/prescriptions`);
-          setPrescriptions(res.data.result);
-        }
-      } catch (err) {
-        console.log(err);
+  const fetchPrescriptions = async () => {
+    try {
+      let res;
+      if (user === 'Doctor') {
+        res = await axiosInstance.get(`/patients/${patientID}/prescription`);
+        //console.log("I'm here");
+        setPrescriptions(res.data.prescriptions);
+      } else {
+        res = await axiosInstance.get(`/me/prescriptions`);
+        setPrescriptions(res.data.result);
       }
-    };
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
     fetchPrescriptions();
   }, []);
 
@@ -63,7 +52,7 @@ export default function PrescriptionView({ patientID }) {
       };
       await axiosInstance.post(`/patients/${patientID}/prescription`, body);
       console.log('Prescription added successfully');
-      window.location.reload();
+      fetchPrescriptions();
     } catch (error) {
       console.error(error);
     }
@@ -151,6 +140,7 @@ export default function PrescriptionView({ patientID }) {
                 isFilled={prescription.isFilled}
                 isSubmitted={prescription.isSubmitted}
                 medicinesListNames={medicinesListNames}
+                fetchPrescriptions={fetchPrescriptions}
               />
             </Grid>
           ))}

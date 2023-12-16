@@ -1,1 +1,1 @@
-export { default as DoctorsView } from "./doctors-view";
+export { default as DoctorsView } from './doctors-view';

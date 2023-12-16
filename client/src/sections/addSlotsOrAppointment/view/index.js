@@ -1,1 +1,1 @@
-export { default as AddView } from "./add-view";
+export { default as AddView } from './add-view';

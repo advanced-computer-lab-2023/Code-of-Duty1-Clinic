@@ -27,7 +27,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
   borderTopLeftRadius: Number(theme.shape.borderRadius) * 2,
   borderBottomLeftRadius: Number(theme.shape.borderRadius) * 2,
   transition: theme.transitions.create('opacity'),
-  '&:hover': { opacity: 0.72 },
+  '&:hover': { opacity: 0.72 }
 }));
 
 // ----------------------------------------------------------------------

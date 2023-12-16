@@ -19,7 +19,7 @@ export default function AppWidgetSummary({ title, total, icon, color = 'primary'
         px: 3,
         py: 5,
         borderRadius: 2,
-        ...sx,
+        ...sx
       }}
       {...other}
     >
@@ -41,5 +41,5 @@ AppWidgetSummary.propTypes = {
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   sx: PropTypes.object,
   title: PropTypes.string,
-  total: PropTypes.number,
+  total: PropTypes.number
 };

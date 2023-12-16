@@ -201,7 +201,7 @@ const generateContract = () => {
 // console.log(generateFakeAppointment());
 // generateFakeWeeklySlots();
 // console.log(generateFakeVacations());
-console.log(generateFakeUser("Patient"));
+console.log(generateFakeUser('Patient'));
 // generateContract();
 
 export {

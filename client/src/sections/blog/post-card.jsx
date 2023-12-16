@@ -40,8 +40,8 @@ export default function PostCard({ post, index }) {
           top: 24,
           left: 24,
           width: 40,
-          height: 40,
-        }),
+          height: 40
+        })
       }}
     />
   );
@@ -59,8 +59,8 @@ export default function PostCard({ post, index }) {
         WebkitBoxOrient: 'vertical',
         ...(latestPostLarge && { typography: 'h5', height: 60 }),
         ...((latestPostLarge || latestPost) && {
-          color: 'common.white',
-        }),
+          color: 'common.white'
+        })
       }}
     >
       {title}
@@ -75,13 +75,13 @@ export default function PostCard({ post, index }) {
       justifyContent="flex-end"
       sx={{
         mt: 3,
-        color: 'text.disabled',
+        color: 'text.disabled'
       }}
     >
       {[
         { number: comment, icon: 'eva:message-circle-fill' },
         { number: view, icon: 'eva:eye-fill' },
-        { number: share, icon: 'eva:share-fill' },
+        { number: share, icon: 'eva:share-fill' }
       ].map((info, _index) => (
         <Stack
           key={_index}
@@ -89,8 +89,8 @@ export default function PostCard({ post, index }) {
           sx={{
             ...((latestPostLarge || latestPost) && {
               opacity: 0.48,
-              color: 'common.white',
-            }),
+              color: 'common.white'
+            })
           }}
         >
           <Iconify width={16} icon={info.icon} sx={{ mr: 0.5 }} />
@@ -110,7 +110,7 @@ export default function PostCard({ post, index }) {
         width: 1,
         height: 1,
         objectFit: 'cover',
-        position: 'absolute',
+        position: 'absolute'
       }}
     />
   );
@@ -124,8 +124,8 @@ export default function PostCard({ post, index }) {
         color: 'text.disabled',
         ...((latestPostLarge || latestPost) && {
           opacity: 0.48,
-          color: 'common.white',
-        }),
+          color: 'common.white'
+        })
       }}
     >
       {fDate(createdAt)}
@@ -143,7 +143,7 @@ export default function PostCard({ post, index }) {
         bottom: -15,
         position: 'absolute',
         color: 'background.paper',
-        ...((latestPostLarge || latestPost) && { display: 'none' }),
+        ...((latestPostLarge || latestPost) && { display: 'none' })
       }}
     />
   );
@@ -163,15 +163,15 @@ export default function PostCard({ post, index }) {
                 width: '100%',
                 height: '100%',
                 position: 'absolute',
-                bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
-              },
+                bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72)
+              }
             }),
             ...(latestPostLarge && {
               pt: {
                 xs: 'calc(100% * 4 / 3)',
-                sm: 'calc(100% * 3 / 4.66)',
-              },
-            }),
+                sm: 'calc(100% * 3 / 4.66)'
+              }
+            })
           }}
         >
           {renderShape}
@@ -187,8 +187,8 @@ export default function PostCard({ post, index }) {
             ...((latestPostLarge || latestPost) && {
               width: 1,
               bottom: 0,
-              position: 'absolute',
-            }),
+              position: 'absolute'
+            })
           }}
         >
           {renderDate}
@@ -204,5 +204,5 @@ export default function PostCard({ post, index }) {
 
 PostCard.propTypes = {
   post: PropTypes.object.isRequired,
-  index: PropTypes.number,
+  index: PropTypes.number
 };

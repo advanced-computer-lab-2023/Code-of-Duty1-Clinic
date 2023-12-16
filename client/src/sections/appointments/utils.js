@@ -7,7 +7,7 @@ export const visuallyHidden = {
   overflow: 'hidden',
   position: 'absolute',
   whiteSpace: 'nowrap',
-  clip: 'rect(0 0 0 0)',
+  clip: 'rect(0 0 0 0)'
 };
 
 export function emptyRows(page, rowsPerPage, arrayLength) {
@@ -47,9 +47,7 @@ export function applyFilter({ inputData, comparator, filterName }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
+    inputData = inputData.filter((user) => user.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
   }
 
   return inputData;

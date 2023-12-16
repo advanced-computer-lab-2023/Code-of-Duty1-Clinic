@@ -1,8 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import { ICart, Cart, Medicine, Order, IMedicine, IOrder } from '../models';
 import { HttpError } from '../utils';
-const getOrders = async (query: Object, patientId: string) => {
-  const order = await Order.find({ ...query, userID: patientId });
+const getOrders = async (query: Object, userId: string, userRole: string) => {
+  if (userRole == 'Pharmacist') return getAllOrders(query);
+  const order = await Order.find({ ...query, userID: userId });
   return {
     status: StatusCodes.OK,
     order
@@ -73,10 +74,10 @@ const cancelOrder = async (id: string) => {
   };
 };
 const getAllOrders = async (query: Object) => {
-  const orders = await Order.find({ ...query });
+  const order = await Order.find({ ...query });
   return {
     status: StatusCodes.OK,
-    orders
+    order
   };
 };
 

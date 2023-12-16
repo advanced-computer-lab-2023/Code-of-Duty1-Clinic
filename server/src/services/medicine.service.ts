@@ -41,7 +41,7 @@ const getPath = (file: any) => {
   return file.path.slice(idx);
 };
 const saveImage = async (medicineID: string, file: Express.Multer.File) => {
-  // console.log(file, '-------');
+  console.log(file, '-------');
   let path = getPath(file);
   let result = await Medicine.findOneAndUpdate({ _id: medicineID }, { image: path }, { new: true });
   return {

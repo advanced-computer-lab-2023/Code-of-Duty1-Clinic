@@ -1,0 +1,73 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Chat App</title>
+    <style>
+        form {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        input {
+            flex: 1;
+        }
+
+        button {
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <label for="email">Email:</label>
+        <input type="text" id="email" />
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div style="display:none" id="chat-container">
+        <ul id="messages"></ul>
+        <form id="form" action="">
+            <input id="m" autocomplete="off" /><button>Send</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        const socket = io();
+        let userEmail;
+
+        function login() {
+            userEmail = $('#email').val();
+            socket.emit('login', userEmail);
+
+            // Hide login and show chat
+            $('#chat-container').show();
+            $('div').hide();
+        }
+
+        $('#form').submit(function () {
+            const message = $('#m').val();
+            const to = prompt('Enter the recipient\'s email:');
+
+            if (to && message) {
+                socket.emit('private message', { to, message });
+                $('#m').val('');
+            } else {
+                alert('Recipient or message cannot be empty.');
+            }
+
+            return false;
+        });
+
+        socket.on('private message', function (msg) {
+            $('#messages').append($('<li>').text(`${msg.from}: ${msg.message}`));
+        });
+    </script>
+</body>
+
+</html>

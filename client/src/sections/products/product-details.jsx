@@ -17,16 +17,19 @@ import Label from 'src/components/label';
 // import { ColorPreview } from 'src/components/color-utils';
 import { MedicineImage } from '../upload/medicineImage';
 import 'react-toastify/dist/ReactToastify.css';
+import { MedicineImageUpload } from '../upload/medicineImageUpload';
 // ----------------------------------------------------------------------
 
 export default function ProductDetails({ product, onCloseProductDetails }) {
   const user = localStorage.getItem('userRole');
+  const [medicineProduct, setMedicineProduct] = useState(product);
   const [isArchived, setIsArchived] = useState(product.isArchived);
+  const [uploadImg, setUploadImg] = useState('');
   const handleArchiveClick = async () => {
     try {
       await axios.put(
-        `http://localhost:3000/medicine/${product._id}`,
-        { isArchived: !product.isArchived },
+        `http://localhost:3000/medicine/${medicineProduct._id}`,
+        { isArchived: !medicineProduct.isArchived },
         { withCredentials: true }
       );
     } catch (err) {
@@ -37,33 +40,41 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const renderStatus = (
     <Label
       variant="filled"
-      color={(product.status === 'sale' && 'error') || 'info'}
+      color={(medicineProduct.status === 'sale' && 'error') || 'info'}
       sx={{
         textTransform: 'uppercase'
       }}
     >
-      {product.numStock != 0 ? 'available' : 'sold out'}
-      {/* suppose here to be the product.status */}
+      {medicineProduct.numStock != 0 ? 'available' : 'sold out'}
+      {/* suppose here to be the medicineProduct.status */}
     </Label>
   );
 
-  const renderImg = (
+  const renderImg = !medicineProduct.image ? (
     <Box
       component="img"
-      alt={product.name}
+      alt={medicineProduct.name}
       src={'assets/images/avatars/avatar_1.jpg'}
       sx={{
         maxWidth: 200,
         maxHeight: 200
       }}
     />
-    // <MedicineImage MedicineID={product._id} />
+  ) : (
+    <Box
+      sx={{
+        maxHeight: 200,
+        maxWidth: 200
+      }}
+    >
+      <MedicineImage MedicineID={medicineProduct._id} />
+    </Box>
   );
 
   const renderPrice = (
     <Typography variant="subtitle1">
       &nbsp;
-      {fCurrency(product.price)}
+      {fCurrency(medicineProduct.price)}
     </Typography>
   );
   const renderArchiveButton = isArchived ? (
@@ -75,19 +86,55 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
       Archive
     </Button>
   );
+  const handleAddNewImageClick = (medicineID) => {
+    setUploadImg(medicineID);
+  };
+  const renderAddNewImageButton = (
+    <Button
+      variant="outlined"
+      sx={{ textTransform: 'uppercase' }}
+      onClick={() => {
+        handleAddNewImageClick(medicineProduct._id);
+      }}
+    >
+      add New Image
+    </Button>
+  );
 
   const renderDescription = (
     <Stack spacing={2}>
       <Stack>
         <Typography>Description : </Typography>
-        <Typography>{product.description} </Typography>
+        <Typography>{medicineProduct.description} </Typography>
       </Stack>
       <Stack direction={'row'} spacing={1}>
         <Typography>medical use : </Typography>
-        <Typography>{product.medicalUse} </Typography>
+        <Typography>{medicineProduct.medicalUse} </Typography>
       </Stack>
     </Stack>
   );
+  const handleCloseUploadImage = async () => {
+    try {
+      medicines = await axios.get(`http://localhost:3000/medicine/${medicineProduct._id}`, { withCredentials: true });
+      if (medicines.result[0]) {
+        setMedicineProduct(medicines.result[0]);
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+
+    setUploadImg('');
+  };
+  if (uploadImg != '') {
+    return (
+      <Card>
+        <IconButton onClick={handleCloseUploadImage} color="primary" aria-label="back">
+          <ArrowBackIcon />
+        </IconButton>
+        <MedicineImageUpload medicineID={medicineProduct._id} />
+      </Card>
+    );
+  }
   return (
     <Card>
       <IconButton onClick={onCloseProductDetails} color="primary" aria-label="back">
@@ -98,20 +145,21 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
         <Stack direction={'row'} justifyContent={'space-between'} sx={{ width: '100%', marginLeft: 2 }}>
           {renderDescription}
           <Stack spacing={2} sx={{ marginRight: 1 }}>
-            {product._id && renderStatus}
+            {medicineProduct._id && renderStatus}
             {user === 'Pharmacist' && renderArchiveButton}
+            {user == 'Pharmacist' && renderAddNewImageButton}
           </Stack>
         </Stack>
       </Stack>
       <Stack direction={'row'} justifyContent={'space-evenly'}>
         <Stack spacing={1} sx={{ p: 3 }}>
           <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
-            {product.name}
+            {medicineProduct.name}
           </Link>
 
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pl: 2 }}>
             {/* <ColorPreview colors={['red', 'blue', 'yellow', 'green']} /> */}
-            {/* it suppose here to be product.colors */}
+            {/* it suppose here to be medicineProduct.colors */}
             {renderPrice}
           </Stack>
         </Stack>
@@ -121,7 +169,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
               items left in the stock
             </Typography>
             <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 7 }}>
-              {product.numStock}
+              {medicineProduct.numStock}
             </Typography>
           </Stack>
         )}
@@ -131,7 +179,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
               items sold
             </Typography>
             <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 4 }}>
-              {product.numSold}
+              {medicineProduct.numSold}
             </Typography>
           </Stack>
         )}

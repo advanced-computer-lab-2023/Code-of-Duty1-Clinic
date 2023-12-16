@@ -29,7 +29,7 @@ export default function OrderDetails({ order, onCLoseModal }) {
         const medicinesData = await Promise.all(
           order.items.map(async (item) => {
             const response = await axios.get(`http://localhost:3000/medicine/${item.id}`, {
-              withCredentials: true,
+              withCredentials: true
             });
             return response.data.result[0];
           })
@@ -58,7 +58,7 @@ export default function OrderDetails({ order, onCLoseModal }) {
                       backgroundColor: color === 'red' ? lightRed : lightGreen, // Light red color
                       padding: '10px',
                       borderRadius: '8px',
-                      color: color,
+                      color: color
                     }}
                   >
                     {status}
@@ -74,7 +74,7 @@ export default function OrderDetails({ order, onCLoseModal }) {
                     width: 30,
                     height: 30,
                     border: 0,
-                    borderColor: 'primary.main',
+                    borderColor: 'primary.main'
                   }}
                 ></Avatar>
                 <Stack>
@@ -101,7 +101,7 @@ export default function OrderDetails({ order, onCLoseModal }) {
                         width: 40,
                         height: 40,
                         border: 0,
-                        borderColor: 'primary.main',
+                        borderColor: 'primary.main'
                       }}
                     ></Avatar>
                   </Stack>

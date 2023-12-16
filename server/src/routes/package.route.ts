@@ -10,7 +10,7 @@ router.get('/:id', (req: Request, res: Response) => {
 });
 
 router.get('/', (req: Request, res: Response) => {
-  controller(res)(getPackages)(req.query)
+  controller(res)(getPackages)(req.query);
 });
 
 router.use(isAuthenticated);

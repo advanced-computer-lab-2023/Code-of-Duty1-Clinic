@@ -20,7 +20,7 @@ export default function DashboardLayout({ children }) {
         sx={{
           minHeight: 1,
           display: 'flex',
-          flexDirection: { xs: 'column', lg: 'row' },
+          flexDirection: { xs: 'column', lg: 'row' }
         }}
       >
         <Nav openNav={openNav} onCloseNav={() => setOpenNav(false)} />
@@ -32,5 +32,5 @@ export default function DashboardLayout({ children }) {
 }
 
 DashboardLayout.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.node
 };

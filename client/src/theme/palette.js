@@ -14,7 +14,7 @@ export const grey = {
   600: '#637381',
   700: '#454F5B',
   800: '#212B36',
-  900: '#161C24',
+  900: '#161C24'
 };
 
 export const primary = {
@@ -23,7 +23,7 @@ export const primary = {
   main: '#1877F2',
   dark: '#0C44AE',
   darker: '#042174',
-  contrastText: '#FFFFFF',
+  contrastText: '#FFFFFF'
 };
 
 export const secondary = {
@@ -32,7 +32,7 @@ export const secondary = {
   main: '#8E33FF',
   dark: '#5119B7',
   darker: '#27097A',
-  contrastText: '#FFFFFF',
+  contrastText: '#FFFFFF'
 };
 
 export const info = {
@@ -41,7 +41,7 @@ export const info = {
   main: '#00B8D9',
   dark: '#006C9C',
   darker: '#003768',
-  contrastText: '#FFFFFF',
+  contrastText: '#FFFFFF'
 };
 
 export const success = {
@@ -50,7 +50,7 @@ export const success = {
   main: '#00A76F',
   dark: '#007867',
   darker: '#004B50',
-  contrastText: '#FFFFFF',
+  contrastText: '#FFFFFF'
 };
 
 export const warning = {
@@ -59,7 +59,7 @@ export const warning = {
   main: '#FFAB00',
   dark: '#B76E00',
   darker: '#7A4100',
-  contrastText: grey[800],
+  contrastText: grey[800]
 };
 
 export const error = {
@@ -68,12 +68,12 @@ export const error = {
   main: '#FF5630',
   dark: '#B71D18',
   darker: '#7A0916',
-  contrastText: '#FFFFFF',
+  contrastText: '#FFFFFF'
 };
 
 export const common = {
   black: '#000000',
-  white: '#FFFFFF',
+  white: '#FFFFFF'
 };
 
 export const action = {
@@ -83,7 +83,7 @@ export const action = {
   disabledBackground: alpha(grey[500], 0.24),
   focus: alpha(grey[500], 0.24),
   hoverOpacity: 0.08,
-  disabledOpacity: 0.48,
+  disabledOpacity: 0.48
 };
 
 const base = {
@@ -96,7 +96,7 @@ const base = {
   grey,
   common,
   divider: alpha(grey[500], 0.2),
-  action,
+  action
 };
 
 // ----------------------------------------------------------------------
@@ -108,16 +108,16 @@ export function palette() {
     text: {
       primary: grey[800],
       secondary: grey[600],
-      disabled: grey[500],
+      disabled: grey[500]
     },
     background: {
       paper: '#FFFFFF',
       default: grey[100],
-      neutral: grey[200],
+      neutral: grey[200]
     },
     action: {
       ...base.action,
-      active: grey[600],
-    },
+      active: grey[600]
+    }
   };
 }
