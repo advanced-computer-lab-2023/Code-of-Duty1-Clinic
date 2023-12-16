@@ -13,7 +13,7 @@ const oauth2Client = new google.auth.OAuth2(
 
 const calendar = google.calendar({
     version: 'v3',
-    auth:process.env.GOOGLE_API
+    auth:process.env.API_KEY
 });
 
 const scopes = [
@@ -40,6 +40,8 @@ router.get('/google', async (req,res) => {
 });
 
 router.get('/schedule-videoCall', async (req,res) =>{
+    const {caller_gmail , callee_gmail} = req.body;
+
     await calendar.events.insert({
         calendarId : 'primary',
         auth:oauth2Client,
@@ -62,8 +64,9 @@ router.get('/schedule-videoCall', async (req,res) =>{
             },
             attendees:[{
                 email: 'aelwahussein@gmail.com'
-            },{
-                email: 'husseinhne@gmail.com'
+            },
+            {
+                email: 'abdoad941@gmail.com'
             }]
         }
     });
