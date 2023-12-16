@@ -9,28 +9,30 @@ import {
   Paper,
   Button,
   Select,
-  MenuItem
+  MenuItem,
+  Modal
 } from '@mui/material';
 import { axiosInstance } from 'src/utils/axiosInstance';
-import DetailedViewModal from './DetailedViewModal';
+import { DisplayRequests } from '../upload/displayRequests';
+import Typography from '@mui/material/Typography';
 
 const ReqTable = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDisplayRequestsModalOpen, setIsDisplayRequestsModalOpen] = useState(false);
   const url = `requests`;
 
   const fetchUsers = async () => {
     try {
       const response = await axiosInstance.get(url);
-      // Assuming each request has a 'medicID' object with 'username' and 'email'
       setUsers(response.data.result.map((req) => ({ ...req.medicID, status: req.status })));
       setFilteredUsers(response.data.result.map((req) => ({ ...req.medicID, status: req.status })));
     } catch (error) {
       console.error('Error in getting requests', error);
     }
   };
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -46,7 +48,6 @@ const ReqTable = () => {
 
   const handleReject = async (email) => {
     try {
-      console.log(email);
       await axiosInstance.put('requests/reject', { email });
       fetchUsers();
     } catch (error) {
@@ -56,7 +57,11 @@ const ReqTable = () => {
 
   const handleView = (user) => {
     setSelectedUser(user);
-    setIsModalOpen(true);
+    setIsDisplayRequestsModalOpen(true);
+  };
+
+  const handleCloseDisplayRequestsModal = () => {
+    setIsDisplayRequestsModalOpen(false);
   };
 
   const filterUsers = (status) => {
@@ -70,6 +75,17 @@ const ReqTable = () => {
 
   const handleStatusFilterChange = (event) => {
     filterUsers(event.target.value);
+  };
+
+  const modalStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '10px',
+    maxWidth: '1100px',
+    margin: 'auto',
+    borderRadius: '8px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   };
 
   return (
@@ -106,7 +122,60 @@ const ReqTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      {<DetailedViewModal user={selectedUser} open={isModalOpen} onClose={() => setIsModalOpen(false)} />}
+
+      {/* DisplayRequests Modal */}
+      <Modal
+        style={modalStyle}
+        open={isDisplayRequestsModalOpen}
+        onClose={handleCloseDisplayRequestsModal}
+        aria-labelledby="display-requests-modal"
+        aria-describedby="display-requests-modal-description"
+      >
+        <div style={{ backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden' }}>
+          {selectedUser && (
+            <div style={{ padding: '20px' }}>
+              <Typography variant="h6" sx={{ marginBottom: '20px', fontWeight: 'bold', color: '#333' }}>
+                User Details
+              </Typography>
+              <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: '1fr 1fr' }}>
+                <div>
+                  <Typography variant="body1">
+                    <strong>Username:</strong> {selectedUser.username}
+                    <br />
+                    <strong>Name:</strong> {selectedUser.name}
+                    <br />
+                    <strong>Hospital:</strong> {selectedUser.hospital}
+                    <br />
+                    <strong>Specialty:</strong> {selectedUser.specialty}
+                    <br />
+                    <strong>Gender:</strong> {selectedUser.gender}
+                    <br />
+                  </Typography>
+                </div>
+                <div>
+                  <Typography variant="body1">
+                    <strong>Phone:</strong> {selectedUser.phone}
+                    <br />
+                    <strong>Email:</strong> {selectedUser.email}
+                    <br />
+                    <strong>Status:</strong> {selectedUser.status}
+                    <br />
+                    <strong>Contract Accepted:</strong> {selectedUser.isContractAccepted ? 'Yes' : 'No'}
+                    <br />
+                    <strong>Birth Date:</strong> {new Date(selectedUser.birthDate).toLocaleDateString()}
+                    <br />
+                    <strong>Education Background:</strong> {selectedUser.educationBackground}
+                  </Typography>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {selectedUser && <div style={{ padding: '20px' }}>
+            <DisplayRequests doctorID={selectedUser._id} />
+          </div>}
+        </div>
+      </Modal>
     </>
   );
 };

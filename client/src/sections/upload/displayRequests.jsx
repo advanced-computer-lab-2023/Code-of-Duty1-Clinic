@@ -10,24 +10,35 @@ import { axiosInstance } from '../../utils/axiosInstance';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-const List = ({ field, array, doctorID }) => {
-  const [rows, setRows] = useState([]);
-
-  useEffect(() => {
-    const newRows = array?.map((item, index) => {
-      let spitedFileName = String(item).split('.');
-      let extension = spitedFileName[spitedFileName.length - 1];
-
-      return <Row key={index} doctorID={doctorID} text={index} field={field} extension={extension} />;
-    });
-
-    setRows(newRows);
-  }, [array, doctorID, field]);
-
-  return <div>{rows}</div>;
+// Inside the List component
+// Inside the List component
+const List = ({ documentType, array, doctorID }) => {
+  return (
+    <div>
+      {/* {array && array.length > 0 && <RowHeader documentType={documentType} />} */}
+      {array?.map((item, index) => {
+        let spitedFileName = String(item).split('.');
+        let extension = spitedFileName[spitedFileName.length - 1];
+        console.log(doctorID, index);
+        return <Row key={index} doctorID={doctorID} text={index} documentType={documentType} extension={extension} />;
+      })}
+    </div>
+  );
 };
 
-const Row = ({ text, doctorID, field, extension }) => {
+const RowHeader = ({ documentType }) => {
+  const rowHeaderStyle = {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    marginBottom: '5px',
+  };
+
+  return (
+    <div style={rowHeaderStyle}>{documentType}</div>
+  );
+};
+
+const Row = ({ text, doctorID, documentType, extension }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -56,21 +67,18 @@ const Row = ({ text, doctorID, field, extension }) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div style={{ flex: 1 }}>{text}</div>
+        <div style={{ flex: 1 }}>{`${documentType} ${text + 1}`}</div>
         <IconButton>{isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</IconButton>
       </div>
-      {isExpanded && <AdditionalContent doctorID={doctorID} text={text} field={field} extension={extension} />}
+      {isExpanded && <AdditionalContent doctorID={doctorID} text={text} documentType={documentType} extension={extension} />}
     </div>
   );
 };
 
-const AdditionalContent = ({ doctorID, text, field, extension }) => {
-  const [comp, setComp] = useState(<p>{text}</p>);
-  const [url, setUrl] = useState(`http://localhost:3000/upload/registration/${doctorID}/${field}/${text}`);
 
-  useEffect(() => {
-    setUrl(`http://localhost:3000/upload/registration/${doctorID}/${field}/${text}`);
-  }, []);
+const AdditionalContent = ({ doctorID, text, documentType, extension }) => {
+  const [comp, setComp] = useState();
+  const url = `http://localhost:3000/upload/registration/${doctorID}/${documentType}/${text}`;
 
   useEffect(() => {
     console.log('----------', extension, text, '----------');
@@ -99,6 +107,7 @@ const DisplayRequests = ({ doctorID }) => {
       try {
         const res = await axiosInstance.get(`/upload/doctor/registration/${doctorID}`);
         setRequests(res.data.result);
+        console.log(res.data.result);
       } catch (err) {
         console.error(err);
       }
@@ -109,62 +118,20 @@ const DisplayRequests = ({ doctorID }) => {
   const labelStyle = {
     fontSize: '18px',
     fontWeight: 'bold',
-    marginBottom: '5px'
+    marginBottom: '5px',
+    overflowY: 'auto',
   };
 
   return (
-    <div>
-      <div style={labelStyle}>ID</div>
-      <List field={'ID'} array={[requests.ID]} doctorID={doctorID} />
+    <div style={{ overflowY: 'auto', maxHeight: '50vh', maxWidth: '90vh', minWidth: '90vh' }}>
+      <div style={labelStyle}>{requests.ID ? " " : "No uploaded "} ID</div>
+      <List documentType={'ID'} array={requests.ID ? [requests.ID] : []} doctorID={doctorID} />
+      <div style={labelStyle}>{(requests.licenses && requests.licenses.length > 0) ? " " : "No uploaded "} License(s)</div>
+      <List documentType={'licenses'} array={requests.licenses} doctorID={doctorID} />
 
-      <div style={labelStyle}>Licenses</div>
-      <List field={'licenses'} array={requests.licenses} doctorID={doctorID} />
-
-      <div style={labelStyle}>Degree</div>
-      <List field={'degree'} array={requests.degree} doctorID={doctorID} />
+      <div style={labelStyle}>{(requests.degree && requests.degree.length > 0) ? " " : "No uploaded "} Degree(s)</div>
+      <List documentType={'degree'} array={requests.degree} doctorID={doctorID} />
     </div>
   );
 };
-
-const DisplayRequestsView = ({ doctorID }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  return (
-    <div>
-      <Button onClick={handleOpenModal}>Open Requests</Button>
-
-      <Modal open={isModalOpen} onClose={handleCloseModal}>
-        <Box
-          sx={{
-            // Use sx instead of style for styling with Material-UI
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%',
-            maxHeight: '80vh',
-            overflowY: 'auto',
-            backgroundColor: 'white', // Add background color if needed
-            padding: '20px', // Add padding if needed
-            boxShadow: 24, // Add box shadow if needed
-            borderRadius: '8px' // Add border radius if needed
-          }}
-        >
-          <Typography variant="h6" sx={{ marginBottom: '20px' }}>
-            Requests
-          </Typography>
-          <DisplayRequests doctorID={doctorID} />
-        </Box>
-      </Modal>
-    </div>
-  );
-};
-export { DisplayRequestsView };
+export { DisplayRequests };

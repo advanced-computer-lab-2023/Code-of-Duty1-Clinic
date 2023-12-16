@@ -47,7 +47,7 @@ uploadRouter.get('/doctor/registration/:doctorID', async (req, res) => {
 uploadRouter.get('/registration/:doctorID/:type/:fileIDX', async (req, res) => {
   const url = await getRequestFileUrl(req.params.doctorID, req.params.type, req.params.fileIDX);
   if (!url) res.status(StatusCodes.NOT_FOUND).send('url not found');
-  res.status(StatusCodes.OK).sendFile(url!);
+  else res.status(StatusCodes.OK).sendFile(url!);
 });
 
 uploadRouter.post('/doctor/registration',isAuthorized("Doctor",'Pharmacist') ,registrationUpload.fields(allowedRegistrationFields as any[]), (req, res) => {
@@ -74,7 +74,7 @@ uploadRouter.get('/pharmacist/registration/:doctorID', async (req, res) => {
 uploadRouter.get('/registration/:doctorID/:type/:fileIDX', async (req, res) => {
   const url = await getRequestFileUrl(req.params.doctorID, req.params.type, req.params.fileIDX);
   if (!url) res.status(StatusCodes.NOT_FOUND).send('url not found');
-  res.status(StatusCodes.OK).sendFile(url!);
+ else res.status(StatusCodes.OK).sendFile(url!);
 });
 
 
