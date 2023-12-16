@@ -10,6 +10,16 @@ import {
     Button,
     Modal,
     Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    TextField,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
 } from '@mui/material';
 import { axiosInstance } from 'src/utils/axiosInstance'; // Adjust the import based on your project structure
 import { DisplayRequests } from 'src/sections/upload/displayRequests';
@@ -28,12 +38,16 @@ const UsersTable = () => {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [tempUsers, setTempUsers] = useState([]);
+    const [searchField, setSearchField] = useState('name');
     const fetchUsers = async () => {
         try {
-            const response = await axiosInstance.get('/users'); // Adjust the API endpoint
+            const response = await axiosInstance.get('/users');
             console.log("7887878787878787878", response)
             setUsers(response.data.result);
+            setTempUsers(response.data.result);
         } catch (error) {
             console.error('Error fetching users', error);
         }
@@ -42,28 +56,73 @@ const UsersTable = () => {
     useEffect(() => {
         fetchUsers();
     }, []);
-
+    useEffect(() => {
+        if (searchQuery) {
+            let filteredUsers = tempUsers.filter((user) =>
+                user[searchField].toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setUsers(filteredUsers);
+        } else {
+            setUsers(tempUsers);
+        }
+    }, [searchQuery, searchField]);
     const handleView = (user) => {
         setSelectedUser(user);
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (userId) => {
+    const handleDelete = (userId) => {
+        const userToDelete = users.find((user) => user._id === userId);
+        setSelectedUser(userToDelete);
+        setIsDeleteDialogOpen(true);
+    };
+    const confirmDelete = async () => {
         try {
-            await axiosInstance.delete(`/users/${userId}`); // Adjust the API endpoint
+            await axiosInstance.delete(`/users/${selectedUser._id}`);
             fetchUsers();
         } catch (error) {
             console.error('Error deleting user', error);
+        } finally {
+            setIsDeleteDialogOpen(false);
+            setSelectedUser(null);
         }
     };
+
 
     const handleCloseModal = () => {
         setSelectedUser(null);
         setIsModalOpen(false);
     };
+    const handleCloseDeleteDialog = () => {
+        setSelectedUser(null);
+        setIsDeleteDialogOpen(false);
+    };
+
 
     return (
         <>
+            <FormControl variant="outlined" style={{ margin: '10px' }}>
+                <InputLabel id="search-field-label">Search Field</InputLabel>
+                <Select
+                    labelId="search-field-label"
+                    id="search-field"
+                    value={searchField}
+                    onChange={(e) => setSearchField(e.target.value)}
+                    label="Search Field"
+                >
+                    <MenuItem value="name">Name</MenuItem>
+                    <MenuItem value="username">Username</MenuItem>
+                    <MenuItem value="email">Email</MenuItem>
+                </Select>
+            </FormControl>
+
+            <TextField
+                label={`Search by ${searchField}`}
+                variant="outlined"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ margin: '10px' }}
+            />
             <TableContainer component={Paper}>
                 <Table aria-label="user table">
                     <TableHead>
@@ -99,8 +158,11 @@ const UsersTable = () => {
                 aria-describedby="display-requests-modal-description"
             >
                 <div style={{ backgroundColor: '#fff', borderRadius: '8px', margin: 'auto', padding: '10px' }}>
+                    <h2>User Details</h2>
+
+
                     {selectedUser && (
-                        <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: '1fr 1fr' }}>
+                        <><div style={{ display: 'grid', gap: '20px', gridTemplateColumns: '1fr 1fr' }}>
                             <div>
                                 <Typography variant="body1">
                                     <strong>Username:</strong> {selectedUser.username}
@@ -132,16 +194,16 @@ const UsersTable = () => {
                                     <strong>Education Background:</strong> {selectedUser.educationBackground}
                                 </Typography>
                             </div>
+                        </div><div>
+                                {selectedUser.role && (selectedUser.role.toLowerCase() === 'doctor' || selectedUser.role.toLowerCase() === 'pharmacist') ? (
 
+                                    <div style={{ padding: '20px' }}>
+                                        <DisplayRequests doctorID={selectedUser._id} />
+                                    </div>
 
-                            {selectedUser.role && (selectedUser.role.toLowerCase() === 'doctor' || selectedUser.role.toLowerCase() === 'pharmacist') ? (
+                                ) : null}
+                            </div></>
 
-                                <div style={{ padding: '20px' }}>
-                                    <DisplayRequests doctorID={selectedUser._id} />
-                                </div>
-
-                            ) : null}
-                        </div>
 
                     )}
                     <Button onClick={handleCloseModal} style={{ marginTop: '20px' }}>
@@ -149,6 +211,27 @@ const UsersTable = () => {
                     </Button>
                 </div>
             </Modal>
+            <Dialog open={isDeleteDialogOpen} onClose={handleCloseDeleteDialog}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete the user:
+                        <br />
+                        <strong>Name:</strong> {selectedUser?.name}
+                        <br />
+                        <strong>Email:</strong> {selectedUser?.email}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDeleteDialog} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={confirmDelete} color="primary">
+                        Confirm Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </>
     );
 };
