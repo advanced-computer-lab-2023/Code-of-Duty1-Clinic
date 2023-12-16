@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -18,6 +18,7 @@ import Label from 'src/components/label';
 import { MedicineImage } from '../upload/medicineImage';
 import 'react-toastify/dist/ReactToastify.css';
 import { MedicineImageUpload } from '../upload/medicineImageUpload';
+import ProductEdit from './product-edit';
 // ----------------------------------------------------------------------
 
 export default function ProductDetails({ product, onCloseProductDetails }) {
@@ -25,6 +26,20 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const [medicineProduct, setMedicineProduct] = useState(product);
   const [isArchived, setIsArchived] = useState(product.isArchived);
   const [uploadImg, setUploadImg] = useState('');
+  const [isEditModalOpen, setIsEditMadalOpen] = useState(false);
+  useEffect(() => {
+    const loadMedicineProduct = async () => {
+      try {
+        medicines = await axios.get(`http://localhost:3000/medicine/${product._id}`, { withCredentials: true });
+        if (medicines.result[0]) {
+          setMedicineProduct(medicines.result[0]);
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+    loadMedicineProduct();
+  }, [medicineProduct, isEditModalOpen]);
   const handleArchiveClick = async () => {
     try {
       await axios.put(
@@ -125,6 +140,18 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
 
     setUploadImg('');
   };
+  const handleOpenEditModal = () => {
+    setIsEditMadalOpen(true);
+  };
+  const handleCloseEditModal = () => {
+    setIsEditMadalOpen(false);
+  };
+  const renderEditMedicineButton = (
+    <Button variant="outlined" sx={{ textTransform: 'uppercase' }} onClick={handleOpenEditModal}>
+      Edit Medicine
+    </Button>
+  );
+  if (isEditModalOpen) return <ProductEdit onClose={handleCloseEditModal} productID={product._id} />;
   if (uploadImg != '') {
     return (
       <Card>
@@ -148,6 +175,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
             {medicineProduct._id && renderStatus}
             {user === 'Pharmacist' && renderArchiveButton}
             {user == 'Pharmacist' && renderAddNewImageButton}
+            {user == 'Pharmacist' && renderEditMedicineButton}
           </Stack>
         </Stack>
       </Stack>
