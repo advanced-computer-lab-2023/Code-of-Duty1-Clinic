@@ -34,6 +34,7 @@ const UsersTable = () => {
         margin: 'auto',
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+
     };
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -157,47 +158,71 @@ const UsersTable = () => {
                 aria-labelledby="display-requests-modal"
                 aria-describedby="display-requests-modal-description"
             >
-                <div style={{ backgroundColor: '#fff', borderRadius: '8px', margin: 'auto', padding: '10px' }}>
+                <div style={{
+                    backgroundColor: '#fff', borderRadius: '8px', margin: 'auto', padding: '15px', border: '1px solid black', alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
                     <h2>User Details</h2>
 
 
                     {selectedUser && (
-                        <><div style={{ display: 'grid', gap: '20px', gridTemplateColumns: '1fr 1fr' }}>
-                            <div>
+                        <><div style={{
+                            display: 'grid', gap: '20px', gridTemplateColumns: '1fr 1fr 1fr', alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <div style={{
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
                                 <Typography variant="body1">
                                     <strong>Username:</strong> {selectedUser.username}
                                     <br />
                                     <strong>Name:</strong> {selectedUser.name}
                                     <br />
-                                    <strong>Hospital:</strong> {selectedUser.hospital}
+                                    <strong>Email:</strong> {selectedUser.email}
                                     <br />
-                                    <strong>Specialty:</strong> {selectedUser.specialty}
+                                    <strong>Phone:</strong> {selectedUser.phone}
                                     <br />
+
+                                </Typography>
+                            </div>
+                            <div style={{
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <Typography variant="body1">
+
                                     <strong>Gender:</strong> {selectedUser.gender}
                                     <br />
                                     <strong>Role:</strong> {selectedUser.role}
                                     <br />
-                                </Typography>
-                            </div>
-                            <div>
-                                <Typography variant="body1">
-                                    <strong>Phone:</strong> {selectedUser.phone}
-                                    <br />
-                                    <strong>Email:</strong> {selectedUser.email}
-                                    <br />
-                                    <strong>Status:</strong> {selectedUser.status}
-                                    <br />
-                                    <strong>Contract Accepted:</strong> {selectedUser.isContractAccepted ? 'Yes' : 'No'}
-                                    <br />
                                     <strong>Birth Date:</strong> {new Date(selectedUser.birthDate).toLocaleDateString()}
                                     <br />
-                                    <strong>Education Background:</strong> {selectedUser.educationBackground}
                                 </Typography>
                             </div>
+                            {selectedUser.role != 'Patient' && <div>
+                                <Typography variant="body1">
+
+                                    {/* <strong>Status:</strong> {selectedUser.status}
+                                    <br /> */}
+                                    <strong>Contract Accepted:</strong> {selectedUser.isContractAccepted ? 'Yes' : 'No'}
+                                    <br />
+
+                                    <strong>Education Background:</strong> {selectedUser.educationBackground}
+                                    <br />
+                                    <strong>Hospital:</strong> {selectedUser.hospital}
+                                    <br />
+                                    <strong>Specialty:</strong> {selectedUser.specialty}
+                                    <br />
+                                </Typography>
+                            </div>}
                         </div><div>
                                 {selectedUser.role && (selectedUser.role.toLowerCase() === 'doctor' || selectedUser.role.toLowerCase() === 'pharmacist') ? (
 
-                                    <div style={{ padding: '20px' }}>
+                                    <div style={{
+                                        padding: '5px', alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}>
                                         <DisplayRequests doctorID={selectedUser._id} />
                                     </div>
 
