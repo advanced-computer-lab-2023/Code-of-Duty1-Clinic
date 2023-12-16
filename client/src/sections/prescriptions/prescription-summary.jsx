@@ -349,7 +349,7 @@ export default function PrescriptionSummary({
       <button
         style={{
           padding: '10px 20px',
-          borderRadius: '4px',
+          borderRadius: '10px',
           border: 'none',
           backgroundColor: '#007bff',
           color: '#fff',
