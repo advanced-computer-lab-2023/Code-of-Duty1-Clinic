@@ -22,7 +22,8 @@ import {
   medicineRouter,
   prescriptionRouter,
   reportRouter,
-  notificationRouter
+  notificationRouter,
+  videoRouter
 } from './routes';
 import { StatusCodes } from 'http-status-codes';
 
@@ -70,6 +71,7 @@ app.use('/upload', uploadRouter);
 app.use('/prescription', prescriptionRouter);
 app.use('/report', reportRouter);
 app.use('/notifications', notificationRouter);
+app.use('/video-permission',videoRouter);
 
 app.all('*', (req: Request, res: Response) => res.status(404).send('Path Not Found'));
 
