@@ -21,6 +21,8 @@ const ReqTable = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isDisplayRequestsModalOpen, setIsDisplayRequestsModalOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState('all');
   const url = `requests`;
 
   const fetchUsers = async () => {
@@ -63,25 +65,43 @@ const ReqTable = () => {
   const handleCloseDisplayRequestsModal = () => {
     setIsDisplayRequestsModalOpen(false);
   };
-
-  const filterUsers = (status) => {
-    if (status === 'all') {
-      setFilteredUsers(users);
-    } else {
-      const filtered = users.filter((user) => user.status.toString().toLowerCase() === status.toString().toLowerCase());
-      setFilteredUsers(filtered);
+  const filterUsers = () => {
+    let filtered = users;
+    console.log(filtered);
+    if (statusFilter !== 'all' && (roleFilter !== 'all')) {
+      filtered = users.filter((user) => user.status &&
+        user.role && user.status.toLowerCase() === statusFilter.toLowerCase() &&
+        user.role.toLowerCase() === roleFilter.toLowerCase());
     }
+    else if (statusFilter !== 'all') {
+      filtered = users.filter((user) => user.status && user.status.toLowerCase() === statusFilter.toLowerCase());
+    }
+
+    else if (roleFilter !== 'all') {
+      filtered = users.filter((user) => user.role && user.role.toLowerCase() === roleFilter.toLowerCase());
+    }
+
+    setFilteredUsers(filtered);
   };
 
+
+  useEffect(() => {
+    filterUsers();
+  }, [statusFilter, roleFilter]);
+
   const handleStatusFilterChange = (event) => {
-    filterUsers(event.target.value);
+    setStatusFilter(event.target.value);
+  };
+
+  const handleRoleFilterChange = (event) => {
+    setRoleFilter(event.target.value);
   };
 
   const modalStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '10px',
+    padding: '20px',
     maxWidth: '1100px',
     margin: 'auto',
     borderRadius: '8px',
@@ -90,11 +110,17 @@ const ReqTable = () => {
 
   return (
     <>
-      <Select defaultValue="all" onChange={handleStatusFilterChange}>
-        <MenuItem value="all">All</MenuItem>
+      <Select value={statusFilter} onChange={handleStatusFilterChange}>
+        <MenuItem value="all">All Status</MenuItem>
         <MenuItem value="pending">Pending</MenuItem>
-        <MenuItem value="accepted">Approved</MenuItem>
+        <MenuItem value="approved">Approved</MenuItem>
         <MenuItem value="rejected">Rejected</MenuItem>
+      </Select>
+      <Select value={roleFilter} onChange={handleRoleFilterChange}>
+        <MenuItem value="all">All Roles</MenuItem>
+        <MenuItem value="doctor">Doctor</MenuItem>
+        <MenuItem value="pharmacist">pharmacist</MenuItem>
+        {/* Add other roles as needed */}
       </Select>
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
@@ -102,6 +128,7 @@ const ReqTable = () => {
             <TableRow>
               <TableCell>Username</TableCell>
               <TableCell align="right">Status</TableCell>
+              <TableCell align="right">Role</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -112,6 +139,7 @@ const ReqTable = () => {
                   {user.username}
                 </TableCell>
                 <TableCell align="right">{user.status}</TableCell>
+                <TableCell align="right">{user.role}</TableCell>
                 <TableCell align="right">
                   {user.status === 'Pending' && <Button onClick={() => handleAccept(user.email)}>Accept</Button>}
                   {user.status === 'Pending' && <Button onClick={() => handleReject(user.email)}>Reject</Button>}
@@ -149,6 +177,8 @@ const ReqTable = () => {
                     <strong>Specialty:</strong> {selectedUser.specialty}
                     <br />
                     <strong>Gender:</strong> {selectedUser.gender}
+                    <br />
+                    <strong>Role:</strong> {selectedUser.role}
                     <br />
                   </Typography>
                 </div>
