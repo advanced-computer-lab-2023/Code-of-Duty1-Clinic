@@ -13,7 +13,8 @@ import {
   getMedicalHistoryURL,
   getMedicalHistory,
   getAllRequests,
-  getRequestFileUrl
+  getRequestFileUrl,
+  didUploadBefore,
 } from '../services';
 import { medicineUpload } from '../middlewares';
 import { saveImage, getImageURL } from '../services';
@@ -88,6 +89,9 @@ uploadRouter.post(
 uploadRouter.get('/pharmacist/registration/',isAuthorized("Pharmacist",'Admin'), async (req, res) => {
   controller(res)(getAllRequests)(req.decoded.id);
 });
+uploadRouter.get('/uploads', isAuthorized('Pharmacist', 'Doctor'), (req, res) => { 
+  controller(res)(didUploadBefore)(req.decoded.id);
+})
 uploadRouter.use((err: any, req: Request, res: Response,next: NextFunction) => {
   if (err instanceof multer.MulterError) {
     res.status(500).send(err.message);
