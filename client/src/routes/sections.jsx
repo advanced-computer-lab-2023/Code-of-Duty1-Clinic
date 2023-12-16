@@ -26,7 +26,7 @@ export const AddFamilyPage = lazy(() => import('src/pages/addFamily'));
 export const FamilyPage = lazy(() => import('src/pages/family'));
 export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
-export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
+// export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
 export const MedicalHistoryPage = lazy(() => import('src/pages/medical-history'));
 
 export const CartPage = lazy(() => import('src/pages/cart'));
@@ -60,7 +60,7 @@ export default function Router() {
         { path: 'requests', element: <RequestsPage /> },
         { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
         { path: '/medical-history', element: <MedicalHistoryPage /> },
-        { path: 'requests-list', element: <RequestsListPage /> },
+        // { path: 'requests-list', element: <RequestsListPage /> },
         { path: 'patients', element: <PatientsPage /> },
         { path: 'health-record/:patientID', element: <HealthRecordPage /> },
         { path: 'health-record', element: <HealthRecordPage /> },
