@@ -17,13 +17,15 @@ import {
   DialogContent,
   TextField,
   DialogActions,
-  Modal,
   Dialog
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { axiosInstance } from 'src/utils/axiosInstance';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 export default function CartComponent() {
   const navigate = useNavigate();
@@ -157,8 +159,8 @@ export default function CartComponent() {
     setAddress(event.target.value);
     // Add your logic for handling the selected address
   };
-  const handleCashPayment = () => {
-    axiosInstance
+  const handleCashPayment = async () => {
+    await axiosInstance
       .post('/orders', {
         paymentType: 'Cash',
         address
@@ -167,8 +169,30 @@ export default function CartComponent() {
   };
   const handleAddNewAddress = () => {
     // Add logic to save the new address (e.g., send to the server)
-    setAddresses((prevAddresses) => [...prevAddresses, newAddress]);
+    if (!addresses) {
+      setAddresses([newAddress]);
+    } else {
+      setAddresses([...addresses, newAddress]);
+    }
     setIsModalOpen(false);
+  };
+  const handleWalletPayment = async (amount) => {
+    try {
+      await axios.put('http://localhost:3000/me/wallet', { amount }, { withCredentials: true });
+      toast.success('Payment done successfully!', {
+        position: toast.POSITION.TOP_RIGHT
+      });
+      await axiosInstance
+        .post('/orders', {
+          paymentType: 'Wallet',
+          address
+        })
+        .then((res) => navigate('/orders'));
+    } catch (error) {
+      toast.error('insuffcient amount of money in the wallet', {
+        position: toast.POSITION.TOP_RIGHT
+      });
+    }
   };
   const NewAddressModal = (
     <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -183,7 +207,13 @@ export default function CartComponent() {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
+        <Button
+          onClick={() => {
+            setIsModalOpen(false);
+          }}
+        >
+          Cancel
+        </Button>
         <Button onClick={handleAddNewAddress} color="primary">
           Add
         </Button>
@@ -272,7 +302,12 @@ export default function CartComponent() {
           <Button onClick={handleCheckout} disabled={!address || address == 'Add New Address'}>
             pay with credit
           </Button>
-          <Button disabled={!address || address == 'Add New Address'}>pay with wallet</Button>
+          <Button
+            disabled={!address || address == 'Add New Address'}
+            onClick={() => handleWalletPayment(totalPrice * -1)}
+          >
+            pay with wallet
+          </Button>
           <Button onClick={handleCashPayment} disabled={!address || address == 'Add New Address'}>
             pay with cash
           </Button>
