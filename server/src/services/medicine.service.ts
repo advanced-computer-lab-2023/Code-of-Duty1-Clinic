@@ -4,7 +4,8 @@ import { Medicine } from '../models';
 import { IMedicine } from '../models/medicine.model';
 import { HttpError } from '../utils';
 import path from 'path';
-const getMedicines = async (query: Object) => {
+const getMedicines = async (query: any) => {
+  if (query.name) query.name = new RegExp(query.name, 'i');
   const medicines = await Medicine.find(query);
   if (!medicines) throw new HttpError(StatusCodes.NOT_FOUND, 'No medicine found');
 
