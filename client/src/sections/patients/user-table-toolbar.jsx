@@ -11,7 +11,14 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({ numSelected, filterName, onFilterName }) {
+export default function UserTableToolbar({
+  numSelected,
+  filterName,
+  onFilterName,
+  upcomingAppointments,
+  setUpcomingAppointments,
+  fetchMyPatients
+}) {
   return (
     <Toolbar
       sx={{
@@ -49,11 +56,27 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
-        </Tooltip>
+        <button
+          style={{
+            padding: '10px 20px',
+            borderRadius: '10px',
+            border: 'none',
+            backgroundColor: upcomingAppointments ? '#0000FF' : '#E9E9E9',
+            color: '#fff',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            margin: '10px 0',
+            boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+            transition: 'background-color 0.3s ease'
+          }}
+          onClick={() => {
+            setUpcomingAppointments(!upcomingAppointments);
+            fetchMyPatients();
+          }}
+        >
+          Upcoming Patients
+        </button>
       )}
     </Toolbar>
   );
@@ -62,5 +85,8 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
 UserTableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
-  onFilterName: PropTypes.func
+  onFilterName: PropTypes.func,
+  upcomingAppointments: PropTypes.bool,
+  setUpcomingAppointments: PropTypes.func,
+  fetchMyPatients: PropTypes.func
 };
