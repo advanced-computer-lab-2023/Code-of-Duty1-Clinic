@@ -74,7 +74,7 @@ export default function RegisterView() {
 
       const data = await res.json();
 
-      if (res.ok) router.push('/upload-document');
+      if (res.ok) router.push('/login');
       else setError(data.message);
     } catch (e) {
       console.log(e);
@@ -249,7 +249,7 @@ export default function RegisterView() {
                         error={!!errors?.educationBackground}
                         helperText={errors?.educationBackground ? 'Required' : null}
                       />
-                      <RegistrationUpload />
+                      {/* <RegistrationUpload /> */}
                     </>
                   )}
                 </Stack>
