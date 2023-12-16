@@ -10,7 +10,7 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const AppointmentsPage = lazy(() => import('src/pages/appointments'));
 export const DoctorsPage = lazy(() => import('src/pages/doctors'));
 export const PatientsPage = lazy(() => import('src/pages/patients'));
-export const RequestsPage = lazy(() => import('src/pages/users'));
+export const RequestsPage = lazy(() => import('src/pages/requests'));
 export const ContractPage = lazy(() => import('src/pages/contract'));
 export const AddSlotsOrAppointmentPage = lazy(() => import('src/pages/addSlotsOrAppointment'));
 export const LoginPage = lazy(() => import('src/pages/login'));
@@ -36,8 +36,9 @@ export const MedicineImageUploadPage = lazy(() => import('src/pages/uploadMedici
 export const ViewMedicineImage = lazy(() => import('src/pages/view-medicine-image'));
 export const AddressesPage = lazy(() => import('src/pages/addresses'));
 export const ViewChat = lazy(() => import('src/pages/textChat'));
-
+export const UsersPage = lazy(() => import('src/pages/users'));
 export const ReportPage = lazy(() => import('src/pages/report'));
+export const AddAdminPage = lazy(() => import('src/pages/addAdmin'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -82,6 +83,9 @@ export default function Router() {
         { path: 'addresses', element: <AddressesPage /> },
         { path: 'chat', element: <ViewChat /> },
         { path: 'report', element: <ReportPage /> },
+        { path: 'users', element: <UsersPage /> },
+        { path: 'add-admin', element: <AddAdminPage /> }
+
       ]
     },
     {

@@ -124,13 +124,15 @@ const DisplayRequests = ({ doctorID }) => {
 
   return (
     <div style={{ overflowY: 'auto', maxHeight: '50vh', maxWidth: '90vh', minWidth: '90vh' }}>
-      <div style={labelStyle}>{requests.ID ? " " : "No uploaded "} ID</div>
-      <List documentType={'ID'} array={requests.ID ? [requests.ID] : []} doctorID={doctorID} />
-      <div style={labelStyle}>{(requests.licenses && requests.licenses.length > 0) ? " " : "No uploaded "} License(s)</div>
-      <List documentType={'licenses'} array={requests.licenses} doctorID={doctorID} />
-
-      <div style={labelStyle}>{(requests.degree && requests.degree.length > 0) ? " " : "No uploaded "} Degree(s)</div>
-      <List documentType={'degree'} array={requests.degree} doctorID={doctorID} />
+      {requests &&
+        (<>
+          <div style={labelStyle}>{requests.ID ? " " : "No uploaded "} ID</div>
+          <List documentType={'ID'} array={requests.ID ? [requests.ID] : []} doctorID={doctorID} />
+          <div style={labelStyle}>{(requests.licenses && requests.licenses.length > 0) ? " " : "No uploaded "} License(s)</div>
+          <List documentType={'licenses'} array={requests.licenses} doctorID={doctorID} />
+          <div style={labelStyle}>{(requests.degree && requests.degree.length > 0) ? " " : "No uploaded "} Degree(s)</div>
+          <List documentType={'degree'} array={requests.degree} doctorID={doctorID} /></>
+        )}
     </div>
   );
 };
