@@ -97,7 +97,7 @@ const viewAvailableAppointments = async (doctorID: string) => {
           0
         );
 
-        const price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute) / 60));
+        const price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute + 1) / 60));
 
         const id = uuidv4();
 
@@ -127,7 +127,7 @@ const getDoctors = async (query: any) => {
   if (newQuery.specialty) newQuery.specialty = new RegExp(newQuery.specialty, 'i');
   if (newQuery.name) newQuery.name = new RegExp(newQuery.name, 'i');
 
-  let doctors: IDoctor[] = await Doctor.find(newQuery); // .find({ isContractAccepted: true });
+  let doctors: IDoctor[] = await Doctor.find(newQuery).find({ isContractAccepted: true });
 
   if (date) {
     date = new Date(date);

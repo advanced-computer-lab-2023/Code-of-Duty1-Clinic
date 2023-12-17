@@ -31,9 +31,20 @@ export default function PackageView() {
     isLoading: isLoadingPackages,
     error,
     data: userPackages
-  } = useQuery('packages', () => axiosInstance.get('/packages').then((res) => res.data.result), {
-    refetchOnWindowFocus: false
-  });
+  } = useQuery(
+    'packages',
+    () =>
+      axiosInstance
+        .get('/packages')
+        .then((res) => res.data.result)
+        .catch((err) => {
+          setMessage(err.response?.data.message || 'Network error');
+          setOpenSnackbar(true);
+        }),
+    {
+      refetchOnWindowFocus: false
+    }
+  );
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedPackage, setPackage] = useState({});
@@ -57,7 +68,7 @@ export default function PackageView() {
           products: [{ name: selectedPackage.name, price: selectedPackage.price, quantity: 1 }]
         });
 
-        await axiosInstance.post('/me/package', { packageID: selectedPackage._id, patientID: selectedUser.id });
+        await axiosInstance.post(`patients/${selectedUser.id}/package`, { packageID: selectedPackage._id });
 
         window.location.href = res.data.url;
       } else {
@@ -65,7 +76,7 @@ export default function PackageView() {
           amount: -selectedPackage.sessionPrice
         });
 
-        await axiosInstance.post('/me/package', { packageID: selectedPackage._id, patientID: selectedUser.id });
+        await axiosInstance.post(`patients/${selectedUser.id}/package`, { packageID: selectedPackage._id });
 
         router.push('/viewPackage');
       }

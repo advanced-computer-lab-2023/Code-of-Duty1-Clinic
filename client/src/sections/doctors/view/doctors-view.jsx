@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery, useMutation } from 'react-query';
 import { useState } from 'react';
 
 import Stack from '@mui/material/Stack';
@@ -14,11 +14,7 @@ import DoctorCard from '../doctor-card';
 import { axiosInstance } from '../../../utils/axiosInstance';
 
 export default function DoctorsView() {
-  const {
-    isLoading,
-    error,
-    data: doctors
-  } = useQuery(
+  const { isLoading, error, data } = useQuery(
     'doctors',
     () =>
       axiosInstance.get(`/doctors`).then((res) => {
@@ -38,19 +34,6 @@ export default function DoctorsView() {
   if (isLoading) return 'Loading...';
   if (error) return 'An error has occurred: ' + error.message;
 
-  const onSearch = async (filters) => {
-    const params = {};
-
-    if (filters.name) params.name = filters.name;
-    if (filters.specialty) params.specialty = filters.specialty;
-    if (filters.date) params.date = filters.date;
-
-    axiosInstance
-      .get(`/doctors`, { params })
-      .then((res) => setFilteredDoctors(res.data.result))
-      .catch((err) => console.log(err));
-  };
-
   let i = 0;
   return (
     <Container>
@@ -59,18 +42,19 @@ export default function DoctorsView() {
       </Typography>
 
       <Card sx={{ mb: 2 }}>
-        <DoctorFilter onSearch={onSearch} />
+        <DoctorFilter setFilteredDoctors={setFilteredDoctors} />
       </Card>
 
       <Grid container spacing={3}>
-        {filteredDoctors &&
-          filteredDoctors.map((doctor) => {
-            return (
-              <Grid key={doctor._id} item xs={12} md={12} sm={12}>
-                <DoctorCard i={i++} doctor={doctor} />
-              </Grid>
-            );
-          })}
+        {filteredDoctors
+          ? filteredDoctors.map((doctor) => {
+              return (
+                <Grid key={doctor._id} item xs={12} md={12} sm={12}>
+                  <DoctorCard i={i++} doctor={doctor} />
+                </Grid>
+              );
+            })
+          : null}
       </Grid>
     </Container>
   );

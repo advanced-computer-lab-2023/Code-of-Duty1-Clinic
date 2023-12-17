@@ -40,7 +40,7 @@ export default function DoctorCard({ i, doctor }) {
   return (
     <Card type="section">
       <Stack direction={'row'} spacing={0} mx={3} my={4}>
-        <Box alignItems="center" justifyContent="center">
+        <Stack alignItems="center" justifyContent="center">
           <Avatar
             alt="User Img"
             src="assets/images/avatars/avatar_13.jpg"
@@ -51,7 +51,7 @@ export default function DoctorCard({ i, doctor }) {
               borderColor: 'primary.main'
             }}
           />
-        </Box>
+        </Stack>
 
         <Stack
           sx={{ width: { xs: '100%', sm: '30%' }, ml: { xs: '0', sm: '50px' }, mr: { xs: '0', sm: '20px' } }}
@@ -72,59 +72,79 @@ export default function DoctorCard({ i, doctor }) {
           </Typography>
         </Stack>
 
-        <Button
-          variant="contained"
-          onClick={() => {
-            setCheck((prev) => !prev);
-            setTimeout(() => {
-              setDisplayedDays((prev) => prev - 3);
-              setCheck((prev) => !prev);
-            }, 400);
-          }}
-          sx={{
-            borderRadius: '50%', // Make the button circular
-            width: '40px', // Set a fixed width for a smaller size
-            height: '40px', // Set a fixed height for a smaller size
-            minWidth: 'unset', // Remove minimum width
-            padding: '0' // Remove default padding
-          }}
+        <Stack
+          direction={'row'}
+          spacing={1}
+          alignItems="center"
+          justifyContent="center"
+          sx={{ position: 'relative', width: '85%' }}
         >
-          <Iconify icon="system-uicons:backward" sx={{ mr: 2 }} />
-        </Button>
-        <Slide in={check} direction="left" timeout={500} appear={false}>
-          <Stack direction={'row'} spacing={1} alignItems="center" justifyContent="center" sx={{ width: '30%' }}>
-            {Object.keys(weekSlots)
-              .slice(displayedDays, displayedDays + 3)
-              .map((day) => (
-                <DoctorDaySlots
-                  key={ii++}
-                  day={day}
-                  slots={weekSlots[day]}
-                  doctorID={doctor._id}
-                  doctorName={doctor.name}
-                />
-              ))}
-          </Stack>
-        </Slide>
-        <Button
-          variant="contained"
-          onClick={() => {
-            setCheck((prev) => !prev);
-            setTimeout(() => {
-              setDisplayedDays((prev) => prev + 3);
+          {/* Backward Navigation Button */}
+          <Button
+            variant="contained"
+            onClick={() => {
               setCheck((prev) => !prev);
-            }, 400);
-          }}
-          sx={{
-            borderRadius: '50%', // Make the button circular
-            width: '40px', // Set a fixed width for a smaller size
-            height: '40px', // Set a fixed height for a smaller size
-            minWidth: 'unset', // Remove minimum width
-            padding: '0' // Remove default padding
-          }}
-        >
-          <Iconify icon="system-uicons:forward" sx={{ mr: 2 }} />
-        </Button>
+              setTimeout(() => {
+                setDisplayedDays((prev) => prev - 3);
+                setCheck((prev) => !prev);
+              }, 400);
+            }}
+            disabled={displayedDays === 0}
+            sx={{
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              minWidth: 'unset',
+              padding: '0',
+              position: 'absolute', // Fix the position
+              left: 0 // Align to the left of the parent Stack
+            }}
+          >
+            <Iconify icon="system-uicons:backward" sx={{ mx: 1 }} />
+          </Button>
+
+          {/* Sliding Component with DoctorDaySlots */}
+          <Slide in={check} direction="left" timeout={500} appear={false}>
+            <Stack direction={'row'} spacing={1} alignItems="center" justifyContent="center">
+              {Object.keys(weekSlots)
+                .slice(displayedDays, displayedDays + 3)
+                .map((day) => (
+                  <DoctorDaySlots
+                    key={ii++}
+                    day={day}
+                    slots={weekSlots[day]}
+                    doctorID={doctor._id}
+                    doctorName={doctor.name}
+                  />
+                ))}
+            </Stack>
+          </Slide>
+
+          {/* Forward Navigation Button */}
+          <Button
+            variant="contained"
+            onClick={() => {
+              setCheck((prev) => !prev);
+              setTimeout(() => {
+                setDisplayedDays((prev) => prev + 3);
+                setCheck((prev) => !prev);
+              }, 400);
+            }}
+            disabled={displayedDays === 6}
+            sx={{
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              minWidth: 'unset',
+              padding: '0',
+              position: 'absolute', // Fix the position
+              left: 'auto', // Reset left to its default value
+              right: 0 // Align to the right of the parent Stack
+            }}
+          >
+            <Iconify icon="system-uicons:forward" sx={{ mx: 1 }} />
+          </Button>
+        </Stack>
       </Stack>
     </Card>
   );

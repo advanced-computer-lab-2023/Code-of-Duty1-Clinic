@@ -122,8 +122,8 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
         sx={{
           border: 1,
           // borderColor: 'primary.main',
-          height: '150px',
-          width: '80%'
+          height: '170px',
+          width: '8em'
         }}
       >
         <Typography variant="h5" sx={{ mx: 1 }}>
@@ -137,7 +137,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
             borderColor: 'primary.gray',
             height: '180px',
             width: '100%',
-            overflowY: 'hidden',
+            overflowY: 'auto',
             overflowX: 'hidden',
             '&::-webkit-scrollbar': {
               width: '6px'
@@ -147,9 +147,6 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
             },
             '&::-webkit-scrollbar-track': {
               backgroundColor: 'transparent'
-            },
-            '&:hover': {
-              overflowY: 'auto'
             }
           }}
         >
@@ -185,7 +182,9 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
         <DialogTitle>Book and Pay</DialogTitle>
         <DialogContent>
           <Stack alignItems="center" justifyContent="center">
-            <DialogContentText>To book this appointment, please Choose for whom you want to book.</DialogContentText>
+            <DialogContentText sx={{ mt: 1 }}>
+              To book this appointment, please choose for whom you want to book.
+            </DialogContentText>
 
             <TextField
               select
@@ -210,14 +209,11 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
               ))}
             </TextField>
 
-            <Typography variant="h6" sx={{ my: 1 }}>
-              Pay With:
-            </Typography>
+            <Typography variant="h6">Pay With:</Typography>
             <ToggleButtonGroup
               onChange={(event, newAlignment) => setAlignment(newAlignment)}
               value={alignment}
               exclusive
-              aria-label="text alignment"
             >
               <ToggleButton value="Wallet" aria-label="left aligned">
                 Wallet
@@ -226,6 +222,9 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
                 Credit Card
               </ToggleButton>
             </ToggleButtonGroup>
+            <Typography variant="h6" color={'green'} sx={{ mt: 5 }}>
+              Total Price: {slot.sessionPrice} USD
+            </Typography>
           </Stack>
         </DialogContent>
         <DialogActions>

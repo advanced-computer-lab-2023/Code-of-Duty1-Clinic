@@ -80,7 +80,7 @@ const AddSlotsForm = () => {
           </Typography>
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={2}>
+            <Stack spacing={2} alignItems="center" justifyContent="center">
               <TextField
                 select
                 label="Day of the Week"
@@ -117,8 +117,15 @@ const AddSlotsForm = () => {
                 margin="normal"
               />
 
-              <Button type="submit" variant="contained" color="inherit" disabled={loading} fullWidth sx={{ mt: 2 }}>
-                {loading ? 'Adding...' : 'Add Slots'}
+              <Button
+                type="submit"
+                variant="contained"
+                color="inherit"
+                disabled={loading}
+                fullWidth
+                sx={{ mt: 1, width: '50%', height: '45px' }}
+              >
+                {loading ? 'Adding...' : 'Add Slot'}
               </Button>
             </Stack>
           </form>
