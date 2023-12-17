@@ -16,6 +16,10 @@ export default function PrescriptionView({ patientID }) {
   console.log(user);
 
   const [prescriptions, setPrescriptions] = useState([]);
+  const [doctorFilter, setDoctorFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+  const [filledFilter, setFilledFilter] = useState(false);
+  const [nonFilledFilter, setNonFilledFilter] = useState(false);
 
   const fetchPrescriptions = async () => {
     try {
@@ -83,6 +87,22 @@ export default function PrescriptionView({ patientID }) {
   const medicinesListNames = medicinesList.map((medicine) => medicine.name);
   console.log(medicinesListNames);
 
+  const filterPrescriptions = (prescription) => {
+    const doctorNameMatch = prescription.doctorID.name.toLowerCase().includes(doctorFilter.toLowerCase());
+    const dateMatch = prescription.dateIssued.slice(0, 10).includes(dateFilter);
+    if (filledFilter) {
+      return doctorNameMatch && dateMatch && prescription.isFilled;
+    } else if (nonFilledFilter) {
+      return doctorNameMatch && dateMatch && !prescription.isFilled;
+    } else {
+      return doctorNameMatch && dateMatch;
+    }
+  };
+
+  const filteredPrescriptions = prescriptions.filter(filterPrescriptions);
+  console.log('filteredPrescriptions');
+  console.log(filteredPrescriptions);
+
   if (user !== 'Patient' && user !== 'Doctor')
     return (
       <Container>
@@ -126,9 +146,83 @@ export default function PrescriptionView({ patientID }) {
         <Typography variant="h4" sx={{ mb: 5 }}>
           Prescriptions
         </Typography>
-
+        {/*filter here*/}
+        {user === 'Patient' && (
+          <div>
+            <Box sx={{ display: 'flex', flexDirection: 'row', gap: '16px' }}>
+              <TextField
+                id="doctorFilter"
+                label="Doctor Name"
+                variant="outlined"
+                value={doctorFilter}
+                onChange={(event) => {
+                  setDoctorFilter(event.target.value);
+                  console.log(doctorFilter);
+                }}
+              />
+              <TextField
+                id="dateFilter"
+                label="Date"
+                variant="outlined"
+                value={dateFilter}
+                onChange={(event) => {
+                  setDateFilter(event.target.value);
+                  console.log(dateFilter);
+                }}
+              />
+              <button
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  backgroundColor: filledFilter ? '#007bff' : '#A9BAB1',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  margin: '10px 0',
+                  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+                  transition: 'background-color 0.3s ease'
+                }}
+                onClick={() => {
+                  console.log(filledFilter);
+                  if (!filledFilter) {
+                    setNonFilledFilter(false);
+                  }
+                  setFilledFilter(!filledFilter);
+                }}
+              >
+                Filled
+              </button>
+              <button
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  backgroundColor: nonFilledFilter ? '#007bff' : '#A9BAB1',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  margin: '10px 0',
+                  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+                  transition: 'background-color 0.3s ease'
+                }}
+                onClick={() => {
+                  if (!nonFilledFilter) {
+                    setFilledFilter(false);
+                  }
+                  setNonFilledFilter(!nonFilledFilter);
+                }}
+              >
+                Non Filled
+              </button>
+            </Box>
+            <br />
+          </div>
+        )}
         <Grid container spacing={3}>
-          {prescriptions.map((prescription) => (
+          {filteredPrescriptions.map((prescription) => (
             <Grid item xs={12} md={6} lg={4} key={prescription._id}>
               <PrescriptionSummary
                 prescriptionID={prescription._id}

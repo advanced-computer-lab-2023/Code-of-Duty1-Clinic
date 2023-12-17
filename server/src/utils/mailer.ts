@@ -25,8 +25,12 @@ const sendEmail = async (to: string, subject: string, text: string) => {
     subject,
     text
   };
-
-  await transporter.sendMail(mailOptions);
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (e) { 
+    console.log(e);
+  };
+  
 };
 
 const sendResetPasswordEmail = async (to: string, otp: string) => {

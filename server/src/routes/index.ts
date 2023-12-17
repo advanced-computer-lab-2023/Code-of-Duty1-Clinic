@@ -14,6 +14,7 @@ import medicineRouter from './medicine.route';
 import notificationRouter from './notification.route';
 import prescriptionRouter from './prescription.route';
 import reportRouter from './report.route';
+import videoRouter from './video.route'
 
 export {
   authRouter,
@@ -32,6 +33,7 @@ export {
   notificationRouter,
   prescriptionRouter,
   reportRouter,
+  videoRouter
 };
 
 // export * from './auth.route';

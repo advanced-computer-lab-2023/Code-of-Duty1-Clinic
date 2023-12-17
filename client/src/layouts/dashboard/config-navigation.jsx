@@ -140,6 +140,16 @@ const navConfig = [
     title: 'report',
     path: '/report',
     icon: icon('ic_analytics')
+  },
+  {
+    title: 'users',
+    path: '/users',
+    icon: icon('ic_analytics')
+  },
+  {
+    title: 'add-admin',
+    path: '/add-admin',
+    icon: icon('ic_analytics')
   }
 ];
 
