@@ -24,12 +24,12 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
   const today = daysOfWeek[new Date().getDay()];
   if (today == day) day = 'Today';
 
-  const user = { _id: localStorage.getItem('userID'), name: localStorage.getItem('userName') };
+  const user = { _id: localStorage.getItem('userID'), name: localStorage.getItem('userName'), email: localStorage.getItem('userEmail') };
 
   const [openModal, setOpenModal] = useState(false);
   const [slot, setSlot] = useState({});
   const [family, setFamily] = useState([]);
-  const [selectedUser, setSelectedUser] = useState({ id: '', name: '' });
+  const [selectedUser, setSelectedUser] = useState({ id: '', name: '', email: '' });
   const [alignment, setAlignment] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [message, setMessage] = useState('');
@@ -49,7 +49,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
 
   const handleSelectUser = (e, option) => {
     if (option.nationalID) option._id = user._id;
-    setSelectedUser({ id: option._id, name: option.name });
+    setSelectedUser({ id: option._id, name: option.name, email: user.email });
   };
 
   const createAppointment = async () => {
@@ -63,7 +63,8 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
       patientName: selectedUser.name,
       startDate: slot.startDate,
       endDate: slot.endDate,
-      sessionPrice: slot.sessionPrice
+      sessionPrice: slot.sessionPrice,
+      patientEmail: selectedUser.email,
     });
   };
 
@@ -80,8 +81,8 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
             {
               name: `Appointment with Dr. ${doctorName} on ${new Date(slot.startDate).toString().slice(0, 16)}
               from ${new Date(slot.startDate).toString().slice(16, 31)} to ${new Date(slot.endDate)
-                .toString()
-                .slice(16, 31)}`,
+                  .toString()
+                  .slice(16, 31)}`,
               price: slot.sessionPrice,
               quantity: 1
             }

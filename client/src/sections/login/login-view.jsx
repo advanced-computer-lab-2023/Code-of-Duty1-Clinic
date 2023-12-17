@@ -57,6 +57,7 @@ export default function LoginView() {
         localStorage.setItem('userName', user.name);
         localStorage.setItem('userId', user._id);
         localStorage.setItem('userRole', user.role);
+        localStorage.setItem('userEmail', user.email);
         let target = destination;
         if (user.role != 'Patient' && user.role != 'Admin') {
           let response = await axiosInstance.get('upload/uploads');
