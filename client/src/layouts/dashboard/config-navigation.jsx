@@ -30,6 +30,12 @@ const navConfig = [
     path: '/viewPackage',
     icon: icon('ic_cart')
   },
+
+  {
+    title: 'Manage packages',
+    path: '/packages-admin',
+    icon: icon('ic_cart')
+  },
   {
     title: 'blog',
     path: '/blog',
@@ -144,8 +150,7 @@ const navConfig = [
     title: 'add-admin',
     path: '/add-admin',
     icon: icon('ic_analytics')
-  },
-
+  }
 ];
 
 export default navConfig;

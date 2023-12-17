@@ -17,44 +17,6 @@ const getMyPatients = async (query: any) => {
   };
 };
 
-const calculateTimeStamp = (slot: { hours: number; minutes: number }) => slot.hours * 60 + slot.minutes;
-
-const getDoctors = async (query: any) => {
-  let { date, ...newQuery } = query;
-  if (newQuery.specialty) newQuery.specialty = new RegExp(newQuery.specialty, 'i');
-  if (newQuery.name) newQuery.name = new RegExp(newQuery.name, 'i');
-
-  let doctors: IDoctor[] = await Doctor.find(newQuery); // .find({ isContractAccepted: true });
-
-  if (date) {
-    date = new Date(date);
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const day: string = daysOfWeek[date.getDay()];
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-
-    const inputTimeStamp = calculateTimeStamp({ hours, minutes });
-    doctors = doctors.filter((doctor: IDoctor) => {
-      const slots = (doctor.weeklySlots as any)[day];
-
-      for (let j = 0; j < slots.length; j++) {
-        const slot = slots[j];
-        const fromTimeStamp = calculateTimeStamp(slot.from);
-        const toTimeStamp = calculateTimeStamp(slot.to);
-
-        if (fromTimeStamp <= inputTimeStamp && inputTimeStamp <= toTimeStamp) return true;
-      }
-      return false;
-    });
-  }
-
-  return {
-    status: StatusCodes.OK,
-    message: 'Doctors retrieved successfully',
-    result: doctors
-  };
-};
-
 const viewAvailableAppointments = async (doctorID: string) => {
   const doctor = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
@@ -135,7 +97,7 @@ const viewAvailableAppointments = async (doctorID: string) => {
           0
         );
 
-        const price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute) / 60));
+        const price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute + 1) / 60));
 
         const id = uuidv4();
 
@@ -157,6 +119,43 @@ const viewAvailableAppointments = async (doctorID: string) => {
     status: StatusCodes.OK,
     message: 'Available Appointments retrieved successfully',
     result: availableAppointments
+  };
+};
+
+const getDoctors = async (query: any) => {
+  let { date, ...newQuery } = query;
+  if (newQuery.specialty) newQuery.specialty = new RegExp(newQuery.specialty, 'i');
+  if (newQuery.name) newQuery.name = new RegExp(newQuery.name, 'i');
+
+  let doctors: IDoctor[] = await Doctor.find(newQuery).find({ isContractAccepted: true });
+
+  if (date) {
+    date = new Date(date);
+    date.setHours(date.getHours() + 2); // UTC to Egypt Time
+
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const day: string = daysOfWeek[date.getDay()];
+
+    const filteredDoctors = await Promise.all(
+      doctors.map(async (doctor: any) => {
+        const { result: appointments } = await viewAvailableAppointments(doctor._id);
+        const dayAppointments = (appointments as any)[day];
+
+        for (const appointment of dayAppointments) {
+          if (appointment.startDate <= date && date <= appointment.endDate) return true;
+        }
+
+        return false;
+      })
+    );
+
+    doctors = doctors.filter((doctor: any, index: number) => filteredDoctors[index]);
+  }
+
+  return {
+    status: StatusCodes.OK,
+    message: 'Doctors retrieved successfully',
+    result: doctors
   };
 };
 
