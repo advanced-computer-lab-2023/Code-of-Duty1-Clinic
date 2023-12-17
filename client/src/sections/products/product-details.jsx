@@ -26,6 +26,22 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const [medicineProduct, setMedicineProduct] = useState(product);
   const [isArchived, setIsArchived] = useState(product.isArchived);
   const [uploadImg, setUploadImg] = useState('');
+  const [alternativeProducts, setAlternativeProducts] = useState([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const alternatives = async () => {
+    try{
+      const response = await axios.get(`http://localhost:3000/medicine`);
+      setAlternativeProducts(response.data.result);
+      console.log(response);
+    }
+    catch (error) {
+      console.error(error.message);
+    }
+  }
+  useEffect(() => {
+    alternatives();
+  }, []);
   const handleArchiveClick = async () => {
     try {
       await axios.put(
@@ -155,6 +171,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   )
 ) || [];
   return (
+    <Box>
     <Card>
       <IconButton onClick={onCloseProductDetails} color="primary" aria-label="back">
         <ArrowBackIcon />
