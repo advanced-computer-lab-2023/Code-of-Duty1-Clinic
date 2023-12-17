@@ -4,6 +4,126 @@ import SvgColor from 'src/components/svg-color';
 
 const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
 
+/*
+Refer to sections for role-based routes
+
+const navConfigByRole = {
+  Patient: [
+    {
+      title: 'dashboard',
+      path: '/',
+      icon: icon('ic_analytics'),
+    },
+    {
+      title: 'Appointments',
+      path: '/appointments',
+      icon: icon('ic_user'),
+    },
+    {
+      title: 'Requests',
+      path: '/requests',
+      icon: icon('ic_user'),
+    },
+    {
+      title: 'Packages',
+      path: '/packages',
+      icon: icon('ic_cart'),
+    },
+    {
+      title: 'My package',
+      path: '/viewPackage',
+      icon: icon('ic_cart'),
+    },
+    // ... Add other patient-specific items
+  ],
+
+  Doctor: [
+    {
+      title: 'dashboard',
+      path: '/',
+      icon: icon('ic_analytics'),
+    },
+    {
+      title: 'Appointments',
+      path: '/appointments',
+      icon: icon('ic_user'),
+    },
+    {
+      title: 'Doctors',
+      path: '/doctors',
+      icon: icon('ic_user'),
+    },
+    {
+      title: 'Medical History',
+      path: '/medical-history',
+      icon: icon('ic_disabled'),
+    },
+    {
+      title: 'Patients',
+      path: '/patients',
+      icon: icon('ic_user'),
+    },
+    // ... Add other doctor-specific items
+  ],
+
+  Pharmacist: [
+    {
+      title: 'dashboard',
+      path: '/',
+      icon: icon('ic_analytics'),
+    },
+    {
+      title: 'chat',
+      path: '/chat',
+      icon: icon('ic_analytics'),
+    },
+    {
+      title: 'Orders',
+      path: '/orders',
+      icon: icon('ic_analytics'),
+    },
+    {
+      title: 'Report',
+      path: '/report',
+      icon: icon('ic_analytics'),
+    },
+    // ... Add other pharmacist-specific items
+  ],
+
+  Admin: [
+    {
+      title: 'dashboard',
+      path: '/',
+      icon: icon('ic_analytics'),
+    },
+    {
+      title: 'Requests',
+      path: '/requests',
+      icon: icon('ic_user'),
+    },
+    {
+      title: 'Manage packages',
+      path: '/packages-admin',
+      icon: icon('ic_cart'),
+    },
+    {
+      title: 'Users',
+      path: '/users',
+      icon: icon('ic_analytics'),
+    },
+    {
+      title: 'Add Admin',
+      path: '/add-admin',
+      icon: icon('ic_analytics'),
+    },
+    // ... Add other admin-specific items
+  ],
+};
+
+const userNavConfig = navConfigByRole[role] || [];
+
+*/
+
 const navConfig = [
   {
     title: 'dashboard',
