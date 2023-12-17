@@ -62,7 +62,7 @@ const navConfig = [
   },
   {
     title: 'Medical History',
-    path: '/medical-history',
+    path: `/medical-history/${localStorage.getItem("userID")}`,
     icon: icon('ic_disabled')
   },
   {

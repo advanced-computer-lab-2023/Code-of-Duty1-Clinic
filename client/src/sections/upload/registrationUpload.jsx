@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Upload from './Upload';
 import Label from 'src/components/label';
 import { Helmet } from 'react-helmet-async';
-import { MedicalHistoryUpload, RecordsList } from 'src/sections/upload';
 function RegistrationUpload() {
   const [isUploaded, setIsUploaded] = useState([0, 0, 0]);
   const url = '/upload/doctor/registration';
@@ -31,19 +30,6 @@ function RegistrationUpload() {
       <Upload url={url} labelName="Medical degree" field="medicalDegree" handleUploadSuccess={handleUploadSuccess} />
       <Label style={style}> {isUploaded} </Label>
     </div>
-  );
-}
-export function UploadView() {
-  return (
-    <>
-      <Helmet>
-        <title> Upload </title>
-      </Helmet>
-
-      <RegistrationUpload />
-      <MedicalHistoryUpload />
-      <RecordsList />
-    </>
   );
 }
 export { RegistrationUpload };

@@ -13,7 +13,7 @@ import { isAuthenticated, isAuthorized } from '../middlewares';
 const router = express.Router();
 
 router.use(isAuthenticated);
-router.use(isAuthorized('Doctor'));
+// router.use(isAuthorized('Doctor'));
 
 router.get('/:id', (req: Request, res: Response) => {
   controller(res)(getMyPatients)({ doctorID: req.decoded.id, patientID: req.params.id });
@@ -26,7 +26,7 @@ router.get('/:id/medicalhistory', isAuthorized('Doctor'), (req: Request, res: Re
   controller(res)(getHealthRecords)(req.params.id);
 });
 
-router.post('/:id/medicalhistory', isAuthorized('Doctor'), (req: Request, res: Response) => {
+router.post('/:id/medicalhistory', (req: Request, res: Response) => {
   controller(res)(addHealthRecord)(req.params.id, req.body);
 });
 

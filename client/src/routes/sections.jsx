@@ -3,7 +3,7 @@ import { Outlet, Navigate, useRoutes, useParams } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
-import { RegistrationUpload, UploadView } from 'src/sections/upload';
+// import { RegistrationUpload, UploadView } from 'src/sections/upload';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -61,7 +61,7 @@ export default function Router() {
         { path: 'doctors', element: <DoctorsPage /> },
         { path: 'requests', element: <RequestsPage /> },
         { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
-        { path: '/medical-history', element: <MedicalHistoryPage /> },
+        { path: '/medical-history/:patientID', element: <MedicalHistoryPage /> },
         // { path: 'requests-list', element: <RequestsListPage /> },
         { path: 'patients', element: <PatientsPage /> },
         { path: 'health-record/:patientID', element: <HealthRecordPage /> },
