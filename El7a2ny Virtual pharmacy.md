@@ -406,10 +406,10 @@ Follow these steps to run the El7a2ny project on your local machine:
 
 ## Screenshots🖵
 
-![Screenshot](./screenshots/24.png)
-![Screenshot](./screenshots/25.png)
-![Screenshot](./screenshots/26.png)
-![Screenshot](./screenshots/27.png)
+![signUp](./screenshots/24.png)
+![Packages](./screenshots/25.png)
+![users](./screenshots/26.png)
+![signin](./screenshots/27.png)
 
 ---
 ## API References
@@ -524,14 +524,12 @@ For backend testing, we extensively use Postman. It is a vital tool in our devel
 - Facilitating the creation and execution of test suites for various API routes, enhancing the consistency and reliability of our backend services.
 - examples 
 - 
--![Screenshot](./screenshots/1.png)
--![Screenshot](./screenshots/2.png)
--![Screenshot](./screenshots/11.png)
--![Screenshot](./screenshots/12.png)
--![Screenshot](./screenshots/13.png)
--![Screenshot](./screenshots/14.png)
--![Screenshot](./screenshots/16.png)
--![Screenshot](./screenshots/17.png)
+-![login](./screenshots/1.png)
+-![cart](./screenshots/12.png)
+-![increase item ](./screenshots/13.png)
+-![Cart changed](./screenshots/14.png)
+-![decrease item](./screenshots/16.png)
+-![cart changed](./screenshots/17.png)
 
 
 ### Jest for Partial Testing
