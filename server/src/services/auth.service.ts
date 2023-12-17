@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { HttpError, generateToken, putRedis, delRedis, sendResetPasswordEmail, getRedis } from '../utils';
-import { User, Request, ICommonUser } from '../models';
+import { User, Request } from '../models';
 
 const login = async (body: any) => {
   const { username, password } = body;

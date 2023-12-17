@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
-import { useUserContext } from 'src/contexts/userContext';
+import { useAuthContext } from 'src/contexts/userContext';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 import PrescriptionSummary from './prescription-summary';

@@ -26,6 +26,7 @@ export default function EditDeletePackage({ setMessage, setOpenSnackbar }) {
   } = useQuery('packages', () => axiosInstance.get('packages').then((res) => res.data.result), {
     refetchOnWindowFocus: false
   });
+
   const [selectedPackage, setPackage] = useState({});
   const [openModal, setOpenModal] = useState(false);
 
