@@ -1,7 +1,8 @@
 import { Appointment, Doctor, Patient, User } from '../models';
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
-
+import { NotificationManager } from '../utils/notification';
+import { sendEmail } from '../utils';
 const getAppointments = async (query: any) => {
   if (query.startDate) query.startDate = { $gte: query.startDate };
   if (query.endDate) query.endDate = { $lte: query.endDate };
@@ -35,7 +36,6 @@ const getAppointments = async (query: any) => {
     doctorName: (appointment.doctorID as any).name,
     ...appointment.toJSON()
   }));
-
   return {
     status: StatusCodes.OK,
     message: 'Appointments retrieved successfully',
@@ -43,10 +43,14 @@ const getAppointments = async (query: any) => {
   };
 };
 
-const createAppointment = async (doctorID: String, body: any) => {
+const createAppointment = async (doctorID: string, body: any) => {
+  console.log(doctorID, body,"147852369--------------");
   const doctor = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
-
+  const patientEmail = body.patientEmail;
+  const doctorEmail = doctor.email;
+  console.log(doctorEmail , patientEmail,"---------------------------")
+  delete body.patientEmail;
   // A local time zone issue
   if (new Date(body.startDate) < new Date(Date.now() + 2 * 60 * 60 * 1000))
     throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot schedule an appointment in the past');
@@ -56,7 +60,37 @@ const createAppointment = async (doctorID: String, body: any) => {
 
   doctor.wallet! += newAppointment.sessionPrice;
   await doctor.save();
+  
+  const options :Intl.DateTimeFormatOptions= {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+  timeZoneName: 'short',
+};
 
+const formatter = new Intl.DateTimeFormat('en-US', options);
+
+const startDate = formatter.format(new Date(body.startDate));
+const endDate = formatter.format(new Date(body.endDate));
+
+await NotificationManager.notify(
+  doctorID,
+  "Appointment",
+  `Time is from ${startDate} to ${endDate}`,
+  `New appointment with Patient ${body.patientName}`
+  );
+  await NotificationManager.notify(
+  body.patientID,
+  "Appointment",
+  `Time is from ${startDate} to ${endDate}`,
+  `New appointment with Doctor ${doctor.name}`
+  );
+  sendEmail(doctorEmail,"New Clinic Appointment", `Dear Doctor ${doctor.name},\n This mail is sent to inform you of a new appointment with Patient ${body.patientName}.\nThe time is from ${startDate} to ${endDate}.\nBest Regards\nEl7ani Clinic Team`);
+  sendEmail(patientEmail,"New Clinic Appointment",`Dear Patient ${body.patientName},\n This mail is sent to inform you of a new appointment with Doctor ${doctor.name}.\nThe time is from ${startDate} to ${endDate}.\nBest Regards\nEl7ani Clinic Team`);
+  
   return {
     status: StatusCodes.CREATED,
     message: 'Appointment created successfully',
