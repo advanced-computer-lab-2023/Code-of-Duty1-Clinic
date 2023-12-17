@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -8,15 +7,12 @@ import Button from '@mui/material/Button';
 import { alpha, useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
 import Card from '@mui/material/Card';
-
 import Logo from 'src/components/logo';
 import { bgGradient } from 'src/theme/css';
 import EnterEmail from '../enter-email';
 import EnterOTP from '../enter-otp';
 import ResetPassword from '../reset-password';
-
 import { useRouter } from 'src/routes/hooks';
-
 const steps = ['Enter your email', 'Enter the OTP', 'Reset your password'];
 
 export default function ForgotView() {
