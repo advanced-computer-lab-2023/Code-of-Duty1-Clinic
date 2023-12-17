@@ -13,12 +13,12 @@ const navConfig = [
   {
     title: 'Appointments',
     path: '/appointments',
-    icon: icon('ic_user')
+    icon: icon('ic_appointment')
   },
   {
     title: 'Requests',
     path: '/requests',
-    icon: icon('ic_user')
+    icon: icon('ic_requests')
   },
   {
     title: 'Packages',
@@ -59,7 +59,7 @@ const navConfig = [
   {
     title: 'Register',
     path: '/register',
-    icon: icon('ic_lock')
+    icon: icon('ic_requests')
   },
   {
     title: 'Doctors',
@@ -89,12 +89,12 @@ const navConfig = [
   {
     title: 'My Health Records',
     path: '/health-record',
-    icon: icon('ic_analytics')
+    icon: icon('ic_healthRecords')
   },
   {
     title: 'My Prescriptions',
     path: '/prescription',
-    icon: icon('ic_analytics')
+    icon: icon('ic_prescriptions')
   },
   {
     title: 'Not found',
@@ -119,7 +119,7 @@ const navConfig = [
   {
     title: 'View Requests',
     path: '/requests-list',
-    icon: icon('ic_disabled')
+    icon: icon('ic_requests')
   },
   {
     title: 'Addresses',
@@ -144,7 +144,7 @@ const navConfig = [
   {
     title: 'users',
     path: '/users',
-    icon: icon('ic_analytics')
+    icon: icon('ic_user')
   },
   {
     title: 'add-admin',
