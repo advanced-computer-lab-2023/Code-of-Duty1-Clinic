@@ -1,26 +1,27 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { RecordsList, MedicalHistoryUpload } from 'src/sections/upload';
-
+import MedicalHistoryView from 'src/sections/upload/Medical-History/view/medicalHistoryView';
+import { useParams } from 'react-router-dom';
 const MedicalHistoryPage = () => {
+  let { patientID } = useParams();
+  patientID = patientID ? patientID : localStorage.getItem('userID');
+
   return (
     <>
       <Helmet>
-        <title>Medical History</title>
+        <title>Medical History/Records</title>
       </Helmet>
 
       <div style={containerStyle}>
-        <h1 style={headingStyle}>Medical History</h1>
-
-        <MedicalHistoryUpload />
-        <RecordsList />
+        <MedicalHistoryView patientID={patientID} />
       </div>
     </>
   );
 };
 
 const containerStyle = {
-  maxWidth: '800px',
+  // maxWidth: '800px',
   margin: '0 auto',
   padding: '20px',
   backgroundColor: '#fff',

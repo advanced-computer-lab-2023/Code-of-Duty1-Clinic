@@ -29,18 +29,43 @@ uploadRouter.get('/patient/medicalHistory/:recordName', async (req, res) => {
 
   res.status(200).sendFile(fileUrl!);
 });
+uploadRouter.get('/patient/:patientID/medicalHistory/:recordName', async (req, res) => {
+  const recordName: string = req.params['recordName'];
+  const fileUrl: any = await getMedicalHistoryURL({ recordName, _id: req.params.patientID });
+  if (!fileUrl) return res.status(StatusCodes.NOT_FOUND).send('File not found');
+
+  res.status(200).sendFile(fileUrl!);
+});
 uploadRouter.delete('/patient/medicalHistory/:recordName', (req, res) => {
   controller(res)(removeMedicalHistory)(req.decoded.id, req.params.recordName);
 });
+uploadRouter.delete('/patient/:patientID/medicalHistory/:recordName', (req, res) => {
+  controller(res)(removeMedicalHistory)(req.params.patientID, req.params.recordName);
+});
+
 
 uploadRouter.get('/patient/medicalHistory/', async (req, res) => {
   controller(res)(getMedicalHistory)(req.decoded.id);
+});
+uploadRouter.get('/patient/:patientID/medicalHistory/', async (req, res) => {
+  controller(res)(getMedicalHistory)(req.params.patientID);
 });
 uploadRouter.post('/patient/medicalHistory', medicalHistoryUpload.array('medicalHistory'), (req, res) => {
   const fileName = req.body.fileName;
   controller(res)(saveMedicalHistory)(req.decoded.id, req.files, fileName);
 });
+uploadRouter.post('/patient/:patientID/medicalHistory', medicalHistoryUpload.array('medicalHistory'), (req, res) => {
+  const fileName = req.body.fileName;
+  controller(res)(saveMedicalHistory)(req.params.patientID , req.files, fileName);
+});
 
+uploadRouter.get('/patient/:patientID/medicalHistory/', async (req, res) => {
+  controller(res)(getMedicalHistory)(req.params.patientID);
+});
+uploadRouter.post('/patient/:patientID/medicalHistory', medicalHistoryUpload.array('medicalHistory'), (req, res) => {
+  const fileName = req.body.fileName;
+  controller(res)(saveMedicalHistory)(req.params.patientID, req.files, fileName);
+});
 //-------------------------------------------------------------------------------------------------------------------
 uploadRouter.get('/doctor/registration/:doctorID', async (req, res) => {
   controller(res)(getAllRequests)(req.params.doctorID);

@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { products } from 'src/_mock/products';
 
@@ -56,6 +57,7 @@ export default function OrdersView() {
     const response = await axios.get('http://localhost:3000/orders', { withCredentials: true });
     setOrders(response.data.order);
   };
+
   const handleChangeOrderState = async ({ orderID, newStatus }) => {
     console.log('does i got to the handle change order state part or not ');
     try {
@@ -67,12 +69,10 @@ export default function OrdersView() {
     const response = await axios.get('http://localhost:3000/orders', { withCredentials: true });
     setOrders(response.data.order);
   };
-  if (error) {
-    return <Typography variant="body1">Error fetching orders: {error.message}</Typography>;
-  }
-  if (loading) {
-    return <Typography variant="body1">Loading...</Typography>;
-  }
+
+  if (loading) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+  if (error) return <Typography variant="body1">Error fetching orders: {error.message}</Typography>;
+
   return (
     <Container>
       <Typography variant="h4" sx={{ mb: 5 }}>

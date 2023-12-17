@@ -71,6 +71,7 @@ const getRequestFileUrl = async (medicID: string, type: any, fileIDX: string) =>
 };
 const didUploadBefore = async (medicID: string) => {
   const requests = await Request.findOne({ medicID: medicID });
+  console.log(JSON.stringify(requests));
   let result = false;
   if (requests) result = requests.ID && requests.degree?.length! > 0 && requests.licenses?.length! > 0 ? true : false;
   return {

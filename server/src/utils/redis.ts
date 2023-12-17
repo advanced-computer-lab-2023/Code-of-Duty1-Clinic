@@ -19,7 +19,7 @@ redisClient.on('error', (error) => {
   throw new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, 'Redis Error');
 });
 
-const putRedis = async (key: string, data: string): Promise<string> => redisClient.set(key, data, 'EX', 3600);
+const putRedis = async (key: string, data: string): Promise<string> => redisClient.set(key, data, 'EX', 60 * 60 * 24);
 
 const getRedis = async (key: string): Promise<string | null> => redisClient.get(key);
 

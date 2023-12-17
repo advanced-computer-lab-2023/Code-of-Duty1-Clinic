@@ -17,12 +17,29 @@ export default function OrderCard({ order, onCancelOrder, onChangeOrderStatus })
   const user = localStorage.getItem('userRole');
   const [orderedBy, setOrderedBy] = React.useState('');
   const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = React.useState(false);
+  const [isCancelConfirmationOpen, setIsCancelConfirmationOpen] = React.useState(false);
+
+  const handleOpenCancelConfirmation = () => {
+    setIsCancelConfirmationOpen(true);
+  };
+
+  const handleCloseCancelConfirmation = () => {
+    setIsCancelConfirmationOpen(false);
+  };
+
+  const handleCancelOrder = () => {
+    setIsCancelConfirmationOpen(false);
+    onCancelOrder(); // Call the onCancelOrder function when confirmed
+  };
+
   const handleOpenChangeStatusModal = () => {
     setIsChangeStatusModalOpen(true);
   };
+
   const handleCloseChangeStatusModal = () => {
     setIsChangeStatusModalOpen(false);
   };
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -30,9 +47,10 @@ export default function OrderCard({ order, onCancelOrder, onChangeOrderStatus })
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
   React.useEffect(() => {
     const loadUserName = async () => {
-      if (user == 'Pharmacist') {
+      if (user === 'Pharmacist') {
         try {
           const response = await axios.get(`http://localhost:3000/users/${order.userID}`, { withCredentials: true });
 
@@ -43,9 +61,10 @@ export default function OrderCard({ order, onCancelOrder, onChangeOrderStatus })
       }
     };
     loadUserName();
-  }, []);
+  }, [order.userID, user]);
+
   const status = order.status;
-  const color = status == 'Cancelled' ? 'red' : status === 'Delivered' ? 'green' : 'black';
+  const color = status === 'Cancelled' ? 'red' : status === 'Delivered' ? 'green' : 'black';
   const formattedDate = new Date(order.date).toLocaleDateString('en-GB');
   let totalAmount = 0;
   let count = 0;
@@ -121,23 +140,34 @@ export default function OrderCard({ order, onCancelOrder, onChangeOrderStatus })
               </Stack>
             </CardContent>
             <CardActions>
-              <Button size="small">Help</Button>
-              <Button size="small" onClick={handleOpenModal}>
+              <Button size="small" variant="outlined">
+                Help
+              </Button>
+              <Button size="small" onClick={handleOpenModal} variant="contained">
                 Details
               </Button>
-              {status != 'Cancelled' && user == 'Patient' && (
-                <Button size="small" onClick={onCancelOrder}>
-                  cancel
-                </Button>
+              {status !== 'Cancelled' && user === 'Patient' && status != 'Delivered' && (
+                <React.Fragment>
+                  <Button size="small" onClick={handleOpenCancelConfirmation} variant="outlined">
+                    Cancel
+                  </Button>
+                  <Dialog open={isCancelConfirmationOpen} onClose={handleCloseCancelConfirmation}>
+                    <DialogTitle>Are you sure you want to cancel the order?</DialogTitle>
+                    <DialogActions>
+                      <Button onClick={handleCloseCancelConfirmation}>No</Button>
+                      <Button onClick={handleCancelOrder}>Yes</Button>
+                    </DialogActions>
+                  </Dialog>
+                </React.Fragment>
               )}
-              {status != 'Cancelled' && user == 'Pharmacist' && (
-                <Button size="small" onClick={handleOpenChangeStatusModal}>
-                  change order state
+              {status !== 'Cancelled' && user === 'Pharmacist' && (
+                <Button size="small" onClick={handleOpenChangeStatusModal} variant="outlined">
+                  Change Order State
                 </Button>
               )}
             </CardActions>
           </React.Fragment>
-          {user == 'Pharmacist' && <Typography sx={{ marginTop: 5 }}>{`orderedBy : ${orderedBy}`}</Typography>}
+          {user === 'Pharmacist' && <Typography sx={{ marginTop: 5 }}>{`orderedBy : ${orderedBy}`}</Typography>}
         </Stack>
       </Card>
       <Modal
@@ -146,42 +176,44 @@ export default function OrderCard({ order, onCancelOrder, onChangeOrderStatus })
         aria-labelledby="order-details-modal"
         aria-describedby="order-details-description"
       >
-        {/* Pass the order details to the modal component */}
-        {/* <OrderDetailsModal order={order} /> */}
         <OrderDetails order={order} onCLoseModal={handleCloseModal}></OrderDetails>
       </Modal>
-      <Dialog open={isChangeStatusModalOpen} onClose={() => setIsChangeStatusModalOpen(false)}>
-        <DialogTitle>Choose the new status </DialogTitle>
+      <Dialog open={isChangeStatusModalOpen} onClose={handleCloseChangeStatusModal}>
+        <DialogTitle>Choose the new status</DialogTitle>
         <DialogActions>
           <Button
             onClick={() => {
               onChangeOrderStatus('Cancelled');
-              setIsChangeStatusModalOpen(false);
+              handleCloseChangeStatusModal(); // Close the modal after handling the status change
             }}
+            variant="outlined"
           >
             Cancel
           </Button>
           <Button
             onClick={() => {
               onChangeOrderStatus('Processing');
-              setIsChangeStatusModalOpen(false);
+              handleCloseChangeStatusModal();
             }}
+            variant="outlined"
           >
             Processing
           </Button>
           <Button
             onClick={() => {
               onChangeOrderStatus('Shipped');
-              setIsChangeStatusModalOpen(false);
+              handleCloseChangeStatusModal();
             }}
+            variant="outlined"
           >
             Shipped
           </Button>
           <Button
             onClick={() => {
               onChangeOrderStatus('Delivered');
-              setIsChangeStatusModalOpen(false);
+              handleCloseChangeStatusModal();
             }}
+            variant="outlined"
           >
             Delivered
           </Button>

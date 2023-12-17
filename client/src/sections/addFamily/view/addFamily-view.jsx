@@ -8,6 +8,7 @@ import { LoadingButton } from '@mui/lab';
 import { useMutation } from 'react-query';
 import { axiosInstance } from 'src/utils/axiosInstance';
 import InputLabel from '@mui/material/InputLabel';
+import { red } from '@mui/material/colors';
 
 const AddFamilyView = () => {
   const [selectedOption, setSelectedOption] = useState('');
@@ -20,7 +21,7 @@ const AddFamilyView = () => {
   const [condition, setCondition] = useState(false);
   const [gender, setGender] = useState('');
   const [age, setAge] = useState('');
-
+  const [color, setColor] = useState('');
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
     setEmail('');
@@ -36,10 +37,12 @@ const AddFamilyView = () => {
     const res = await axiosInstance.post('/me/family', body).catch(function (error) {
       if (error.response) {
         setMessage(error.response.data.message);
+        setColor('red');
       }
     });
 
     setMessage(res.data.message);
+    setColor('green');
   };
 
   const mutation = useMutation({
@@ -124,7 +127,7 @@ const AddFamilyView = () => {
           Please enter all fields
         </Typography>
       )}
-      {familyMessage && <Typography variant="body1">{familyMessage}</Typography>}
+      {familyMessage && <Typography variant="body1" style={{ color: color }}>{familyMessage}</Typography>}
       <LoadingButton
         onClick={() => handleClick(familyName, familyPhone, familyEmail, familyNationalId, age, gender, familyRelation)}
         loading={mutation.isLoading}

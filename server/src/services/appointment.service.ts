@@ -1,8 +1,9 @@
-import { Appointment, Doctor, Patient, User } from '../models';
+import { Appointment, Doctor, IAppointment, ICommonUser, Patient, User } from '../models';
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
 import { NotificationManager } from '../utils/notification';
 import { sendEmail } from '../utils';
+
 const getAppointments = async (query: any) => {
   if (query.startDate) query.startDate = { $gte: query.startDate };
   if (query.endDate) query.endDate = { $lte: query.endDate };
@@ -30,12 +31,12 @@ const getAppointments = async (query: any) => {
 
     appointments = appointments.concat(familyAppointments);
   }
-
   // Transform the result to the desired format
-  const formattedAppointments = appointments.map((appointment) => ({
+  const formattedAppointments: any = appointments.map((appointment) => ({
     doctorName: (appointment.doctorID as any).name,
     ...appointment.toJSON()
   }));
+
   return {
     status: StatusCodes.OK,
     message: 'Appointments retrieved successfully',
@@ -44,12 +45,11 @@ const getAppointments = async (query: any) => {
 };
 
 const createAppointment = async (doctorID: string, body: any) => {
-  console.log(doctorID, body,"147852369--------------");
   const doctor = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
+
   const patientEmail = body.patientEmail;
   const doctorEmail = doctor.email;
-  console.log(doctorEmail , patientEmail,"---------------------------")
   delete body.patientEmail;
   // A local time zone issue
   if (new Date(body.startDate) < new Date(Date.now() + 2 * 60 * 60 * 1000))
@@ -60,37 +60,45 @@ const createAppointment = async (doctorID: string, body: any) => {
 
   doctor.wallet! += newAppointment.sessionPrice;
   await doctor.save();
-  
-  const options :Intl.DateTimeFormatOptions= {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric',
-  second: 'numeric',
-  timeZoneName: 'short',
-};
 
-const formatter = new Intl.DateTimeFormat('en-US', options);
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    timeZoneName: 'short'
+  };
 
-const startDate = formatter.format(new Date(body.startDate));
-const endDate = formatter.format(new Date(body.endDate));
+  const formatter = new Intl.DateTimeFormat('en-US', options);
 
-await NotificationManager.notify(
-  doctorID,
-  "Appointment",
-  `Time is from ${startDate} to ${endDate}`,
-  `New appointment with Patient ${body.patientName}`
+  const startDate = formatter.format(new Date(body.startDate));
+  const endDate = formatter.format(new Date(body.endDate));
+
+  await NotificationManager.notify(
+    doctorID,
+    'Appointment',
+    `Time is from ${startDate} to ${endDate}`,
+    `New appointment with Patient ${body.patientName}`
   );
   await NotificationManager.notify(
-  body.patientID,
-  "Appointment",
-  `Time is from ${startDate} to ${endDate}`,
-  `New appointment with Doctor ${doctor.name}`
+    body.patientID,
+    'Appointment',
+    `Time is from ${startDate} to ${endDate}`,
+    `New appointment with Doctor ${doctor.name}`
   );
-  sendEmail(doctorEmail,"New Clinic Appointment", `Dear Doctor ${doctor.name},\n This mail is sent to inform you of a new appointment with Patient ${body.patientName}.\nThe time is from ${startDate} to ${endDate}.\nBest Regards\nEl7ani Clinic Team`);
-  sendEmail(patientEmail,"New Clinic Appointment",`Dear Patient ${body.patientName},\n This mail is sent to inform you of a new appointment with Doctor ${doctor.name}.\nThe time is from ${startDate} to ${endDate}.\nBest Regards\nEl7ani Clinic Team`);
-  
+  sendEmail(
+    doctorEmail,
+    'New Clinic Appointment',
+    `Dear Doctor ${doctor.name},\n This mail is sent to inform you of a new appointment with Patient ${body.patientName}.\nThe time is from ${startDate} to ${endDate}.\nBest Regards\nEl7ani Clinic Team`
+  );
+  sendEmail(
+    patientEmail,
+    'New Clinic Appointment',
+    `Dear Patient ${body.patientName},\n This mail is sent to inform you of a new appointment with Doctor ${doctor.name}.\nThe time is from ${startDate} to ${endDate}.\nBest Regards\nEl7ani Clinic Team`
+  );
+
   return {
     status: StatusCodes.CREATED,
     message: 'Appointment created successfully',
@@ -103,7 +111,9 @@ const rescheduleAppointment = async (userID: string, appointmentID: any, newBody
   if (appointment.status !== 'Upcoming' || appointment.startDate < new Date(Date.now() + 2 * 60 * 60 * 1000))
     throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot reschedule a non-upcoming appointment');
 
-  const newAppointment = { ...appointment.toJSON(), ...newBody }; // newBody will override some of the old values
+  const newAppointment = { ...appointment.toJSON(), ...newBody };
+  await sendNotification('Rescheduled', appointment, newAppointment);
+  // newBody will override some of the old values
   appointment.set(newAppointment);
   appointment.save();
 
@@ -134,7 +144,7 @@ const cancelAppointment = async (userID: string, appointmentID: string) => {
       Doctor.findByIdAndUpdate(appointment.doctorID, { $inc: { wallet: -appointment.sessionPrice } }); // Maybe he will be indebted
     }
 
-    // here it should send a notification and email to the doctor and patient
+    sendNotification('Canceled', appointment);
   }
 
   appointment.status = 'Cancelled';
@@ -213,6 +223,42 @@ async function validateAppointment(userID: string, appointmentID: string) {
 
   return appointment;
 }
+
+const sendNotification = async (type: string, appointment: IAppointment, newAppointment?: IAppointment) => {
+  try {
+    console.log('Sending notification on appointment update .....');
+    const users = await User.find({
+      _id: { $in: [appointment.patientID, appointment.doctorID] }
+    });
+    let title = `Your Appointment is ${type}`;
+    let time = (app: IAppointment) =>
+      `from ${new Date(app.startDate).toUTCString()} to ${new Date(app.endDate).toUTCString()}`;
+    let message = `Your appointment ${time(appointment)} is canceled`;
+    if (type == 'Rescheduled') {
+      message = `Your appointment ${time(appointment)} is rescheduled,\n your new appointment is ${time(
+        newAppointment!
+      )}`;
+    }
+    const getTitle = (user: ICommonUser) => {
+      return user.role == 'Patient' ? 'User' : 'Doctor';
+    };
+    for (const user of users) {
+      try {
+        NotificationManager.notify(user._id.toString(), type, message, title, new Date());
+        let mailBody = `Hello ${getTitle(user)} ${
+          user.name
+        },\nWe hope this mail finds you will. we are sending this mail to let you know that \n${message}\n\nBest Regards \nEl7ani Clinic Team `;
+        sendEmail(user.email, title, mailBody);
+      } catch (e) {
+        console.log('Error while notifying for appointment update');
+        continue;
+      }
+    }
+    console.log('Done Sending notification on appointment update');
+  } catch (e) {
+    console.log('Error while notifying for appointment update');
+  }
+};
 
 export {
   getAppointments,

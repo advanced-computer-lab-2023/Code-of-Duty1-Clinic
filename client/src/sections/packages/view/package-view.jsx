@@ -18,6 +18,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import PlanCard from '../plan-view';
 
@@ -68,15 +69,15 @@ export default function PackageView() {
           products: [{ name: selectedPackage.name, price: selectedPackage.price, quantity: 1 }]
         });
 
-        await axiosInstance.post(`patients/${selectedUser.id}/package`, { packageID: selectedPackage._id });
+        await axiosInstance.post(`patients/${selectedUser.id}/package`, { package: selectedPackage });
 
         window.location.href = res.data.url;
       } else {
         await axiosInstance.put(`/me/wallet`, {
-          amount: -selectedPackage.sessionPrice
+          amount: -Number(selectedPackage.sessionPrice)
         });
 
-        await axiosInstance.post(`patients/${selectedUser.id}/package`, { packageID: selectedPackage._id });
+        await axiosInstance.post(`patients/${selectedUser.id}/package`, { package: selectedPackage });
 
         router.push('/viewPackage');
       }
@@ -86,8 +87,8 @@ export default function PackageView() {
     }
   });
 
-  if (isLoadingPackages) return 'Loading...';
-  if (error) return 'An error has occurred' + error.message;
+  if (isLoadingPackages) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+  if (error) return <Typography>An error has occurred: {error.response?.data.message || 'Network error'}</Typography>;
 
   const handleClick = async (userPackage) => {
     if (family.length == 0)
@@ -119,11 +120,12 @@ export default function PackageView() {
         <Stack spacing={3} alignItems="center">
           <div style={{ width: '100%' }}>
             <Grid container spacing={3} pt={4}>
-              {userPackages.map((plan, i) => (
-                <Grid item xs={12} sm={4} md={4} key={i}>
-                  <PlanCard plan={plan} handleClick={handleClick} />
-                </Grid>
-              ))}
+              {userPackages &&
+                userPackages.map((plan, i) => (
+                  <Grid item xs={12} sm={4} md={4} key={i}>
+                    <PlanCard plan={plan} handleClick={handleClick} />
+                  </Grid>
+                ))}
             </Grid>
           </div>
         </Stack>

@@ -1,14 +1,21 @@
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
-import { User, Patient } from '../models';
+import { User, Patient, Doctor, Pharmacist, Admin } from '../models';
 
 const updateInfo = async (id: string, info: any) => {
   const canUpdate = ['email', 'hourRate', 'hospital'];
-  for (const field in info)
-    if (!canUpdate.includes(field)) throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot update these fields');
+  // for (const field in info)
+  //   if (!canUpdate.includes(field)) throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot update these fields');
 
-  const updatedUser = await User.findByIdAndUpdate(id, info, { new: true });
+  console.log(info, '****');
+  let user: any = Doctor;
+  if (info.role === 'Patient') user = Patient;
+  else if (info.role === 'Doctor') user = Doctor;
+  else if (info.role === 'Pharmacist') user = Pharmacist;
+  else if (info.role === 'Admin') user = Admin;
+  const updatedUser = await user.findByIdAndUpdate(id, info, { new: true });
   if (!updatedUser) throw new HttpError(StatusCodes.NOT_FOUND, 'the user does not exist');
+  console.log(updatedUser, '----');
 
   return {
     status: StatusCodes.OK,
@@ -28,20 +35,13 @@ const getUsers = async (query: Object) => {
 };
 const addNewDeliveryAddress = async (id: string, address: string) => {
   const patient = await Patient.findById(id);
-  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'no such a user exist ');
-  if (!address)
-    return {
-      status: StatusCodes.OK,
-      result: patient.addresses
-    };
+  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'No such user exist ');
+
+  if (!address) throw new HttpError(StatusCodes.BAD_REQUEST, 'Address is required');
 
   patient.addresses!.push(address);
   await patient.save();
 
-  // patient.updateOne({ addresses: addresses });
-  // console.log('i got there by the way and i finished my job');
-  // await patient.save();
-  // console.log('patient has been saved ');
   return {
     status: StatusCodes.OK,
     result: patient.addresses

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -15,29 +15,26 @@ import { account } from 'src/_mock/account';
 import { axiosInstance } from 'src/utils/axiosInstance';
 import { useRouter } from 'src/routes/hooks';
 
-// ----------------------------------------------------------------------
 
-const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    icon: 'eva:home-fill',
-    path: '/'
-  },
-  {
-    label: 'Profile',
-    icon: 'eva:person-fill',
-    path: '/profile'
-  },
-  {
-    label: 'Reset Password',
-    icon: 'eva:lock-fill',
-    path: '/reset-password'
-  }
-];
-
-// ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const MENU_OPTIONS = [
+    {
+      label: 'Home',
+      icon: 'eva:home-fill',
+      path: '/'
+    },
+    {
+      label: 'Profile',
+      icon: 'eva:person-fill',
+      path: `/profile/${localStorage.getItem('userID')}`
+    },
+    {
+      label: 'Reset Password',
+      icon: 'eva:lock-fill',
+      path: '/reset-password'
+    }
+  ]
   const router = useRouter();
 
   const [open, setOpen] = useState(null);
@@ -76,7 +73,7 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
+          src={'assets/images/profile/profile-image.png'}
           alt={account.displayName}
           sx={{
             width: 36,
@@ -105,10 +102,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {localStorage.getItem('userName')}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {localStorage.getItem('userEmail')}
           </Typography>
         </Box>
 

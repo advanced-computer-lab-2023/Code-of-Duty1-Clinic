@@ -1,11 +1,15 @@
-import { useState } from 'react';
-import { useQuery } from 'react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation } from 'react-query';
 
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { axiosInstance } from '../../utils/axiosInstance';
 
@@ -18,9 +22,8 @@ export default function ViewSlots() {
     refetchOnWindowFocus: false
   });
 
-  if (isLoading) return null;
-
-  if (error) return 'An error has occurred';
+  if (isLoading) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+  if (error) return <Typography>An error has occurred: {error.response?.data.message || 'Network error'}</Typography>;
 
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -49,9 +52,8 @@ export default function ViewSlots() {
             const from = `${slot.from.hours}:${slot.from.minutes}`;
             const to = `${slot.to.hours}:${slot.to.minutes}`;
 
-            let i = 0;
             return (
-              <Stack key={i++}>
+              <Stack key={slot.id}>
                 <Button color="inherit" underline="hover" variant="subtitle2">
                   {from} - {to}
                 </Button>
@@ -66,7 +68,7 @@ export default function ViewSlots() {
 
   return (
     <Stack direction={'row'} spacing={1} alignItems="center" justifyContent="center" sx={{ width: '900px' }}>
-      {days.map((day) => daySlots(weeklySlots[day], day))}
+      {weeklySlots && days.map((day) => daySlots(weeklySlots[day], day))}
     </Stack>
   );
 }

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useQuery, useMutation } from 'react-query';
 
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -7,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,6 +18,8 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { axiosInstance } from '../../utils/axiosInstance';
 
@@ -24,12 +28,17 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
   const today = daysOfWeek[new Date().getDay()];
   if (today == day) day = 'Today';
 
-  const user = { _id: localStorage.getItem('userID'), name: localStorage.getItem('userName'), email: localStorage.getItem('userEmail') };
+  const user = {
+    _id: localStorage.getItem('userID'),
+    name: localStorage.getItem('userName'),
+    email: localStorage.getItem('userEmail')
+  };
 
   const [openModal, setOpenModal] = useState(false);
   const [slot, setSlot] = useState({});
   const [family, setFamily] = useState([]);
   const [selectedUser, setSelectedUser] = useState({ id: '', name: '', email: '' });
+  const [discount, setDiscount] = useState(0);
   const [alignment, setAlignment] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [message, setMessage] = useState('');
@@ -50,6 +59,18 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
   const handleSelectUser = (e, option) => {
     if (option.nationalID) option._id = user._id;
     setSelectedUser({ id: option._id, name: option.name, email: user.email });
+
+    axiosInstance
+      .get('me/package')
+      .then((res) => res.data.result)
+      .then((res) => {
+        res.forEach((userPackage) => {
+          if (userPackage.status != 'Unsubscribed' && userPackage.user._id == option._id) {
+            const discount = userPackage.package.familyDiscount;
+            setDiscount(discount);
+          }
+        });
+      });
   };
 
   const createAppointment = async () => {
@@ -63,12 +84,12 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
       patientName: selectedUser.name,
       startDate: slot.startDate,
       endDate: slot.endDate,
-      sessionPrice: slot.sessionPrice,
-      patientEmail: selectedUser.email,
+      sessionPrice: slot.sessionPrice - slot.sessionPrice * (discount / 100),
+      patientEmail: selectedUser.email
     });
   };
 
-  const handleReserve = async () => {
+  const { isLoading: isLoadingMutate, mutate: handleReserve } = useMutation(async () => {
     if (!alignment || !selectedUser.id) {
       setMessage('Some fields are not filled correctly');
       return setOpenSnackbar(true);
@@ -81,8 +102,8 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
             {
               name: `Appointment with Dr. ${doctorName} on ${new Date(slot.startDate).toString().slice(0, 16)}
               from ${new Date(slot.startDate).toString().slice(16, 31)} to ${new Date(slot.endDate)
-                  .toString()
-                  .slice(16, 31)}`,
+                .toString()
+                .slice(16, 31)}`,
               price: slot.sessionPrice,
               quantity: 1
             }
@@ -94,7 +115,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
         window.location.href = res.data.url;
       } else {
         await axiosInstance.put(`/me/wallet`, {
-          amount: -selectedPackage.sessionPrice
+          amount: -slot.sessionPrice
         });
 
         await createAppointment();
@@ -104,8 +125,9 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
     } catch (err) {
       setMessage(err.response?.data.message || 'Network error');
       setOpenSnackbar(true);
+      console.log(err);
     }
-  };
+  });
 
   const handleCloseSnackBar = (event, reason) => {
     if (reason === 'clickaway') return;
@@ -194,7 +216,12 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
               sx={{ my: 3 }}
               required
             >
-              <MenuItem key={user.id} value={'Me'} onClick={(e) => handleSelectUser(e, user)} sx={{ fontSize: 16 }}>
+              <MenuItem
+                key={user._id}
+                value={user.name}
+                onClick={(e) => handleSelectUser(e, user)}
+                sx={{ fontSize: 16 }}
+              >
                 Me
               </MenuItem>
               <Divider sx={{ fontSize: 15 }}>Family</Divider>
@@ -224,13 +251,20 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
               </ToggleButton>
             </ToggleButtonGroup>
             <Typography variant="h6" color={'green'} sx={{ mt: 5 }}>
-              Total Price: {slot.sessionPrice} USD
+              Total Price: {Number(slot.sessionPrice) - Number(slot.sessionPrice) * (discount / 100)} USD
             </Typography>
           </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-          <Button onClick={handleReserve}>Book</Button>
+          <LoadingButton
+            loading={isLoadingMutate}
+            loadingIndicator="Loading…"
+            disabled={isLoadingMutate}
+            onClick={handleReserve}
+          >
+            Book
+          </LoadingButton>
         </DialogActions>
 
         <Snackbar
@@ -239,6 +273,11 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
           autoHideDuration={5000}
           onClose={handleCloseSnackBar}
           message={message}
+          action={
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleCloseSnackBar}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          }
         />
       </Dialog>
     </>

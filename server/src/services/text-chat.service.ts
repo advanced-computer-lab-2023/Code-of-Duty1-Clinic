@@ -95,8 +95,8 @@ const getMyPossibleDoctors = async (patientID: string) => {
 
   
   const doctors = appointments.filter((appointment, index, array) => { 
-   const currentDoctorID = appointment.doctorID.toString();
-    return array.findIndex(a => a.doctorID.toString() === currentDoctorID) === index;
+    const currentDoctorID = appointment.doctorID;
+    return array.findIndex(a => a.doctorID == currentDoctorID) == index;
 
   }).map((appointment) => {
     return {

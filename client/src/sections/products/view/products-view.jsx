@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // import { products } from 'src/_mock/products';
 
@@ -129,28 +130,19 @@ export default function ProductsView() {
     handleCloseMedicineForm();
   };
 
-  if (error) {
-    return <Typography variant="body1">Error fetching orders: {error.message}</Typography>;
-  }
-  if (loading) {
-    return <Typography variant="body1">Loading...</Typography>;
-  }
-  if (expandProductDetails) {
+  if (loading) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+  if (error) return <Typography variant="body1">Error fetching orders: {error.message}</Typography>;
+  if (expandProductDetails)
     return <ProductDetails product={product} onCloseProductDetails={handleCloseProductDetails} />;
-  }
 
   return (
     <Container>
       <Typography variant="h4" sx={{ mb: 5 }}>
-        Products
-        {console.log(products)}
+        Medicines
       </Typography>
 
-      <Stack direction="row" alignItems="center" flexWrap="wrap-reverse" justifyContent="flex-end" sx={{ mb: 5 }}>
-        <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters openFilter={openFilter} onOpenFilter={handleOpenFilter} onCloseFilter={handleCloseFilter} />
-
-          <ProductSort />
+      <Stack direction="row" alignItems="center" flexWrap="wrap-reverse" sx={{ mb: 5 }}>
+        <Stack direction="row" spacing={1} sx={{ my: 1 }}>
           <ProductSearch onSearch={onSearch} />
           {user == 'Pharmacist' && (
             <Button
@@ -160,7 +152,7 @@ export default function ProductsView() {
               onClick={handleOpenMedicineForm}
               sx={{ maxHeight: 60, maxWidth: 150 }}
             >
-              add medicine
+              Add Medicine
             </Button>
           )}
         </Stack>
@@ -243,7 +235,11 @@ export default function ProductsView() {
           .filter((product) => !(user === 'Patient' && product.isArchived))
           .map((product) => (
             <Grid key={product.id} xs={12} sm={6} md={3}>
-              <ProductCard product={product} onDetailsview={handleExpandProductDetails} />
+              <ProductCard
+                product={product}
+                onDetailsview={handleExpandProductDetails}
+                addableToCart={localStorage.getItem('userRole') == 'Patient'}
+              />
             </Grid>
           ))}
       </Grid>

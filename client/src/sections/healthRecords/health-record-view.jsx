@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-import { useUserContext } from 'src/contexts/userContext';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 import HealthRecordSummary from './health-record-summary';
@@ -15,6 +14,7 @@ export default function HealthRecordView({ patientID }) {
   const [healthRecords, setHealthRecords] = useState([]);
   const [newName, setNewName] = useState('');
   const [newRecord, setNewRecord] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // const {
   //   user: { role },
@@ -41,14 +41,18 @@ export default function HealthRecordView({ patientID }) {
   }, []);
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     try {
       await axiosInstance.post(`/patients/${patientID}/medicalhistory`, {
         name: newName,
         medicalRecord: newRecord
       });
       fetchHealthRecords();
+
+      setIsLoading(false);
     } catch (err) {
       console.error(err);
+      setIsLoading(false);
     }
 
     setNewName('');
@@ -86,8 +90,8 @@ export default function HealthRecordView({ patientID }) {
             sx={{ mb: 2 }}
           />
           <br />
-          <Button variant="contained" onClick={handleSubmit}>
-            Add
+          <Button disabled={isLoading} variant="contained" onClick={handleSubmit}>
+            {isLoading ? 'Loading...' : 'Add'}
           </Button>
         </div>
       )}

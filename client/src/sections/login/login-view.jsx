@@ -15,7 +15,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 import { axiosInstance } from '../../utils/axiosInstance';
-import { useUserContext } from 'src/contexts/userContext';
 
 import { bgGradient } from 'src/theme/css';
 import Logo from 'src/components/logo';
@@ -42,7 +41,7 @@ export default function LoginView() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { setUser } = useUserContext();
+  // const { setToken } = useAuthContext();
 
   const onSubmit = async (body) => {
     setLoading(true);
@@ -51,8 +50,9 @@ export default function LoginView() {
 
       if (res.status == 200) {
         const user = res.data.user;
-        localStorage.setItem('token', user.name); // limited time token
-        // setUser({ name: user.name, role: user.role });
+        localStorage.setItem('token', user.token);
+        // setToken(() => user.token);
+
         localStorage.setItem('userID', user._id);
         localStorage.setItem('userName', user.name);
         localStorage.setItem('userId', user._id);
@@ -61,7 +61,7 @@ export default function LoginView() {
         let target = destination;
         if (user.role != 'Patient' && user.role != 'Admin') {
           let response = await axiosInstance.get('upload/uploads');
-          if (response.data.result == 0) {
+          if (!response.data.result) {
             target = '/upload-document';
           }
         }
@@ -70,7 +70,7 @@ export default function LoginView() {
         setError(res.data.message);
       }
     } catch (e) {
-      setError(e.message);
+      setError(e.response?.data.message || 'Network error');
     } finally {
       setLoading(false);
     }

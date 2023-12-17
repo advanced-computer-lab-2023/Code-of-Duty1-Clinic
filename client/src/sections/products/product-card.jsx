@@ -18,12 +18,16 @@ import { MedicineImage } from '../upload/medicineImage';
 import 'react-toastify/dist/ReactToastify.css';
 // ----------------------------------------------------------------------
 
-export default function ShopProductCard({ product, onDetailsview }) {
+export default function ShopProductCard({ product, onDetailsview, addableToCart }) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const user = localStorage.getItem('userRole');
   let count = 1;
   const handleAddToCart = async (id, clickNumber) => {
     if (clickNumber === 1) {
       try {
+        setIsLoading(true);
+
         await axios.post('http://localhost:3000/cart', { medID: id }, { withCredentials: true });
         toast.success('Product added to the cart successfully!', {
           position: toast.POSITION.TOP_RIGHT
@@ -33,6 +37,8 @@ export default function ShopProductCard({ product, onDetailsview }) {
         toast.error('Error adding to cart. Please try again later.', {
           position: toast.POSITION.TOP_RIGHT
         });
+      } finally {
+        setIsLoading(false);
       }
     } else {
       alert('The item is already added to the cart!');
@@ -144,14 +150,17 @@ export default function ShopProductCard({ product, onDetailsview }) {
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           {/* <ColorPreview colors={['red', 'blue', 'yellow', 'green']} /> */}
           {/* it suppose here to be product.colors */}
-          <Button
-            variant="contained"
-            color="inherit"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => handleAddToCart(product._id, count)}
-          >
-            add to cart
-          </Button>
+          {addableToCart && (
+            <Button
+              disabled={isLoading}
+              variant="contained"
+              color="inherit"
+              startIcon={<Iconify icon="eva:plus-fill" />}
+              onClick={() => handleAddToCart(product._id, count)}
+            >
+              {isLoading ? 'Adding...' : 'Add to cart'}
+            </Button>
+          )}
           {renderPrice}
         </Stack>
       </Stack>

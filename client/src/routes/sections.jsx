@@ -1,9 +1,9 @@
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes, useParams } from 'react-router-dom';
 
-import DashboardLayout from 'src/layouts/dashboard';
+import CircularProgress from '@mui/material/CircularProgress';
 
-import { RegistrationUpload, UploadView } from 'src/sections/upload';
+import DashboardLayout from 'src/layouts/dashboard';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -28,6 +28,9 @@ export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
 // export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
 export const MedicalHistoryPage = lazy(() => import('src/pages/medical-history'));
+
+export const ProfilePage = lazy(() => import('src/pages/profile'));
+
 export const PackageAdmin = lazy(() => import('src/pages/package-admin'));
 
 export const CartPage = lazy(() => import('src/pages/cart'));
@@ -41,52 +44,96 @@ export const UsersPage = lazy(() => import('src/pages/users'));
 export const ReportPage = lazy(() => import('src/pages/report'));
 export const AddAdminPage = lazy(() => import('src/pages/addAdmin'));
 // ----------------------------------------------------------------------
-
 export default function Router() {
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('userRole');
+
+  const userRoutes = {
+    Patient: [
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'doctors', element: <DoctorsPage /> },
+      { path: 'appointments', element: <AppointmentsPage /> },
+      { path: 'chat', element: <ViewChat /> },
+      { path: 'requests', element: <RequestsPage /> },
+      { path: '/medical-history', element: <MedicalHistoryPage /> },
+      { path: 'health-record', element: <HealthRecordPage /> },
+      { path: 'prescription', element: <PrescriptionsPage /> },
+      { path: 'packages', element: <PackagePage /> },
+      { path: 'family', element: <FamilyPage /> },
+      { path: 'addFamily', element: <AddFamilyPage /> },
+      { path: 'viewPackage', element: <ViewPackagePage /> },
+      { path: 'orders', element: <OrdersPage /> },
+      { path: 'cart', element: <CartPage /> },
+      { path: 'view-medicine-image', element: <ViewMedicineImage /> },
+      { path: 'addresses', element: <AddressesPage /> },
+      {
+        path: 'profile/:id',
+        element: <ProfilePage />
+      }
+    ],
+    Doctor: [
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'doctors', element: <DoctorsPage /> },
+      { path: 'appointments', element: <AppointmentsPage /> },
+      { path: 'chat', element: <ViewChat /> },
+      { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
+      { path: '/medical-history/:patientID', element: <MedicalHistoryPage /> },
+      { path: 'patients', element: <PatientsPage /> },
+      { path: 'health-record/:patientID', element: <HealthRecordPage /> },
+      { path: 'prescription/:patientID', element: <PrescriptionsPage /> },
+      { path: 'contract', element: <ContractPage /> },
+      { path: 'slots', element: <AddSlotsOrAppointmentPage /> },
+      {
+        path: 'profile/:id',
+        element: <ProfilePage />
+      }
+    ],
+    Pharmacist: [
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'doctors', element: <DoctorsPage /> },
+      { path: 'chat', element: <ViewChat /> },
+      { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
+      { path: 'contract', element: <ContractPage /> },
+      { path: 'orders', element: <OrdersPage /> },
+      { path: 'view-medicine-image', element: <ViewMedicineImage /> },
+      { path: 'report', element: <ReportPage /> },
+      {
+        path: 'profile/:id',
+        element: <ProfilePage />
+      }
+    ],
+    Admin: [
+      { path: 'requests', element: <RequestsPage /> },
+      { path: 'packages-admin', element: <PackageAdmin /> },
+      { path: 'users', element: <UsersPage /> },
+      { path: 'add-admin', element: <AddAdminPage /> },
+      { path: 'report', element: <ReportPage /> },
+      {
+        path: 'profile/:id',
+        element: <ProfilePage />
+      }
+    ]
+  };
+
   const routes = useRoutes([
     {
       path: '',
-      element: (
+      element: token ? (
         <DashboardLayout>
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />}>
             <Outlet />
           </Suspense>
         </DashboardLayout>
+      ) : (
+        <Navigate to="/login" replace />
       ),
       children: [
         { index: true, element: <IndexPage /> },
-        { path: 'appointments', element: <AppointmentsPage /> },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
-        { path: 'doctors', element: <DoctorsPage /> },
-        { path: 'requests', element: <RequestsPage /> },
-        { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
-        { path: '/medical-history', element: <MedicalHistoryPage /> },
-        // { path: 'requests-list', element: <RequestsListPage /> },
-        { path: 'patients', element: <PatientsPage /> },
-        { path: 'health-record/:patientID', element: <HealthRecordPage /> },
-        { path: 'health-record', element: <HealthRecordPage /> },
-        { path: 'prescription/:patientID', element: <PrescriptionsPage /> },
-        { path: 'prescription', element: <PrescriptionsPage /> },
-        { path: 'doctors', element: <DoctorsPage /> },
-        { path: 'packages', element: <PackagePage /> },
-        { path: 'packages-admin', element: <PackageAdmin /> },
-        { path: 'family', element: <FamilyPage /> },
-        { path: 'addFamily', element: <AddFamilyPage /> },
-        { path: 'viewPackage', element: <ViewPackagePage /> },
-        { path: 'contract', element: <ContractPage /> },
-        { path: 'addSlotsOrAppointment', element: <AddSlotsOrAppointmentPage /> },
-        { path: 'reset-password', element: <ResetPage /> },
-
-        { path: 'orders', element: <OrdersPage /> },
-        { path: 'cart', element: <CartPage /> },
-        { path: 'upload-medicine-image', element: <MedicineImageUploadPage /> },
-        { path: 'view-medicine-image', element: <ViewMedicineImage /> },
-        { path: 'addresses', element: <AddressesPage /> },
-        { path: 'chat', element: <ViewChat /> },
-        { path: 'report', element: <ReportPage /> },
-        { path: 'users', element: <UsersPage /> },
-        { path: 'add-admin', element: <AddAdminPage /> }
+        {
+          path: 'reset-password',
+          element: <ResetPage />
+        },
+        ...(userRoutes[role] || [])
       ]
     },
     {
@@ -97,13 +144,10 @@ export default function Router() {
       path: 'register',
       element: <RegisterPage />
     },
+
     {
       path: 'forgot-password',
       element: <ForgotPage />
-    },
-    {
-      path: '404',
-      element: <Page404 />
     },
     {
       path: '*',

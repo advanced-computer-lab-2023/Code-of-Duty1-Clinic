@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../../../utils/axiosInstance';
 import Chat from './Chat';
-import { Typography, List, ListItem, ListItemText, Paper, Box, Divider,Button } from '@mui/material';
+import { Typography, List, ListItem, ListItemText, Paper, Box, Divider, Button, CircularProgress } from '@mui/material';
 import io from 'socket.io-client';
 
 function UsersList({ ioUrl, contactUrl }) {
@@ -12,6 +12,7 @@ function UsersList({ ioUrl, contactUrl }) {
     const [newSocket, setNewSocket] = useState(null);
     const [oldUsers, setOldUsers] = useState([]);
     const [isSavedOld, setIsSavedOld] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const handleUserClick = (user) => {
         setSelectedUser(user);
     };
@@ -24,15 +25,15 @@ function UsersList({ ioUrl, contactUrl }) {
         try {
             if (firstTime) {
                 firstTime = false;
-    
+
                 await fetch('http://localhost:3000/video-permission', {
                     method: 'GET',
                 });
-                
+
             } else {
                 // Open a new tab with Google Calendar URL
                 window.open('https://calendar.google.com/', '_blank');
-    
+
                 // Use fetch for the second time with a request body
                 await fetch('http://localhost:3000/video-permission/schedule-videoCall', {
                     method: 'GET',
@@ -61,11 +62,12 @@ function UsersList({ ioUrl, contactUrl }) {
 
     const fetchData = async () => {
         try {
+            setIsLoading(true);
             const response = await axiosInstance.get(contactUrl);
             console.log('Response from /chat/users:', response.data);
 
             const unseenMessagesCounts = await Promise.all(
-                response.data.map(async (user) => {
+                response.data.filter((user) => user.userID).map(async (user) => {
                     const countResponse = await axiosInstance.get(`/chat/room/${user.userID._id}/count`);
                     return { userID: user.userID._id, count: countResponse.data.count };
                 })
@@ -74,7 +76,7 @@ function UsersList({ ioUrl, contactUrl }) {
             unseenMessagesCounts.forEach((item) => {
                 countMap[item.userID] = item.count;
             });
-            const sortedUsers = response.data.sort((a, b) => {
+            const sortedUsers = response.data.filter((user) => user.userID).sort((a, b) => {
                 const countA = unseenMessagesCount[a.userID._id] || 0;
                 const countB = unseenMessagesCount[b.userID._id] || 0;
                 return countB - countA;
@@ -86,6 +88,8 @@ function UsersList({ ioUrl, contactUrl }) {
             console.log('Count map:', countMap);
         } catch (error) {
             console.error('Error fetching users:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -131,7 +135,65 @@ function UsersList({ ioUrl, contactUrl }) {
         });
         setUsers((prev) => sortedUsers);
     }, [searchQuery]);
-
+    const renderList = () => {
+        return (<List style={{ padding: '0' }}>
+            {users.map((user) => (
+                <React.Fragment key={user.userID._id}>
+                    <ListItem
+                        style={{
+                            backgroundColor: '#e6f7ff', // Light Blue
+                            cursor: 'pointer',
+                            transition: 'background-color 0.3s',
+                            '&:hover': {
+                                backgroundColor: '#c2e2ff', // Lighter Blue on Hover
+                            },
+                            //display: 'flex',
+                            //alignItems: 'center'
+                        }}
+                        onClick={() => handleUserClick(user)}
+                    >
+                        <img
+                            src={`/assets/images/profile/profile-image.png`}
+                            alt={user.userID.name}
+                            style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '16px' }}
+                        />
+                        <ListItemText primary={user.userID.name} />
+                        {unseenMessagesCount[user.userID._id] > 0 && (
+                            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                                <div
+                                    style={{
+                                        width: '24px',
+                                        height: '24px',
+                                        borderRadius: '50%',
+                                        backgroundColor: 'red',
+                                        color: '#fff',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '14px',
+                                    }}
+                                >
+                                    {unseenMessagesCount[user.userID._id]}
+                                </div>
+                            </div>
+                        )}
+                        <Button
+                            variant="outlined"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleVideoChat(user)
+                            }}
+                            style={{ marginLeft: 'auto' }}
+                        >
+                            Video Chat
+                        </Button>
+                    </ListItem>
+                    <Divider sx={{ backgroundColor: '#bdbdbd' }} />
+                </React.Fragment>
+            ))}
+        </List>
+        );
+    }
     return (
         <Box maxWidth="800px" m="0 auto" p="20px">
             {/* <Typography variant="h4" mb={3} color="primary">
@@ -154,62 +216,7 @@ function UsersList({ ioUrl, contactUrl }) {
                 />
             </Paper>
             <Paper elevation={3} sx={{ borderRadius: '8px', backgroundColor: '#f0f0f0', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)' }}>
-                <List style={{ padding: '0' }}>
-                    {users.map((user) => (
-                        <React.Fragment key={user.userID._id}>
-                            <ListItem
-                                style={{
-                                    backgroundColor: '#e6f7ff', // Light Blue
-                                    cursor: 'pointer',
-                                    transition: 'background-color 0.3s',
-                                    '&:hover': {
-                                        backgroundColor: '#c2e2ff', // Lighter Blue on Hover
-                                    },
-                                    //display: 'flex',
-                                    //alignItems: 'center'
-                                }}
-                                onClick={() => handleUserClick(user)}
-                            >
-                                <img
-                                    src={`/assets/contact-image.svg`}
-                                    alt={user.userID.name}
-                                    style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '16px' }}
-                                />
-                                <ListItemText primary={user.userID.name} />
-                                {unseenMessagesCount[user.userID._id] > 0 && (
-                                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                                        <div
-                                            style={{
-                                                width: '24px',
-                                                height: '24px',
-                                                borderRadius: '50%',
-                                                backgroundColor: 'red',
-                                                color: '#fff',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontSize: '14px',
-                                            }}
-                                        >
-                                            {unseenMessagesCount[user.userID._id]}
-                                        </div>
-                                    </div>
-                                )}
-                                                <Button
-                                                    variant="outlined"
-                                                    onClick={(e) =>{
-                                                        e.stopPropagation();
-                                                        handleVideoChat(user)
-                                                    }}
-                                                    style={{ marginLeft: 'auto' }}
-                                                >
-                                                        Video Chat
-                                                 </Button>
-                            </ListItem>
-                            <Divider sx={{ backgroundColor: '#bdbdbd' }} />
-                        </React.Fragment>
-                    ))}
-                </List>
+                {isLoading ? <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} /> : renderList()}
             </Paper>
             {selectedUser && (
                 <Chat

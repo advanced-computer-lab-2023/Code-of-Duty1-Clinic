@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -15,8 +15,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { account } from 'src/_mock/account';
-
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 
@@ -29,6 +27,16 @@ export default function Nav({ openNav, onCloseNav }) {
   const pathname = usePathname();
 
   const upLg = useResponsive('up', 'lg');
+
+  const [role, setRole] = useState(() => localStorage.getItem('userRole'));
+
+  const navigationBar = navConfig(role);
+
+  const account = {
+    displayName: localStorage.getItem('userName'),
+    photoURL: '/static/mock-images/avatars/avatar_default.jpg',
+    role: localStorage.getItem('userRole')
+  };
 
   useEffect(() => {
     if (openNav) {
@@ -64,7 +72,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const renderMenu = (
     <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
-      {navConfig.map((item) => (
+      {navigationBar.map((item) => (
         <NavItem key={item.title} item={item} />
       ))}
     </Stack>

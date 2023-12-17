@@ -5,6 +5,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
+import Divider from '@mui/material/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import MemberCard from '../member-card';
 
@@ -20,8 +22,8 @@ export default function FamilyView() {
     refetchOnWindowFocus: false
   });
 
-  if (isLoading) return 'Loading...';
-  if (error) return 'An error has occurred: ' + error.message;
+  if (isLoading) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+  if (error) return <Typography>An error has occurred: {error.response?.data.message || 'Network error'}</Typography>;
 
   return (
     <Container>

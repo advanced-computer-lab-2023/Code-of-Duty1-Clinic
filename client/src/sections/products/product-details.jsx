@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -30,19 +30,50 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const alternatives = async () => {
-    try{
+    try {
       const response = await axios.get(`http://localhost:3000/medicine`);
       setAlternativeProducts(response.data.result);
       console.log(response);
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error.message);
     }
-  }
+  };
   useEffect(() => {
     alternatives();
   }, []);
-  const [isEditModalOpen, setIsEditMadalOpen] = useState(false);
+  const renderAlternatives = () => {
+    if (filteredAlternatives.length === 0) {
+      return (
+        <Box
+          sx={{
+            textAlign: 'center',
+            paddingTop: 4,
+            paddingLeft: 7
+          }}
+        >
+          <Typography variant="h4" fontWeight="bold">
+            No alternatives available.
+          </Typography>
+        </Box>
+      );
+    }
+
+    return (
+      <Card sx={{ mt: 3 }}>
+        <Typography variant="h3" mt={3}>
+          Alternative Products
+        </Typography>
+        {filteredAlternatives.map((alternative) => (
+          <Card key={alternative._id} sx={{ mt: 2, p: 2, borderRadius: 8, boxShadow: 2 }}>
+            <Typography variant="subtitle1" fontWeight="bold">
+              {alternative.name}
+            </Typography>
+            <Typography color="textSecondary">{alternative.description}</Typography>
+          </Card>
+        ))}
+      </Card>
+    );
+  };
   // useEffect(() => {
   //   const loadMedicineProduct = async () => {
   //     try {
@@ -135,12 +166,20 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const renderDescription = (
     <Stack spacing={2}>
       <Stack>
-        <Typography>Description : </Typography>
+        <Typography fontWeight="bold">Description : </Typography>
         <Typography>{medicineProduct.description} </Typography>
       </Stack>
       <Stack direction={'row'} spacing={1}>
-        <Typography>medical use : </Typography>
+        <Typography fontWeight="bold">Medical use : </Typography>
         <Typography>{medicineProduct.medicalUse} </Typography>
+      </Stack>
+      <Stack direction={'row'} spacing={1}>
+        <Typography fontWeight="bold">Active Ingredients :</Typography>
+        {medicineProduct.activeIngredients && medicineProduct.activeIngredients.length > 0 ? (
+          <Typography>{medicineProduct.activeIngredients.join(', ')}</Typography>
+        ) : (
+          <Typography>No active ingredients available</Typography>
+        )}
       </Stack>
     </Stack>
   );
@@ -159,7 +198,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
     setUploadImg('');
   };
   const handleOpenEditModal = () => {
-    setIsEditMadalOpen(true);
+    setIsEditModalOpen(true);
   };
   const handleCloseEditModal = async () => {
     try {
@@ -170,7 +209,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
     } catch (err) {
       console.log(err.message);
     }
-    setIsEditMadalOpen(false);
+    setIsEditModalOpen(false);
   };
   const renderEditMedicineButton = (
     <Button variant="outlined" sx={{ textTransform: 'uppercase' }} onClick={handleOpenEditModal}>
@@ -189,76 +228,64 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
     );
   }
 
-  const filteredAlternatives = alternativeProducts?.filter((alternative) =>
-  alternative.activeIngredients.some((ingredient) =>
-    medicineProduct.activeIngredients.includes(ingredient)
-  )
-) || [];
+  const filteredAlternatives =
+    alternativeProducts?.filter((alternative) =>
+      alternative.activeIngredients.some((ingredient) => medicineProduct.activeIngredients.includes(ingredient))
+    ) || [];
   return (
     <Box>
-    <Card>
-      <IconButton onClick={onCloseProductDetails} color="primary" aria-label="back">
-        <ArrowBackIcon />
-      </IconButton>
-      <Stack sx={{ position: 'relative' }} direction="row">
-        {renderImg}
-        <Stack direction={'row'} justifyContent={'space-between'} sx={{ width: '100%', marginLeft: 2 }}>
-          {renderDescription}
-          <Stack spacing={2} sx={{ marginRight: 1 }}>
-            {medicineProduct._id && renderStatus}
-            {user === 'Pharmacist' && renderArchiveButton}
-            {user == 'Pharmacist' && renderAddNewImageButton}
+      <Card>
+        <IconButton onClick={onCloseProductDetails} color="primary" aria-label="back">
+          <ArrowBackIcon />
+        </IconButton>
+        <Stack sx={{ position: 'relative' }} direction="row">
+          {renderImg}
+          <Stack direction={'row'} justifyContent={'space-between'} sx={{ width: '100%', marginLeft: 2 }}>
+            {renderDescription}
+            <Stack spacing={2} sx={{ marginRight: 1 }}>
+              {medicineProduct._id && renderStatus}
+              {user === 'Pharmacist' && renderArchiveButton}
+              {user == 'Pharmacist' && renderAddNewImageButton}
+              {user == 'Pharmacist' && renderEditMedicineButton}
+            </Stack>
           </Stack>
         </Stack>
-      </Stack>
-      <Stack direction={'row'} justifyContent={'space-evenly'}>
-        <Stack spacing={1} sx={{ p: 3 }}>
-          <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
-            {medicineProduct.name}
-          </Link>
+        <Stack direction={'row'} justifyContent={'space-evenly'}>
+          <Stack spacing={1} sx={{ p: 3 }}>
+            <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
+              {medicineProduct.name}
+            </Link>
 
-              <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pl: 2 }}>
-                {/* <ColorPreview colors={['red', 'blue', 'yellow', 'green']} /> */}
-                {/* it suppose here to be medicineProduct.colors */}
-                {renderPrice}
-              </Stack>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pl: 2 }}>
+              {/* <ColorPreview colors={['red', 'blue', 'yellow', 'green']} /> */}
+              {/* it suppose here to be medicineProduct.colors */}
+              {renderPrice}
             </Stack>
-            {user === 'Pharmacist' && (
-              <Stack spacing={1} sx={{ p: 3 }}>
-                <Typography color="inherit" underline="hover" variant="subtitle2">
-                  items left in the stock
-                </Typography>
-                <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 7 }}>
-                  {medicineProduct.numStock}
-                </Typography>
-              </Stack>
-            )}
-            {user === 'Pharmacist' && (
-              <Stack spacing={1} sx={{ p: 3 }}>
-                <Typography color="inherit" underline="hover" variant="subtitle2">
-                  items sold
-                </Typography>
-                <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 4 }}>
-                  {medicineProduct.numSold}
-                </Typography>
-              </Stack>
-            )}
           </Stack>
-        </Card>
-        {medicineProduct.numStock === 0 && (
-        <Card>
-          <Typography variant="h5" mt={3}>
-            Alternative Products
-          </Typography>
-          {filteredAlternatives.map((alternative) => (
-            <Card key={alternative._id}>
-              <Typography>{alternative.name}</Typography>
-            </Card>
-          ))}
-        </Card>
-      )}
-      </Box>  
-
+          {user === 'Pharmacist' && (
+            <Stack spacing={1} sx={{ p: 3 }}>
+              <Typography color="inherit" underline="hover" variant="subtitle2">
+                Items left in the stock
+              </Typography>
+              <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 7 }}>
+                {medicineProduct.numStock}
+              </Typography>
+            </Stack>
+          )}
+          {user === 'Pharmacist' && (
+            <Stack spacing={1} sx={{ p: 3 }}>
+              <Typography color="inherit" underline="hover" variant="subtitle2">
+                Items sold
+              </Typography>
+              <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 4 }}>
+                {medicineProduct.numSold}
+              </Typography>
+            </Stack>
+          )}
+        </Stack>
+      </Card>
+      {renderAlternatives()}
+    </Box>
   );
 }
 

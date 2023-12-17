@@ -5,15 +5,16 @@ import { getPackages, addPackage, updatePackage, deletePackage } from '../servic
 
 const router = express.Router();
 
+router.use(isAuthenticated);
+
 router.get('/:id', (req: Request, res: Response) => {
   controller(res)(getPackages)({ _id: req.params.id });
 });
 
 router.get('/', (req: Request, res: Response) => {
-  controller(res)(getPackages)(req.query);
+  controller(res)(getPackages)(req.query, req.decoded.id);
 });
 
-router.use(isAuthenticated);
 router.use(isAuthorized('Admin'));
 
 router.post('/', (req: Request, res: Response) => {

@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Snackbar from '@mui/material/Snackbar';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import PlanCard from './plan-view';
 
@@ -31,8 +32,8 @@ export default function PackageView() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [message, setMessage] = useState('');
 
-  if (isLoading) return 'Loading...';
-  if (error) return 'An error has occurred: ' + error.message;
+  if (isLoading) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+  if (error) return <Typography>An error has occurred: {error.response?.data.message || 'Network error'}</Typography>;
 
   const handleCloseSnackBar = (event, reason) => {
     if (reason === 'clickaway') return;

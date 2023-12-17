@@ -16,7 +16,7 @@ const modalStyle = {
   padding: '20px',
   width: '400px',
   borderRadius: '8px',
-  boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.2)'
+  boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.2)',
 };
 
 const closeButtonStyle = {
@@ -24,13 +24,13 @@ const closeButtonStyle = {
   top: '10px',
   right: '10px',
   fontSize: '20px',
-  cursor: 'pointer'
+  cursor: 'pointer',
 };
 
-const MedicalHistoryUploadComponent = ({ onClose }) => {
+const MedicalHistoryUploadComponent = ({ onClose, patientID }) => {
   const [isUploaded, setIsUploaded] = useState([0, 0, 0]);
   const [fileName, setFileName] = useState('');
-  const url = '/upload/patient/medicalHistory';
+  const url = `/upload/patient/${patientID}/medicalHistory`;
 
   const handleUploadSuccess = (field) => {
     let idx = 0;
@@ -72,7 +72,7 @@ const MedicalHistoryUploadComponent = ({ onClose }) => {
   );
 };
 
-const MedicalHistoryUpload = () => {
+const MedicalHistoryUpload = ({ patientID }) => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const openModal = () => {
@@ -81,6 +81,8 @@ const MedicalHistoryUpload = () => {
 
   const closeModal = () => {
     setModalOpen(false);
+    window.location.reload();
+
   };
 
   return (
@@ -91,14 +93,14 @@ const MedicalHistoryUpload = () => {
           sx={{ fontSize: '16px', padding: '10px', cursor: 'pointer', marginTop: '20px' }}
           onClick={openModal}
         >
-          Upload to Medical History
+          Upload File
         </Button>
         <Modal open={isModalOpen} onClose={closeModal}>
           <Box sx={modalStyle}>
             <Typography variant="h6" sx={{ marginBottom: '20px' }}>
               Medical History Upload
             </Typography>
-            <MedicalHistoryUploadComponent onClose={closeModal} />
+            <MedicalHistoryUploadComponent onClose={closeModal} patientID={patientID} />
           </Box>
         </Modal>
       </div>

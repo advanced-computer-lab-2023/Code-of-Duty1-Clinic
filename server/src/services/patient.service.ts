@@ -5,8 +5,10 @@ import { HttpError } from '../utils';
 import { Prescription, Appointment } from '../models';
 import path from 'path';
 import fs from 'fs';
+import mongoose, { ObjectId } from 'mongoose';
 
 const addFamilyMember = async (id: string, body: any) => {
+  console.log(body);
   const { relation, email, phone, name, age, gender, nationalID } = body;
   if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
 
@@ -18,9 +20,10 @@ const addFamilyMember = async (id: string, body: any) => {
   let newFamily;
   if (email || phone) {
     const query = email ? { email } : { phone };
+    console.log(query)
 
     const familyUser = await Patient.findOne(query).select('_id');
-    if (!familyUser) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
+    if (!familyUser) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
 
     let userID = familyUser._id;
     if (userID === id) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please enter a user other than yourself');
@@ -275,17 +278,22 @@ const cancelSubscription = async (userID: string) => {
   };
 };
 
-const subscribe = async (userID: string, packageID: string) => {
+const subscribe = async (userID: string, packageData: any) => {
   let date = new Date();
   date.setFullYear(date.getFullYear() + 1);
 
+  console.log(packageData._id + ' ' + userID);
   const userPackage = {
-    packageID: packageID,
+    packageID: packageData._id,
     packageStatus: 'Subscribed',
     endDate: date
   };
 
-  await Patient.findByIdAndUpdate(userID, { $set: { package: userPackage } });
+  const patient = await Patient.findByIdAndUpdate(userID, { $set: { package: userPackage } });
+  if (!patient) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
+
+  patient.wallet! += packageData.price;
+  await patient.save();
 
   return {
     status: StatusCodes.OK,

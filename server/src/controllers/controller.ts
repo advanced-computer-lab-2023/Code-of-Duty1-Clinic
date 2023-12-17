@@ -15,7 +15,6 @@ const controller =
           secure: false,
           maxAge: 1000 * 60 * 60 * 24
         });
-        delete result.token;
       }
 
       res.status(result.status || StatusCodes.OK).json(result);

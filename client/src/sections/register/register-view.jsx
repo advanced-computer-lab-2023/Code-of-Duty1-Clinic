@@ -21,7 +21,6 @@ import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
 import { axiosInstance } from '../../utils/axiosInstance';
-import { RegistrationUpload } from 'src/sections/upload';
 
 // ----------------------------------------------------------------------
 
@@ -30,15 +29,15 @@ export default function RegisterView() {
 
   const router = useRouter();
 
+  const [currentTab, setCurrentTab] = useState(0);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm();
-
-  const [currentTab, setCurrentTab] = useState(0);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleTabChange = (e, tabIndex) => {
     e.preventDefault();
@@ -75,7 +74,7 @@ export default function RegisterView() {
       const data = await res.json();
 
       if (res.ok) router.push('/login');
-      else setError(data.message);
+      else setError(data.message || 'Network error');
     } catch (e) {
       console.log(e);
     } finally {
@@ -122,11 +121,13 @@ export default function RegisterView() {
             <Divider sx={{ mb: 1 }}>OR</Divider>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Tabs centered sx={{ mb: 2 }} onChange={handleTabChange}>
-                <Tab label="Register as a Patient" value={0} />
-                <Tab label="Register as a Doctor" value={1} />
-                <Tab label="Register as a Pharmacist" value={2} />
-              </Tabs>
+              <Box sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs centered sx={{}} onChange={handleTabChange}>
+                  <Tab label="As a Patient" value={0} />
+                  <Tab label="As a Doctor" value={1} />
+                  <Tab label="As a Pharmacist" value={2} />
+                </Tabs>
+              </Box>
 
               <Stack spacing={3}>
                 {error && (
@@ -224,6 +225,7 @@ export default function RegisterView() {
                   {(currentTab === 1 || currentTab === 2) && (
                     <>
                       <TextField
+                        type="number"
                         label="Hour Rate"
                         {...register('hourRate', {
                           required: true

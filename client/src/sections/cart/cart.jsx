@@ -17,7 +17,8 @@ import {
   DialogContent,
   TextField,
   DialogActions,
-  Dialog
+  Dialog,
+  Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -26,7 +27,8 @@ import { axiosInstance } from 'src/utils/axiosInstance';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { set } from 'lodash';
 export default function CartComponent() {
   const navigate = useNavigate();
 
@@ -36,6 +38,8 @@ export default function CartComponent() {
   const [addresses, setAddresses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newAddress, setNewAddress] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const url = `http://localhost:3000/cart`;
   const fetchCartData = async () => {
     try {
@@ -139,33 +143,40 @@ export default function CartComponent() {
       price: item.price,
       quantity: item.count
     }));
-    console.log(products);
+
+    setIsLoading(true);
+
     axiosInstance
       .post(`/payment/session/oneTimePayment`, {
         products: products
       })
       .then((res) => {
-        window.location.replace(res.data.url);
-        console.log(res);
         axiosInstance.post('/orders', {
           paymentType: 'Card',
           StripePaymentID: res.data.id,
           address
         });
+        window.location.replace(res.data.url);
+        console.log(res);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setIsLoading(false));
   };
+
   const handleSelectChange = (event) => {
     setAddress(event.target.value);
     // Add your logic for handling the selected address
   };
+
   const handleCashPayment = async () => {
+    setIsLoading(true);
     await axiosInstance
       .post('/orders', {
         paymentType: 'Cash',
         address
       })
-      .then((res) => navigate('/orders'));
+      .then((res) => navigate('/orders'))
+      .finally(() => setIsLoading(false));
   };
   const handleAddNewAddress = () => {
     // Add logic to save the new address (e.g., send to the server)
@@ -176,7 +187,10 @@ export default function CartComponent() {
     }
     setIsModalOpen(false);
   };
+
   const handleWalletPayment = async (amount) => {
+    setIsLoading(true);
+
     try {
       await axios.put('http://localhost:3000/me/wallet', { amount }, { withCredentials: true });
       toast.success('Payment done successfully!', {
@@ -188,10 +202,13 @@ export default function CartComponent() {
           address
         })
         .then((res) => navigate('/orders'));
+
+      setIsLoading(false);
     } catch (error) {
       toast.error('insuffcient amount of money in the wallet', {
         position: toast.POSITION.TOP_RIGHT
       });
+      setIsLoading(false);
     }
   };
   const NewAddressModal = (
@@ -221,8 +238,24 @@ export default function CartComponent() {
     </Dialog>
   );
 
+  const handleNavigateToMedicine = () => {
+    navigate('/products');
+  };
   return (
     <>
+      {/* <Tooltip title="Go to Medicine">
+        <IconButton
+          onClick={handleNavigateToMedicine}
+          sx={{
+            position: 'fixed', // Use 'fixed' instead of 'absolute'
+            top: 40,
+            left: 280,
+            zIndex: 2001
+          }}
+        >
+          <ArrowBackIcon />
+        </IconButton>
+      </Tooltip> */}
       <Table
         sx={{
           border: '1px solid #ddd',
@@ -299,18 +332,39 @@ export default function CartComponent() {
           </TableRow>
         </TableBody>
         <Stack direction={'row'} spacing={2}>
-          <Button onClick={handleCheckout} disabled={!address || address == 'Add New Address'}>
-            pay with credit
-          </Button>
-          <Button
-            disabled={!address || address == 'Add New Address'}
-            onClick={() => handleWalletPayment(totalPrice * -1)}
-          >
-            pay with wallet
-          </Button>
-          <Button onClick={handleCashPayment} disabled={!address || address == 'Add New Address'}>
-            pay with cash
-          </Button>
+          <Tooltip title={address ? '' : 'Please select or add an address'}>
+            <div>
+              <Button
+                onClick={handleCheckout}
+                disabled={!address || address === 'Add New Address' || isLoading}
+                variant="outlined"
+              >
+                {isLoading ? 'Loading...' : 'Pay with card'}
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title={address ? '' : 'Please select or add an address'}>
+            <div>
+              <Button
+                disabled={!address || address === 'Add New Address' || isLoading}
+                onClick={() => handleWalletPayment(totalPrice * -1)}
+                variant="outlined"
+              >
+                {isLoading ? 'Loading...' : 'Pay with wallet'}
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title={address ? '' : 'Please select or add an address'}>
+            <div>
+              <Button
+                onClick={handleCashPayment}
+                disabled={!address || address === 'Add New Address' || isLoading}
+                variant="outlined"
+              >
+                {isLoading ? 'Loading...' : 'Pay with cash'}
+              </Button>
+            </div>
+          </Tooltip>
         </Stack>
       </Table>
       <br />
