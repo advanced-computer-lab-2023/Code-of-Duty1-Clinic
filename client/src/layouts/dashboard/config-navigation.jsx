@@ -64,17 +64,17 @@ const navConfig = [
   {
     title: 'Doctors',
     path: '/doctors',
-    icon: icon('ic_user')
+    icon: icon('ic_doctor')
   },
   {
     title: 'Medical History',
     path: '/medical-history',
-    icon: icon('ic_disabled')
+    icon: icon('ic_history')
   },
   {
     title: 'Patients',
     path: '/patients',
-    icon: icon('ic_user')
+    icon: icon('ic_patient')
   },
   {
     title: 'product',
@@ -84,7 +84,7 @@ const navConfig = [
   {
     title: 'Upload Documents',
     path: '/upload-document',
-    icon: icon('ic_disabled')
+    icon: icon('ic_upload')
   },
   {
     title: 'My Health Records',
@@ -104,17 +104,17 @@ const navConfig = [
   {
     title: 'Family Members',
     path: '/family',
-    icon: icon('ic_user')
+    icon: icon('ic_family')
   },
   {
     title: 'Add Family Member',
     path: '/addFamily',
-    icon: icon('ic_user')
+    icon: icon('ic_addMember')
   },
   {
     title: 'Forgot Password',
     path: '/forgot-password',
-    icon: icon('ic_disabled')
+    icon: icon('ic_reset')
   },
   {
     title: 'View Requests',
@@ -124,22 +124,22 @@ const navConfig = [
   {
     title: 'Addresses',
     path: '/addresses',
-    icon: icon('ic_analytics')
+    icon: icon('ic_address')
   },
   {
     title: 'orders',
     path: '/orders',
-    icon: icon('ic_analytics')
+    icon: icon('ic_order')
   },
   {
     title: 'chat',
     path: '/chat',
-    icon: icon('ic_analytics')
+    icon: icon('ic_chat')
   },
   {
     title: 'report',
     path: '/report',
-    icon: icon('ic_analytics')
+    icon: icon('ic_report')
   },
   {
     title: 'users',
@@ -149,7 +149,7 @@ const navConfig = [
   {
     title: 'add-admin',
     path: '/add-admin',
-    icon: icon('ic_analytics')
+    icon: icon('ic_addAdmin')
   }
 ];
 
