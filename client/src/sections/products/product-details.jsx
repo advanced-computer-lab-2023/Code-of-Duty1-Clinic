@@ -27,19 +27,19 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const [isArchived, setIsArchived] = useState(product.isArchived);
   const [uploadImg, setUploadImg] = useState('');
   const [isEditModalOpen, setIsEditMadalOpen] = useState(false);
-  useEffect(() => {
-    const loadMedicineProduct = async () => {
-      try {
-        medicines = await axios.get(`http://localhost:3000/medicine/${product._id}`, { withCredentials: true });
-        if (medicines.result[0]) {
-          setMedicineProduct(medicines.result[0]);
-        }
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-    loadMedicineProduct();
-  }, [medicineProduct, isEditModalOpen]);
+  // useEffect(() => {
+  //   const loadMedicineProduct = async () => {
+  //     try {
+  //       medicines = await axios.get(`http://localhost:3000/medicine/${product._id}`, { withCredentials: true });
+  //       if (medicines.data.result[0]) {
+  //         setMedicineProduct(medicines.result[0]);
+  //       }
+  //     } catch (err) {
+  //       console.log(err.message);
+  //     }
+  //   };
+  //   loadMedicineProduct();
+  // }, []);
   const handleArchiveClick = async () => {
     try {
       await axios.put(
@@ -130,7 +130,9 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   );
   const handleCloseUploadImage = async () => {
     try {
-      medicines = await axios.get(`http://localhost:3000/medicine/${medicineProduct._id}`, { withCredentials: true });
+      const medicines = await axios.get(`http://localhost:3000/medicine/${medicineProduct._id}`, {
+        withCredentials: true
+      });
       if (medicines.result[0]) {
         setMedicineProduct(medicines.result[0]);
       }
@@ -143,7 +145,15 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const handleOpenEditModal = () => {
     setIsEditMadalOpen(true);
   };
-  const handleCloseEditModal = () => {
+  const handleCloseEditModal = async () => {
+    try {
+      const medicines = await axios.get(`http://localhost:3000/medicine/${product._id}`, { withCredentials: true });
+      if (medicines.data.result[0]) {
+        setMedicineProduct(medicines.data.result[0]);
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
     setIsEditMadalOpen(false);
   };
   const renderEditMedicineButton = (
