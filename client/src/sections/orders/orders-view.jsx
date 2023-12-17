@@ -47,9 +47,19 @@ export default function OrdersView() {
     setOpenFilter(false);
   };
   const handleCancelOrder = async (id) => {
-    console.log(id);
     try {
       await axios.put(`http://localhost:3000/orders/${id}/cancel`, null, { withCredentials: true });
+    } catch (err) {
+      console.log(`the error happening is${err.message}`);
+    }
+
+    const response = await axios.get('http://localhost:3000/orders', { withCredentials: true });
+    setOrders(response.data.order);
+  };
+  const handleChangeOrderState = async ({ orderID, newStatus }) => {
+    console.log('does i got to the handle change order state part or not ');
+    try {
+      await axios.put(`http://localhost:3000/orders/${orderID}`, { status: newStatus }, { withCredentials: true });
     } catch (err) {
       console.log(`the error happening is${err.message}`);
     }
@@ -80,7 +90,12 @@ export default function OrdersView() {
       {orders ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', marginBottom: 100 }}>
           {orders.map((order) => (
-            <OrderCard order={order} key={order.id} onCancelOrder={() => handleCancelOrder(order._id)} />
+            <OrderCard
+              order={order}
+              key={order.id}
+              onCancelOrder={() => handleCancelOrder(order._id)}
+              onChangeOrderStatus={(newStatus) => handleChangeOrderState({ orderID: order._id, newStatus })}
+            />
           ))}
         </Box>
       ) : (

@@ -24,12 +24,12 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
   const today = daysOfWeek[new Date().getDay()];
   if (today == day) day = 'Today';
 
-  const user = { _id: localStorage.getItem('userID'), name: localStorage.getItem('userName') };
+  const user = { _id: localStorage.getItem('userID'), name: localStorage.getItem('userName'), email: localStorage.getItem('userEmail') };
 
   const [openModal, setOpenModal] = useState(false);
   const [slot, setSlot] = useState({});
   const [family, setFamily] = useState([]);
-  const [selectedUser, setSelectedUser] = useState({ id: '', name: '' });
+  const [selectedUser, setSelectedUser] = useState({ id: '', name: '', email: '' });
   const [alignment, setAlignment] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [message, setMessage] = useState('');
@@ -49,7 +49,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
 
   const handleSelectUser = (e, option) => {
     if (option.nationalID) option._id = user._id;
-    setSelectedUser({ id: option._id, name: option.name });
+    setSelectedUser({ id: option._id, name: option.name, email: user.email });
   };
 
   const createAppointment = async () => {
@@ -63,47 +63,48 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
       patientName: selectedUser.name,
       startDate: slot.startDate,
       endDate: slot.endDate,
-      sessionPrice: slot.sessionPrice
+      sessionPrice: slot.sessionPrice,
+      patientEmail: selectedUser.email,
     });
   };
 
-  const handleReserve = () => {
+  const handleReserve = async () => {
     if (!alignment || !selectedUser.id) {
       setMessage('Some fields are not filled correctly');
       return setOpenSnackbar(true);
     }
 
-    if (alignment === 'Card')
-      axiosInstance
-        .post(`/payment/session/oneTimePayment`, {
+    try {
+      if (alignment === 'Card') {
+        const res = await axiosInstance.post(`/payment/session/oneTimePayment`, {
           products: [
             {
               name: `Appointment with Dr. ${doctorName} on ${new Date(slot.startDate).toString().slice(0, 16)}
               from ${new Date(slot.startDate).toString().slice(16, 31)} to ${new Date(slot.endDate)
-                .toString()
-                .slice(16, 31)}`,
+                  .toString()
+                  .slice(16, 31)}`,
               price: slot.sessionPrice,
               quantity: 1
             }
           ]
-        })
-        .then((res) => createAppointment().then((res1) => res))
-        .then((res) => window.location.replace(res.data.url))
-        .catch((err) => {
-          setMessage(err.response?.data.message || 'Network error');
-          setOpenSnackbar(true);
         });
-    else
-      axiosInstance
-        .put(`/me/wallet`, {
-          amount: -slot.sessionPrice
-        })
-        .then((res) => createAppointment())
-        .then((res) => window.location.reload())
-        .catch((err) => {
-          setMessage(err.response?.data.message || 'Network error');
-          setOpenSnackbar(true);
+
+        await createAppointment();
+
+        window.location.href = res.data.url;
+      } else {
+        await axiosInstance.put(`/me/wallet`, {
+          amount: -selectedPackage.sessionPrice
         });
+
+        await createAppointment();
+
+        window.location.reload();
+      }
+    } catch (err) {
+      setMessage(err.response?.data.message || 'Network error');
+      setOpenSnackbar(true);
+    }
   };
 
   const handleCloseSnackBar = (event, reason) => {
@@ -117,15 +118,13 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
     <>
       <Stack
         key={day}
+        alignItems="center"
+        justifyContent="center"
         sx={{
           border: 1,
-          borderColor: 'primary.main',
-          height: '150px',
-          overflowY: 'hidden',
-          overflowX: 'hidden',
-          '&:hover': {
-            overflowY: 'auto'
-          }
+          // borderColor: 'primary.main',
+          height: '170px',
+          width: '8em'
         }}
       >
         <Typography variant="h5" sx={{ mx: 1 }}>
@@ -133,15 +132,45 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
         </Typography>
         <Divider sx={{ border: 1, borderColor: 'primary.gray' }}></Divider>
 
-        <Stack alignItems="center" justifyContent="center" sx={{}}>
+        <Stack
+          sx={{
+            border: 1,
+            borderColor: 'primary.gray',
+            height: '180px',
+            width: '100%',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            '&::-webkit-scrollbar': {
+              width: '6px'
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'primary.light'
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: 'transparent'
+            }
+          }}
+        >
           {slots.map((slot) => {
-            const from = `${new Date(slot.startDate).getUTCHours()}:${new Date(slot.startDate).getUTCMinutes()}`;
-            const to = `${new Date(slot.endDate).getUTCHours()}:${new Date(slot.endDate).getUTCMinutes()}`;
+            // const from = `${new Date(slot.startDate).getUTCHours()}:${new Date(slot.startDate).getUTCMinutes()}`;
+            // const to = `${new Date(slot.endDate).getUTCHours()}:${new Date(slot.endDate).getUTCMinutes()}`;
+            const startDate = new Date(slot.startDate);
+            const endDate = new Date(slot.endDate);
+            startDate.setHours(startDate.getHours() - 2);
+            endDate.setHours(endDate.getHours() - 2);
+            const from = startDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+            const to = endDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
 
             return (
               <Stack key={i++}>
-                <Button onClick={() => handleClick(slot)} color="inherit" underline="hover" variant="subtitle2">
-                  {from} - {to}
+                <Button
+                  onClick={() => handleClick(slot)}
+                  color="inherit"
+                  underline="hover"
+                  variant="subtitle2"
+                  sx={{ whiteSpace: 'pre-line' }}
+                >
+                  {`${from}\n- ${to}`}
                 </Button>
                 <Divider></Divider>
               </Stack>
@@ -154,7 +183,9 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
         <DialogTitle>Book and Pay</DialogTitle>
         <DialogContent>
           <Stack alignItems="center" justifyContent="center">
-            <DialogContentText>To book this appointment, please Choose for whom you want to book.</DialogContentText>
+            <DialogContentText sx={{ mt: 1 }}>
+              To book this appointment, please choose for whom you want to book.
+            </DialogContentText>
 
             <TextField
               select
@@ -179,14 +210,11 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
               ))}
             </TextField>
 
-            <Typography variant="h6" sx={{ my: 1 }}>
-              Pay With:
-            </Typography>
+            <Typography variant="h6">Pay With:</Typography>
             <ToggleButtonGroup
               onChange={(event, newAlignment) => setAlignment(newAlignment)}
               value={alignment}
               exclusive
-              aria-label="text alignment"
             >
               <ToggleButton value="Wallet" aria-label="left aligned">
                 Wallet
@@ -195,6 +223,9 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
                 Credit Card
               </ToggleButton>
             </ToggleButtonGroup>
+            <Typography variant="h6" color={'green'} sx={{ mt: 5 }}>
+              Total Price: {slot.sessionPrice} USD
+            </Typography>
           </Stack>
         </DialogContent>
         <DialogActions>

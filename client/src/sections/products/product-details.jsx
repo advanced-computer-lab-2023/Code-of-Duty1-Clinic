@@ -18,6 +18,7 @@ import Label from 'src/components/label';
 import { MedicineImage } from '../upload/medicineImage';
 import 'react-toastify/dist/ReactToastify.css';
 import { MedicineImageUpload } from '../upload/medicineImageUpload';
+import ProductEdit from './product-edit';
 // ----------------------------------------------------------------------
 
 export default function ProductDetails({ product, onCloseProductDetails }) {
@@ -25,21 +26,6 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const [medicineProduct, setMedicineProduct] = useState(product);
   const [isArchived, setIsArchived] = useState(product.isArchived);
   const [uploadImg, setUploadImg] = useState('');
-  const [alternativeProducts, setAlternativeProducts] = useState([]);
-  
-  const alternatives = async () => {
-    try{
-      const response = await axios.get(`http://localhost:3000/medicine`);
-      setAlternativeProducts(response.data.result);
-      console.log(response);
-    }
-    catch (error) {
-      console.error(error.message);
-    }
-  }
-  useEffect(() => {
-    alternatives();
-  }, []);
   const handleArchiveClick = async () => {
     try {
       await axios.put(
@@ -140,6 +126,18 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
 
     setUploadImg('');
   };
+  const handleOpenEditModal = () => {
+    setIsEditMadalOpen(true);
+  };
+  const handleCloseEditModal = () => {
+    setIsEditMadalOpen(false);
+  };
+  const renderEditMedicineButton = (
+    <Button variant="outlined" sx={{ textTransform: 'uppercase' }} onClick={handleOpenEditModal}>
+      Edit Medicine
+    </Button>
+  );
+  if (isEditModalOpen) return <ProductEdit onClose={handleCloseEditModal} productID={product._id} />;
   if (uploadImg != '') {
     return (
       <Card>
@@ -157,27 +155,26 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   )
 ) || [];
   return (
-      <Box>  
-        <Card>
-          <IconButton onClick={onCloseProductDetails} color="primary" aria-label="back">
-            <ArrowBackIcon />
-          </IconButton>
-          <Stack sx={{ position: 'relative' }} direction="row">
-            {renderImg}
-            <Stack direction={'row'} justifyContent={'space-between'} sx={{ width: '100%', marginLeft: 2 }}>
-              {renderDescription}
-              <Stack spacing={2} sx={{ marginRight: 1 }}>
-                {medicineProduct._id && renderStatus}
-                {user === 'Pharmacist' && renderArchiveButton}
-                {user == 'Pharmacist' && renderAddNewImageButton}
-              </Stack>
-            </Stack>
+    <Card>
+      <IconButton onClick={onCloseProductDetails} color="primary" aria-label="back">
+        <ArrowBackIcon />
+      </IconButton>
+      <Stack sx={{ position: 'relative' }} direction="row">
+        {renderImg}
+        <Stack direction={'row'} justifyContent={'space-between'} sx={{ width: '100%', marginLeft: 2 }}>
+          {renderDescription}
+          <Stack spacing={2} sx={{ marginRight: 1 }}>
+            {medicineProduct._id && renderStatus}
+            {user === 'Pharmacist' && renderArchiveButton}
+            {user == 'Pharmacist' && renderAddNewImageButton}
           </Stack>
-          <Stack direction={'row'} justifyContent={'space-evenly'}>
-            <Stack spacing={1} sx={{ p: 3 }}>
-              <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
-                {medicineProduct.name}
-              </Link>
+        </Stack>
+      </Stack>
+      <Stack direction={'row'} justifyContent={'space-evenly'}>
+        <Stack spacing={1} sx={{ p: 3 }}>
+          <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
+            {medicineProduct.name}
+          </Link>
 
               <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pl: 2 }}>
                 {/* <ColorPreview colors={['red', 'blue', 'yellow', 'green']} /> */}

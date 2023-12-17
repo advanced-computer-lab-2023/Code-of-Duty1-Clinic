@@ -13,6 +13,8 @@ import ProductFilters from '../product-filters';
 import ProductCartWidget from '../product-cart-widget';
 import axios from 'axios';
 import ProductDetails from '../product-details';
+import { axiosInstance } from '../../../utils/axiosInstance';
+import ProductSearch from '../product-search';
 // ----------------------------------------------------------------------
 
 export default function ProductsView() {
@@ -60,6 +62,17 @@ export default function ProductsView() {
 
     fetchData();
   }, []);
+  const onSearch = async (filters) => {
+    const params = {};
+
+    if (filters.name) params.name = filters.name;
+    if (filters.medicalUse) params.medicalUse = filters.medicalUse;
+
+    await axiosInstance
+      .get(`/medicine`, { params })
+      .then((res) => setProducts(res.data.result))
+      .catch((err) => console.log(err));
+  };
 
   if (error) {
     return <Typography variant="body1">Error fetching orders: {error.message}</Typography>;
@@ -83,6 +96,7 @@ export default function ProductsView() {
           <ProductFilters openFilter={openFilter} onOpenFilter={handleOpenFilter} onCloseFilter={handleCloseFilter} />
 
           <ProductSort />
+          <ProductSearch onSearch={onSearch} />
         </Stack>
       </Stack>
 

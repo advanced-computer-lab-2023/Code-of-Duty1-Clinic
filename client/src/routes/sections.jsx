@@ -10,7 +10,7 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const AppointmentsPage = lazy(() => import('src/pages/appointments'));
 export const DoctorsPage = lazy(() => import('src/pages/doctors'));
 export const PatientsPage = lazy(() => import('src/pages/patients'));
-export const RequestsPage = lazy(() => import('src/pages/users'));
+export const RequestsPage = lazy(() => import('src/pages/requests'));
 export const ContractPage = lazy(() => import('src/pages/contract'));
 export const AddSlotsOrAppointmentPage = lazy(() => import('src/pages/addSlotsOrAppointment'));
 export const LoginPage = lazy(() => import('src/pages/login'));
@@ -26,8 +26,9 @@ export const AddFamilyPage = lazy(() => import('src/pages/addFamily'));
 export const FamilyPage = lazy(() => import('src/pages/family'));
 export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
-export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
+// export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
 export const MedicalHistoryPage = lazy(() => import('src/pages/medical-history'));
+export const PackageAdmin = lazy(() => import('src/pages/package-admin'));
 
 export const CartPage = lazy(() => import('src/pages/cart'));
 export const OrdersPage = lazy(() => import('src/pages/orders'));
@@ -36,8 +37,9 @@ export const MedicineImageUploadPage = lazy(() => import('src/pages/uploadMedici
 export const ViewMedicineImage = lazy(() => import('src/pages/view-medicine-image'));
 export const AddressesPage = lazy(() => import('src/pages/addresses'));
 export const ViewChat = lazy(() => import('src/pages/textChat'));
-
+export const UsersPage = lazy(() => import('src/pages/users'));
 export const ReportPage = lazy(() => import('src/pages/report'));
+export const AddAdminPage = lazy(() => import('src/pages/addAdmin'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -60,7 +62,7 @@ export default function Router() {
         { path: 'requests', element: <RequestsPage /> },
         { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
         { path: '/medical-history', element: <MedicalHistoryPage /> },
-        { path: 'requests-list', element: <RequestsListPage /> },
+        // { path: 'requests-list', element: <RequestsListPage /> },
         { path: 'patients', element: <PatientsPage /> },
         { path: 'health-record/:patientID', element: <HealthRecordPage /> },
         { path: 'health-record', element: <HealthRecordPage /> },
@@ -68,6 +70,7 @@ export default function Router() {
         { path: 'prescription', element: <PrescriptionsPage /> },
         { path: 'doctors', element: <DoctorsPage /> },
         { path: 'packages', element: <PackagePage /> },
+        { path: 'packages-admin', element: <PackageAdmin /> },
         { path: 'family', element: <FamilyPage /> },
         { path: 'addFamily', element: <AddFamilyPage /> },
         { path: 'viewPackage', element: <ViewPackagePage /> },
@@ -82,6 +85,8 @@ export default function Router() {
         { path: 'addresses', element: <AddressesPage /> },
         { path: 'chat', element: <ViewChat /> },
         { path: 'report', element: <ReportPage /> },
+        { path: 'users', element: <UsersPage /> },
+        { path: 'add-admin', element: <AddAdminPage /> }
       ]
     },
     {

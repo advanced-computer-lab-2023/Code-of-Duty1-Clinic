@@ -13,12 +13,19 @@ const getRequests = async (query: Object) => {
 };
 
 const addAdmin = async (adminInfo: any) => {
-  const admin = new Admin(adminInfo);
-  await admin.save();
+  let admin;
+  let message = 'new admin has been created';
+  let status = StatusCodes.OK;
 
-  return {
-    message: 'new admin has been created',
-    status: StatusCodes.OK,
+  try {
+     admin = new Admin(adminInfo);
+    await admin.save();
+  } catch (e) { 
+      message = (e as Error).message;
+      status = StatusCodes.CONFLICT;
+  }  return {
+    message: message,
+    status: status,
     result: admin
   };
 };

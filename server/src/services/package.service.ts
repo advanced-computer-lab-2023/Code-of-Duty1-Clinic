@@ -3,7 +3,7 @@ import { HttpError } from '../utils';
 import { Patient, Package } from '../models';
 
 const getPackages = async (query: Object) => {
-  const packages = await Package.find(query);
+  const packages = await Package.find({ ...query, isLatest: true }).sort({ price: 1 });
   if (!packages) throw new HttpError(StatusCodes.NOT_FOUND, 'No packages found');
 
   return {
@@ -47,10 +47,8 @@ const updatePackage = async (id: string, packageDetails: any) => {
 };
 
 const deletePackage = async (id: string) => {
-  const deletedPackage = await Package.findOneAndDelete({ _id: id });
-  if (!deletedPackage) throw new HttpError(StatusCodes.NOT_FOUND, 'Package Not Found');
-
-  await Patient.updateMany({ 'package.type.packageID': id }, { $set: { package: {} } });
+  const packageI = await Package.findByIdAndUpdate(id, { isLatest: false });
+  if (!packageI) throw new HttpError(StatusCodes.NOT_FOUND, 'update the package failed');
 
   return {
     status: StatusCodes.OK,

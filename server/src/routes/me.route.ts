@@ -16,15 +16,13 @@ import {
   getHealthRecords,
   viewWallet,
   updateWallet,
-  getHealthPackage,
-  cancelSubscribtion,
-  subscribe,
   addSlots,
   viewContract,
   acceptContract,
   addNewDeliveryAddress,
   getMyPrescriptions,
-  getWeeklySlots
+  getWeeklySlots,
+  getHealthPackage
 } from '../services';
 
 const router = express.Router();
@@ -113,14 +111,6 @@ router.post('/family', (req: Request, res: Response) => {
 
 router.get('/package', (req: Request, res: Response) => {
   controller(res)(getHealthPackage)(req.decoded.id);
-});
-
-router.post('/package', (req: Request, res: Response) => {
-  if (req.body.cancel) {
-    controller(res)(cancelSubscribtion)(req.decoded.id);
-  } else {
-    controller(res)(subscribe)(req.decoded.id, req.body.packageID);
-  }
 });
 
 // router.use(isAuthorized('Pharmacist', 'Patient', 'Doctor'));

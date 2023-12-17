@@ -19,6 +19,7 @@ router.delete('/', (req: Request, res: Response) => {
 });
 
 router.post('/', (req: Request, res: Response) => {
+  console.log("PPPPPP");
   controller(res)(addAdmin)(req.body);
 });
 

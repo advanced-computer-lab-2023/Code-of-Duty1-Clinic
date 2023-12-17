@@ -17,7 +17,7 @@ const notificationSchema = new Schema<INotification>({
   },
   title: { type: String, required: true },
   content: { type: String, required: true },
-  type: { type: String, enum: ['Message', 'Rescheduled', 'Canceled', 'Update'], required: true, default: 'Update' },
+  type: { type: String, enum: ['Message', 'Rescheduled', 'Canceled', 'Update','Appointment'], required: true, default: 'Update' },
   date: { type: Date, default: Date.now() },
   isSeen: { type: Boolean, default: false }
 });

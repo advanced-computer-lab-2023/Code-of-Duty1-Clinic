@@ -56,12 +56,26 @@ const resolveURL = (url: string) => {
 };
 //licenses degree ID
 const getRequestFileUrl = async (medicID: string, type: any, fileIDX: string) => {
+  console.log(medicID," ff ff  ",type," f ff ",fileIDX,"  ")
   const requests = await Request.findOne({ medicID: medicID });
   if (!requests) throw new Error('Requests not found');
   let fileUrl;
-  if (type === 'ID') fileUrl = requests.ID;
-  else fileUrl = (requests as any)[type][Number(fileIDX)];
-
+  if (type === 'ID') {
+    fileUrl = requests.ID;
+  } else {
+    if (!(requests as any )[type]) throw new Error(`Type ${type} not found in requests`);
+    fileUrl = (requests as any )[type][Number(fileIDX)];
+  }
+  console.log(requests, "requests found , ", fileUrl," ddddddddddddd");
   return resolveURL(fileUrl);
 };
-export { getAllRequests, getRequestFileUrl, saveRegistrationFiles };
+const didUploadBefore = async (medicID: string) => {
+  const requests = await Request.findOne({ medicID: medicID });
+  let result = false;
+  if (requests) result = requests.ID && requests.degree?.length! > 0 && requests.licenses?.length! > 0 ? true : false;
+  return {
+    result: result,
+    status: StatusCodes.OK
+  }
+};
+export { getAllRequests, getRequestFileUrl, saveRegistrationFiles,didUploadBefore };

@@ -13,7 +13,7 @@ router.get('/:id', (req: Request, res: Response) => {
   controller(res)(getOrders)({ _id: req.params.id }, req.decoded.id);
 });
 router.get('/', (req: Request, res: Response) => {
-  controller(res)(getOrders)(req.query, req.decoded.id);
+  controller(res)(getOrders)(req.query, req.decoded.id, req.decoded.role);
 });
 
 router.post('/', (req: Request, res: Response) => {
