@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -25,6 +25,21 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const [medicineProduct, setMedicineProduct] = useState(product);
   const [isArchived, setIsArchived] = useState(product.isArchived);
   const [uploadImg, setUploadImg] = useState('');
+  const [alternativeProducts, setAlternativeProducts] = useState([]);
+  
+  const alternatives = async () => {
+    try{
+      const response = await axios.get(`http://localhost:3000/medicine`);
+      setAlternativeProducts(response.data.result);
+      console.log(response);
+    }
+    catch (error) {
+      console.error(error.message);
+    }
+  }
+  useEffect(() => {
+    alternatives();
+  }, []);
   const handleArchiveClick = async () => {
     try {
       await axios.put(
@@ -135,56 +150,77 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
       </Card>
     );
   }
-  return (
-    <Card>
-      <IconButton onClick={onCloseProductDetails} color="primary" aria-label="back">
-        <ArrowBackIcon />
-      </IconButton>
-      <Stack sx={{ position: 'relative' }} direction="row">
-        {renderImg}
-        <Stack direction={'row'} justifyContent={'space-between'} sx={{ width: '100%', marginLeft: 2 }}>
-          {renderDescription}
-          <Stack spacing={2} sx={{ marginRight: 1 }}>
-            {medicineProduct._id && renderStatus}
-            {user === 'Pharmacist' && renderArchiveButton}
-            {user == 'Pharmacist' && renderAddNewImageButton}
-          </Stack>
-        </Stack>
-      </Stack>
-      <Stack direction={'row'} justifyContent={'space-evenly'}>
-        <Stack spacing={1} sx={{ p: 3 }}>
-          <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
-            {medicineProduct.name}
-          </Link>
 
-          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pl: 2 }}>
-            {/* <ColorPreview colors={['red', 'blue', 'yellow', 'green']} /> */}
-            {/* it suppose here to be medicineProduct.colors */}
-            {renderPrice}
+  const filteredAlternatives = alternativeProducts?.filter((alternative) =>
+  alternative.activeIngredients.some((ingredient) =>
+    medicineProduct.activeIngredients.includes(ingredient)
+  )
+) || [];
+  return (
+      <Box>  
+        <Card>
+          <IconButton onClick={onCloseProductDetails} color="primary" aria-label="back">
+            <ArrowBackIcon />
+          </IconButton>
+          <Stack sx={{ position: 'relative' }} direction="row">
+            {renderImg}
+            <Stack direction={'row'} justifyContent={'space-between'} sx={{ width: '100%', marginLeft: 2 }}>
+              {renderDescription}
+              <Stack spacing={2} sx={{ marginRight: 1 }}>
+                {medicineProduct._id && renderStatus}
+                {user === 'Pharmacist' && renderArchiveButton}
+                {user == 'Pharmacist' && renderAddNewImageButton}
+              </Stack>
+            </Stack>
           </Stack>
-        </Stack>
-        {user === 'Pharmacist' && (
-          <Stack spacing={1} sx={{ p: 3 }}>
-            <Typography color="inherit" underline="hover" variant="subtitle2">
-              items left in the stock
-            </Typography>
-            <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 7 }}>
-              {medicineProduct.numStock}
-            </Typography>
+          <Stack direction={'row'} justifyContent={'space-evenly'}>
+            <Stack spacing={1} sx={{ p: 3 }}>
+              <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
+                {medicineProduct.name}
+              </Link>
+
+              <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pl: 2 }}>
+                {/* <ColorPreview colors={['red', 'blue', 'yellow', 'green']} /> */}
+                {/* it suppose here to be medicineProduct.colors */}
+                {renderPrice}
+              </Stack>
+            </Stack>
+            {user === 'Pharmacist' && (
+              <Stack spacing={1} sx={{ p: 3 }}>
+                <Typography color="inherit" underline="hover" variant="subtitle2">
+                  items left in the stock
+                </Typography>
+                <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 7 }}>
+                  {medicineProduct.numStock}
+                </Typography>
+              </Stack>
+            )}
+            {user === 'Pharmacist' && (
+              <Stack spacing={1} sx={{ p: 3 }}>
+                <Typography color="inherit" underline="hover" variant="subtitle2">
+                  items sold
+                </Typography>
+                <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 4 }}>
+                  {medicineProduct.numSold}
+                </Typography>
+              </Stack>
+            )}
           </Stack>
-        )}
-        {user === 'Pharmacist' && (
-          <Stack spacing={1} sx={{ p: 3 }}>
-            <Typography color="inherit" underline="hover" variant="subtitle2">
-              items sold
-            </Typography>
-            <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 4 }}>
-              {medicineProduct.numSold}
-            </Typography>
-          </Stack>
-        )}
-      </Stack>
-    </Card>
+        </Card>
+        {medicineProduct.numStock === 0 && (
+        <Card>
+          <Typography variant="h5" mt={3}>
+            Alternative Products
+          </Typography>
+          {filteredAlternatives.map((alternative) => (
+            <Card key={alternative._id}>
+              <Typography>{alternative.name}</Typography>
+            </Card>
+          ))}
+        </Card>
+      )}
+      </Box>  
+
   );
 }
 
