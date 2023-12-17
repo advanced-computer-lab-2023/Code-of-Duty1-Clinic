@@ -28,7 +28,7 @@ export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
 // export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
 export const MedicalHistoryPage = lazy(() => import('src/pages/medical-history'));
-
+export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const CartPage = lazy(() => import('src/pages/cart'));
 export const OrdersPage = lazy(() => import('src/pages/orders'));
 export const PharmacistDocumentUploadPage = lazy(() => import('src/pages/pharmacist-upload-document'));
@@ -42,6 +42,7 @@ export const AddAdminPage = lazy(() => import('src/pages/addAdmin'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
+  // let { id } = useParams();
   const routes = useRoutes([
     {
       path: '',
@@ -84,7 +85,11 @@ export default function Router() {
         { path: 'chat', element: <ViewChat /> },
         { path: 'report', element: <ReportPage /> },
         { path: 'users', element: <UsersPage /> },
-        { path: 'add-admin', element: <AddAdminPage /> }
+        { path: 'add-admin', element: <AddAdminPage /> },
+        {
+          path: 'profile/:id',
+          element: <ProfilePage />
+        },
 
       ]
     },

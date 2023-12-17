@@ -19,6 +19,7 @@ const addOrder = async (id: string, info: Object) => {
       if (!medicine) throw new HttpError(StatusCodes.NOT_FOUND, 'the medicine is not found ');
       const medicinePrice = medicine!.price;
       const medicineStock = medicine!.numStock;
+      //
       if (item.count > medicineStock)
         throw new HttpError(StatusCodes.CONFLICT, 'there is no enough quantity in the stock ');
       await medicine!.updateOne({ $inc: { numStock: -item.count, numSold: item.count } });

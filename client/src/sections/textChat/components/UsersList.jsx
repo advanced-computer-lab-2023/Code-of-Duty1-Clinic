@@ -142,7 +142,7 @@ function UsersList({ ioUrl, contactUrl }) {
                                 onClick={() => handleUserClick(user)}
                             >
                                 <img
-                                    src={`/assets/contact-image.svg`}
+                                    src={`/assets/images/profile/profile-image.png`}
                                     alt={user.userID.name}
                                     style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '16px' }}
                                 />
