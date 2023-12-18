@@ -85,6 +85,7 @@ const getAllOrders = async (query: Object) => {
 };
 const checkStock = async (medicine: IMedicine | null) => {
   if (!medicine) return;
+  console.log("Checking is medicine is out of stock ",medicine._id);
 
   const medicineCount = medicine?.numStock;
   if (medicineCount <= 0) {
