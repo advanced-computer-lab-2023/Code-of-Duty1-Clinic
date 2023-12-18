@@ -6,9 +6,7 @@ import ReactLoading from 'react-loading';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
-
 import { useAuthContext } from 'src/contexts/userContext';
-
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -38,7 +36,6 @@ export const ProfilePage = lazy(() => import('src/pages/profile'));
 
 export const PackageAdmin = lazy(() => import('src/pages/package-admin'));
 
-
 export const CartPage = lazy(() => import('src/pages/cart'));
 export const OrdersPage = lazy(() => import('src/pages/orders'));
 export const PharmacistDocumentUploadPage = lazy(() => import('src/pages/pharmacist-upload-document'));
@@ -56,6 +53,8 @@ export default function Router() {
 
   const userRoutes = {
     Patient: [
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'doctors', element: <DoctorsPage /> },
       { path: 'appointments', element: <AppointmentsPage /> },
       { path: 'chat', element: <ViewChat /> },
       { path: 'requests', element: <RequestsPage /> },
@@ -72,22 +71,25 @@ export default function Router() {
       { path: 'addresses', element: <AddressesPage /> }
     ],
     Doctor: [
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'doctors', element: <DoctorsPage /> },
       { path: 'appointments', element: <AppointmentsPage /> },
       { path: 'chat', element: <ViewChat /> },
       { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
-      { path: '/medical-history/:patientID', element: <MedicalHistoryPage /> }
+      { path: '/medical-history/:patientID', element: <MedicalHistoryPage /> },
       { path: 'patients', element: <PatientsPage /> },
       { path: 'health-record/:patientID', element: <HealthRecordPage /> },
       { path: 'prescription/:patientID', element: <PrescriptionsPage /> },
       { path: 'contract', element: <ContractPage /> },
-      { path: 'addSlotsOrAppointment', element: <AddSlotsOrAppointmentPage /> }
+      { path: 'slots', element: <AddSlotsOrAppointmentPage /> }
     ],
     Pharmacist: [
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'doctors', element: <DoctorsPage /> },
       { path: 'chat', element: <ViewChat /> },
       { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
       { path: 'contract', element: <ContractPage /> },
       { path: 'orders', element: <OrdersPage /> },
-      { path: 'upload-medicine-image', element: <MedicineImageUploadPage /> },
       { path: 'view-medicine-image', element: <ViewMedicineImage /> },
       { path: 'report', element: <ReportPage /> }
     ],
@@ -112,12 +114,7 @@ export default function Router() {
       ) : (
         <Navigate to="/login" replace />
       ),
-      children: [
-        { index: true, element: <IndexPage /> },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'doctors', element: <DoctorsPage /> },
-        ...userRoutes[role]
-      ]
+      children: [{ index: true, element: <IndexPage /> }, ...(userRoutes[role] || [])]
     },
     {
       path: 'login',
@@ -139,10 +136,10 @@ export default function Router() {
       path: '404',
       element: <Page404 />
     },
-      {
-          path: 'profile/:id',
-          element: <ProfilePage />
-        },
+    {
+      path: 'profile/:id',
+      element: <ProfilePage />
+    },
     {
       path: '*',
       element: <Navigate to="/404" replace />
