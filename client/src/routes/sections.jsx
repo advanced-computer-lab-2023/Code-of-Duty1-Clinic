@@ -6,9 +6,9 @@ import ReactLoading from 'react-loading';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
+
 import { useAuthContext } from 'src/contexts/userContext';
 
-import { RegistrationUpload, UploadView } from 'src/sections/upload';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -33,7 +33,11 @@ export const ViewPackagePage = lazy(() => import('src/pages/viewPackage'));
 export const DoctorDocumentUploadPage = lazy(() => import('src/pages/doctor-document-upload'));
 // export const RequestsListPage = lazy(() => import('src/pages/requests-list'));
 export const MedicalHistoryPage = lazy(() => import('src/pages/medical-history'));
+
+export const ProfilePage = lazy(() => import('src/pages/profile'));
+
 export const PackageAdmin = lazy(() => import('src/pages/package-admin'));
+
 
 export const CartPage = lazy(() => import('src/pages/cart'));
 export const OrdersPage = lazy(() => import('src/pages/orders'));
@@ -46,7 +50,6 @@ export const UsersPage = lazy(() => import('src/pages/users'));
 export const ReportPage = lazy(() => import('src/pages/report'));
 export const AddAdminPage = lazy(() => import('src/pages/addAdmin'));
 // ----------------------------------------------------------------------
-
 export default function Router() {
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('userRole');
@@ -56,7 +59,7 @@ export default function Router() {
       { path: 'appointments', element: <AppointmentsPage /> },
       { path: 'chat', element: <ViewChat /> },
       { path: 'requests', element: <RequestsPage /> },
-      { path: '/medical-history', element: <MedicalHistoryPage /> },
+      { path: '/medical-history/:patientID', element: <MedicalHistoryPage /> },
       { path: 'health-record', element: <HealthRecordPage /> },
       { path: 'prescription', element: <PrescriptionsPage /> },
       { path: 'packages', element: <PackagePage /> },
@@ -72,7 +75,7 @@ export default function Router() {
       { path: 'appointments', element: <AppointmentsPage /> },
       { path: 'chat', element: <ViewChat /> },
       { path: '/upload-document', element: <DoctorDocumentUploadPage /> },
-      { path: '/medical-history', element: <MedicalHistoryPage /> },
+      { path: '/medical-history/:patientID', element: <MedicalHistoryPage /> }
       { path: 'patients', element: <PatientsPage /> },
       { path: 'health-record/:patientID', element: <HealthRecordPage /> },
       { path: 'prescription/:patientID', element: <PrescriptionsPage /> },
@@ -136,6 +139,10 @@ export default function Router() {
       path: '404',
       element: <Page404 />
     },
+      {
+          path: 'profile/:id',
+          element: <ProfilePage />
+        },
     {
       path: '*',
       element: <Navigate to="/404" replace />

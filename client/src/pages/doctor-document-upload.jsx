@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { RegistrationUpload, MedicalHistoryUpload, RecordsList } from 'src/sections/upload';
+import { RegistrationUpload, RecordsList } from 'src/sections/upload';
 
 function DoctorDocumentUploadPage() {
   return (

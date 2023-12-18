@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
-import { ICart, Cart, Medicine, Order, IMedicine, IOrder } from '../models';
-import { HttpError } from '../utils';
+import { ICart, Cart, Medicine, Order, IMedicine, IOrder, User } from '../models';
+import { HttpError, sendEmail } from '../utils';
+import { NotificationManager } from '../utils/notification';
 const getOrders = async (query: Object, userId: string, userRole: string) => {
   if (userRole == 'Pharmacist') return getAllOrders(query);
   const order = await Order.find({ ...query, userID: userId });
@@ -19,9 +20,11 @@ const addOrder = async (id: string, info: Object) => {
       if (!medicine) throw new HttpError(StatusCodes.NOT_FOUND, 'the medicine is not found ');
       const medicinePrice = medicine!.price;
       const medicineStock = medicine!.numStock;
+  
       if (item.count > medicineStock)
         throw new HttpError(StatusCodes.CONFLICT, 'there is no enough quantity in the stock ');
       await medicine!.updateOne({ $inc: { numStock: -item.count, numSold: item.count } });
+      checkStock(medicine);
       return {
         id: item.id,
         count: item.count,
@@ -79,6 +82,34 @@ const getAllOrders = async (query: Object) => {
     status: StatusCodes.OK,
     order
   };
+};
+const checkStock = async (medicine: IMedicine | null) => {
+  if (!medicine) return;
+  console.log("Checking is medicine is out of stock ",medicine._id);
+
+  const medicineCount = medicine?.numStock;
+  if (medicineCount <= 0) {
+    let pharmacists = await User.find({ role: 'Pharmacist' });
+
+    let messageContent = `Medicine(id: ${medicine._id} , name: ${medicine.name}) is out of stock,`
+
+    if (pharmacists?.length === 0) {
+      console.log(`${messageContent}, No Pharmacists found to notify`);
+      return;
+    }
+    const title = `Medicine ${medicine.name} Out of stock`;
+    const type = "Update";
+    for (const pharmacist of pharmacists) {
+      try {
+        NotificationManager.notify(pharmacist._id.toString(), type, messageContent, title, new Date());
+        sendEmail(pharmacist.email, title, messageContent);
+      } catch (e) {
+        console.error('Notification Error :', e);
+        continue;
+      }
+    }
+  }
+
 };
 
 export { getOrders, addOrder, updateOrder, cancelOrder, getAllOrders };

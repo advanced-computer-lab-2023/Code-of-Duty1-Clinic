@@ -16,6 +16,8 @@ import { isAuthenticated, isAuthorized } from '../middlewares';
 const router = express.Router();
 
 router.use(isAuthenticated);
+// router.use(isAuthorized('Doctor'));
+
 
 router.get('/package', (req: Request, res: Response) => {
   controller(res)(getHealthPackage)(req.decoded.id);

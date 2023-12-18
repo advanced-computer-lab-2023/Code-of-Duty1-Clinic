@@ -1,4 +1,4 @@
-import { Appointment, Doctor, Patient, User } from '../models';
+import { Appointment, Doctor, IAppointment, ICommonUser, Patient, User } from '../models';
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
 import { NotificationManager } from '../utils/notification';
@@ -133,7 +133,7 @@ const cancelAppointment = async (userID: string, appointmentID: string) => {
 
       Doctor.findByIdAndUpdate(appointment.doctorID, { $inc: { wallet: -appointment.sessionPrice } }); // Maybe he will be indebted
     }
-
+    sendNotification("Canceled",appointment);
     // here it should send a notification and email to the doctor and patient
   }
 
@@ -163,6 +163,7 @@ const scheduleFollowUp = async (userID: string, prevAppointmentID: string, appoi
   };
 
   const newAppointmentDoc = await Appointment.create(newAppointment);
+    sendNotification("Rescheduled",newAppointmentDoc);
 
   return {
     status: StatusCodes.CREATED,
@@ -212,6 +213,33 @@ async function validateAppointment(userID: string, appointmentID: string) {
   }
 
   return appointment;
+}
+const sendNotification = async (type: string, appointment: IAppointment, newAppointment?: IAppointment) => {
+  console.log("Sending notification on appointment update .....");
+  const users = await User.find({
+    _id: { $in: [appointment.patientID, appointment.doctorID] }
+  });
+  let title = `Your Appointment is ${type}`;
+  let time = (app: IAppointment) => `from ${app.startDate.toUTCString()} to ${app.endDate.toUTCString()}`;
+  let message = `Your appointment ${time(appointment)} is canceled`;
+  if (type == 'Rescheduled') {
+    message = `Your appointment ${time(appointment)} is rescheduled and your new appointment is ${time(newAppointment!)}`;
+  }
+  const getTitle = (user: ICommonUser) => {
+    return user.role == "patient" ? "user" : "doctor"
+  }
+  for (const user of users) {
+    try {
+      NotificationManager.notify(user._id.toString(), type, message, title, new Date());
+      let mailBody = `Hello ${getTitle(user)} ${user.name},\nWe hope this mail finds you will. we are sending this mail to let you know that ${message.toLowerCase()}\n\nBest Regards \nEl7ani Clinic Team `
+      sendEmail(user.email, title, mailBody);
+
+    } catch (e) {
+      console.log("Error while notifying for appointment update")
+      continue;
+    }
+  }
+  console.log("Done Sending notification on appointment update");
 }
 
 export {
