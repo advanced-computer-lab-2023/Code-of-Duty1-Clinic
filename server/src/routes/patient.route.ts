@@ -6,7 +6,10 @@ import {
   addPrescription,
   getHealthRecords,
   getMyPatients,
-  getPatientPrescriptions
+  getPatientPrescriptions,
+  getHealthPackage,
+  cancelSubscribtion,
+  subscribe
 } from '../services';
 import { isAuthenticated, isAuthorized } from '../middlewares';
 
@@ -15,14 +18,20 @@ const router = express.Router();
 router.use(isAuthenticated);
 // router.use(isAuthorized('Doctor'));
 
-router.get('/:id', (req: Request, res: Response) => {
-  controller(res)(getMyPatients)({ doctorID: req.decoded.id, patientID: req.params.id });
+
+router.get('/package', (req: Request, res: Response) => {
+  controller(res)(getHealthPackage)(req.decoded.id);
 });
-router.get('/', (req: Request, res: Response) => {
-  controller(res)(getMyPatients)({ doctorID: req.decoded.id, ...req.query });
+router.post('/:id/package', (req: Request, res: Response) => {
+  controller(res)(subscribe)(req.params.id, req.body.packageID);
+});
+router.delete('/:id/package', (req: Request, res: Response) => {
+  controller(res)(cancelSubscribtion)(req.params.id);
 });
 
-router.get('/:id/medicalhistory', isAuthorized('Doctor'), (req: Request, res: Response) => {
+router.use(isAuthorized('Doctor'));
+
+router.get('/:id/medicalhistory', (req: Request, res: Response) => {
   controller(res)(getHealthRecords)(req.params.id);
 });
 
@@ -34,8 +43,15 @@ router.get('/:id/prescription', (req: Request, res: Response) => {
   controller(res)(getPatientPrescriptions)(req.decoded.id, req.params.id);
 });
 
-router.post('/:id/prescription', isAuthorized('Doctor'), (req: Request, res: Response) => {
+router.post('/:id/prescription', (req: Request, res: Response) => {
   controller(res)(addPrescription)(req.decoded.id, req.params.id, req.body);
+});
+
+router.get('/:id', (req: Request, res: Response) => {
+  controller(res)(getMyPatients)({ doctorID: req.decoded.id, patientID: req.params.id });
+});
+router.get('/', (req: Request, res: Response) => {
+  controller(res)(getMyPatients)({ doctorID: req.decoded.id, ...req.query });
 });
 
 export default router;

@@ -270,11 +270,19 @@ export default function AppointmentsView() {
                   .map((row) => {
                     let startDate = new Date(row.startDate);
                     startDate.setHours(startDate.getHours() - 2);
-                    const from = startDate.toTimeString().slice(0, 5);
+                    const from = startDate.toLocaleString('en-US', {
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      hour12: true
+                    });
 
                     let endDate = new Date(row.endDate);
                     endDate.setHours(endDate.getHours() - 2);
-                    const to = endDate.toTimeString().slice(0, 5);
+                    const to = endDate.toLocaleString('en-US', {
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      hour12: true
+                    });
 
                     const day = startDate.toDateString();
 

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function ProductEdit({ onClose, productID }) {
-  const [selectedMenuItem, setSelectedMenuItem] = useState('Description');
+  const [selectedMenuItem, setSelectedMenuItem] = useState('description');
   const [infoText, setInfoText] = useState('');
 
   // Function to handle menu item selection
@@ -59,9 +59,11 @@ export default function ProductEdit({ onClose, productID }) {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button color="primary" onClick={handleEditDetails}>
-          Add
+        <Button onClick={onClose} variant="outlined">
+          Cancel
+        </Button>
+        <Button color="primary" onClick={handleEditDetails} variant="outlined">
+          submit
         </Button>
       </DialogActions>
     </Dialog>

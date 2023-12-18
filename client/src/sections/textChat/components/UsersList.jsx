@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../../../utils/axiosInstance';
 import Chat from './Chat';
-import { Typography, List, ListItem, ListItemText, Paper, Box, Divider } from '@mui/material';
+import { Typography, List, ListItem, ListItemText, Paper, Box, Divider,Button } from '@mui/material';
 import io from 'socket.io-client';
 
 function UsersList({ ioUrl, contactUrl }) {
@@ -14,6 +14,33 @@ function UsersList({ ioUrl, contactUrl }) {
     const [isSavedOld, setIsSavedOld] = useState(false);
     const handleUserClick = (user) => {
         setSelectedUser(user);
+    };
+
+    var firstTime = true;
+    //const myGmail = localStorage.getItem('userEmail')
+    //console.log(myGmail);
+
+    const handleVideoChat = async (user) => {
+        try {
+            if (firstTime) {
+                firstTime = false;
+    
+                await fetch('http://localhost:3000/video-permission', {
+                    method: 'GET',
+                });
+                
+            } else {
+                // Open a new tab with Google Calendar URL
+                window.open('https://calendar.google.com/', '_blank');
+    
+                // Use fetch for the second time with a request body
+                await fetch('http://localhost:3000/video-permission/schedule-videoCall', {
+                    method: 'GET',
+                });
+            }
+        } catch (error) {
+            console.error('Error initiating video chat:', error);
+        }
     };
 
     const handleChatClose = () => {
@@ -138,6 +165,8 @@ function UsersList({ ioUrl, contactUrl }) {
                                     '&:hover': {
                                         backgroundColor: '#c2e2ff', // Lighter Blue on Hover
                                     },
+                                    //display: 'flex',
+                                    //alignItems: 'center'
                                 }}
                                 onClick={() => handleUserClick(user)}
                             >
@@ -166,6 +195,16 @@ function UsersList({ ioUrl, contactUrl }) {
                                         </div>
                                     </div>
                                 )}
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={(e) =>{
+                                                        e.stopPropagation();
+                                                        handleVideoChat(user)
+                                                    }}
+                                                    style={{ marginLeft: 'auto' }}
+                                                >
+                                                        Video Chat
+                                                 </Button>
                             </ListItem>
                             <Divider sx={{ backgroundColor: '#bdbdbd' }} />
                         </React.Fragment>

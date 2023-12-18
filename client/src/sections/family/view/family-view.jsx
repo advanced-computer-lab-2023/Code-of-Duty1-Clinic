@@ -16,7 +16,7 @@ export default function FamilyView() {
     error,
     data: members
   } = useQuery('family', () => axiosInstance.get(`/me/family`).then((res) => res.data.result), {
-    refetchOnMount: false,
+    // refetchOnMount: false,
     refetchOnWindowFocus: false
   });
 

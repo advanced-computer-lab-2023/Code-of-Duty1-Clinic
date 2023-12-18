@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-import { useUserContext } from 'src/contexts/userContext';
+import { useAuthContext } from 'src/contexts/userContext';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 import HealthRecordSummary from './health-record-summary';
