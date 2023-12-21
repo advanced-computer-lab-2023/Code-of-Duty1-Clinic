@@ -17,30 +17,22 @@ const PatientInfo = ({ patient }) => {
 
     return (
         <Paper elevation={3} style={{ padding: '16px', margin: '16px' }}>
-            <Typography variant="h5">Patient Information</Typography>
+            {/* <Typography variant="h5">Patient Information</Typography> */}
             <List>
-                <ListItem>
-                    <ListItemText primary={<strong>Name:</strong>} secondary={patient.name} />
-                </ListItem>
-                <ListItem>
-                    <ListItemText primary={<strong>Email:</strong>} secondary={patient.email} />
-                </ListItem>
-                <ListItem>
-                    <ListItemText primary={<strong>Birth Date:</strong>} secondary={patient.birthDate} />
-                </ListItem>
+
                 <ListItem>
                     <ListItemText
                         primary={<strong>Emergency Contact:</strong>}
                         secondary={
                             <List>
                                 <ListItem>
-                                    <ListItemText primary={<strong>Name:</strong>} secondary={patient.emergencyContact.name} />
+                                    <ListItemText primary={<strong>Name:</strong>} secondary={patient?.emergencyContact?.name} />
                                 </ListItem>
                                 <ListItem>
-                                    <ListItemText primary={<strong>Phone:</strong>} secondary={patient.emergencyContact.phone} />
+                                    <ListItemText primary={<strong>Phone:</strong>} secondary={patient?.emergencyContact?.phone} />
                                 </ListItem>
                                 <ListItem>
-                                    <ListItemText primary={<strong>Relation:</strong>} secondary={patient.emergencyContact.relation} />
+                                    <ListItemText primary={<strong>Relation:</strong>} secondary={patient?.emergencyContact?.relation} />
                                 </ListItem>
                             </List>
                         }
@@ -54,11 +46,11 @@ const PatientInfo = ({ patient }) => {
                                 {patient.family.map((familyMember, index) => (
                                     <ListItem key={index}>
                                         <ListItemAvatar>
-                                            <Avatar>{familyMember.name[0]}</Avatar>
+                                            <Avatar>{familyMember?.name[0]}</Avatar>
                                         </ListItemAvatar>
                                         <ListItemText
-                                            primary={familyMember.name}
-                                            secondary={`Relation: ${familyMember.relation}`}
+                                            primary={familyMember?.name}
+                                            secondary={`Relation: ${familyMember?.relation}`}
                                         />
                                     </ListItem>
                                 ))}
@@ -73,25 +65,25 @@ const PatientInfo = ({ patient }) => {
                             patient.package ? (
                                 <List>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Package Name:</strong>} secondary={patient.package.packageID.name} />
+                                        {<ListItemText primary={<strong>Package Name:</strong>} secondary={patient.package?.packageID.name} />}
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Package Status:</strong>} secondary={patient.package.packageStatus} />
+                                        <ListItemText primary={<strong>Package Status:</strong>} secondary={patient.package?.packageStatus} />
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>End Date:</strong>} secondary={patient.package.endDate} />
+                                        <ListItemText primary={<strong>End Date:</strong>} secondary={patient.package?.endDate} />
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Package Price:</strong>} secondary={patient.package.packageID.price} />
+                                        <ListItemText primary={<strong>Package Price:</strong>} secondary={patient.package?.packageID?.price} />
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Session Discount:</strong>} secondary={`${patient.package.packageID.sessionDiscount}%`} />
+                                        <ListItemText primary={<strong>Session Discount:</strong>} secondary={`${patient.package?.packageID?.sessionDiscount}%`} />
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Medicine Discount:</strong>} secondary={`${patient.package.packageID.medicineDiscount}%`} />
+                                        <ListItemText primary={<strong>Medicine Discount:</strong>} secondary={`${patient.package?.packageID?.medicineDiscount}%`} />
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Family Discount:</strong>} secondary={`${patient.package.packageID.familyDiscount}%`} />
+                                        <ListItemText primary={<strong>Family Discount:</strong>} secondary={`${patient.package?.packageID?.familyDiscount}%`} />
                                     </ListItem>
                                 </List>
                             ) : (
