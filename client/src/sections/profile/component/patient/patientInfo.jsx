@@ -24,29 +24,34 @@ const PatientInfo = ({ patient }) => {
                     <ListItemText
                         primary={<strong>Emergency Contact:</strong>}
                         secondary={
-                            <List>
-                                <ListItem>
-                                    <ListItemText primary={<strong>Name:</strong>} secondary={patient?.emergencyContact?.name} />
-                                </ListItem>
-                                <ListItem>
-                                    <ListItemText primary={<strong>Phone:</strong>} secondary={patient?.emergencyContact?.phone} />
-                                </ListItem>
-                                <ListItem>
-                                    <ListItemText primary={<strong>Relation:</strong>} secondary={patient?.emergencyContact?.relation} />
-                                </ListItem>
-                            </List>
+                            patient?.emergencyContact?.name ? (
+                                <List>
+                                    <ListItem>
+                                        <ListItemText primary={<strong>Name:</strong>} secondary={patient?.emergencyContact?.name} />
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemText primary={<strong>Phone:</strong>} secondary={patient?.emergencyContact?.phone} />
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemText primary={<strong>Relation:</strong>} secondary={patient?.emergencyContact?.relation} />
+                                    </ListItem>
+                                </List>
+                            ) : (
+                                <Typography>No contacts</Typography>
+                            )
                         }
                     />
                 </ListItem>
+
                 <ListItem>
                     <ListItemText
                         primary={<strong>Family:</strong>}
                         secondary={
                             <List>
-                                {patient.family.map((familyMember, index) => (
+                                {patient?.family && patient.family.map((familyMember, index) => (
                                     <ListItem key={index}>
                                         <ListItemAvatar>
-                                            <Avatar>{familyMember?.name[0]}</Avatar>
+                                            <Avatar>{familyMember?.name}</Avatar>
                                         </ListItemAvatar>
                                         <ListItemText
                                             primary={familyMember?.name}
@@ -65,7 +70,7 @@ const PatientInfo = ({ patient }) => {
                             patient.package ? (
                                 <List>
                                     <ListItem>
-                                        {<ListItemText primary={<strong>Package Name:</strong>} secondary={patient.package?.packageID.name} />}
+                                        {patient.package?.packageID && <ListItemText primary={<strong>Package Name:</strong>} secondary={patient.package?.packageID.name} />}
                                     </ListItem>
                                     <ListItem>
                                         <ListItemText primary={<strong>Package Status:</strong>} secondary={patient.package?.packageStatus} />
@@ -74,16 +79,16 @@ const PatientInfo = ({ patient }) => {
                                         <ListItemText primary={<strong>End Date:</strong>} secondary={patient.package?.endDate} />
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Package Price:</strong>} secondary={patient.package?.packageID?.price} />
+                                        {patient.package?.packageID && <ListItemText primary={<strong>Package Price:</strong>} secondary={patient.package?.packageID?.price} />}
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Session Discount:</strong>} secondary={`${patient.package?.packageID?.sessionDiscount}%`} />
+                                        {patient.package?.packageID && <ListItemText primary={<strong>Session Discount:</strong>} secondary={`${patient.package?.packageID?.sessionDiscount}%`} />}
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Medicine Discount:</strong>} secondary={`${patient.package?.packageID?.medicineDiscount}%`} />
+                                        {patient.package?.packageID && <ListItemText primary={<strong>Medicine Discount:</strong>} secondary={`${patient.package?.packageID?.medicineDiscount}%`} />}
                                     </ListItem>
                                     <ListItem>
-                                        <ListItemText primary={<strong>Family Discount:</strong>} secondary={`${patient.package?.packageID?.familyDiscount}%`} />
+                                        {patient.package?.packageID && <ListItemText primary={<strong>Family Discount:</strong>} secondary={`${patient.package?.packageID?.familyDiscount}%`} />}
                                     </ListItem>
                                 </List>
                             ) : (
@@ -94,7 +99,7 @@ const PatientInfo = ({ patient }) => {
                 </ListItem>
 
             </List>
-        </Paper>
+        </Paper >
     );
 }
 

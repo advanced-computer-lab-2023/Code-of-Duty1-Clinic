@@ -7,6 +7,7 @@ import path from 'path';
 import fs from 'fs';
 
 const addFamilyMember = async (id: string, body: any) => {
+  console.log(body);
   const { relation, email, phone, name, age, gender, nationalID } = body;
   if (!id || !relation) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please provide id, relation');
 
@@ -18,9 +19,10 @@ const addFamilyMember = async (id: string, body: any) => {
   let newFamily;
   if (email || phone) {
     const query = email ? { email } : { phone };
+    console.log(query)
 
     const familyUser = await Patient.findOne(query).select('_id');
-    if (!familyUser) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
+    if (!familyUser) throw new HttpError(StatusCodes.NOT_FOUND, 'Patient not found');
 
     let userID = familyUser._id;
     if (userID === id) throw new HttpError(StatusCodes.BAD_REQUEST, 'Please enter a user other than yourself');
