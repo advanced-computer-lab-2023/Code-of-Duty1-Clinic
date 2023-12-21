@@ -68,7 +68,11 @@ export default function Router() {
       { path: 'orders', element: <OrdersPage /> },
       { path: 'cart', element: <CartPage /> },
       { path: 'view-medicine-image', element: <ViewMedicineImage /> },
-      { path: 'addresses', element: <AddressesPage /> }
+      { path: 'addresses', element: <AddressesPage /> },
+      {
+        path: 'profile/:id',
+        element: <ProfilePage />
+      },
     ],
     Doctor: [
       { path: 'products', element: <ProductsPage /> },
@@ -81,7 +85,11 @@ export default function Router() {
       { path: 'health-record/:patientID', element: <HealthRecordPage /> },
       { path: 'prescription/:patientID', element: <PrescriptionsPage /> },
       { path: 'contract', element: <ContractPage /> },
-      { path: 'slots', element: <AddSlotsOrAppointmentPage /> }
+      { path: 'slots', element: <AddSlotsOrAppointmentPage /> },
+      {
+        path: 'profile/:id',
+        element: <ProfilePage />
+      },
     ],
     Pharmacist: [
       { path: 'products', element: <ProductsPage /> },
@@ -91,14 +99,22 @@ export default function Router() {
       { path: 'contract', element: <ContractPage /> },
       { path: 'orders', element: <OrdersPage /> },
       { path: 'view-medicine-image', element: <ViewMedicineImage /> },
-      { path: 'report', element: <ReportPage /> }
+      { path: 'report', element: <ReportPage /> },
+      {
+        path: 'profile/:id',
+        element: <ProfilePage />
+      },
     ],
     Admin: [
       { path: 'requests', element: <RequestsPage /> },
       { path: 'packages-admin', element: <PackageAdmin /> },
       { path: 'users', element: <UsersPage /> },
       { path: 'add-admin', element: <AddAdminPage /> },
-      { path: 'report', element: <ReportPage /> }
+      { path: 'report', element: <ReportPage /> },
+      {
+        path: 'profile/:id',
+        element: <ProfilePage />
+      },
     ]
   };
 
@@ -114,7 +130,12 @@ export default function Router() {
       ) : (
         <Navigate to="/login" replace />
       ),
-      children: [{ index: true, element: <IndexPage /> }, ...(userRoutes[role] || [])]
+      children: [{ index: true, element: <IndexPage /> },
+      {
+        path: 'reset-password',
+        element: <ResetPage />
+      },
+      ...(userRoutes[role] || [])]
     },
     {
       path: 'login',
@@ -124,10 +145,7 @@ export default function Router() {
       path: 'register',
       element: <RegisterPage />
     },
-    {
-      path: 'reset-password',
-      element: <ResetPage />
-    },
+
     {
       path: 'forgot-password',
       element: <ForgotPage />
@@ -136,10 +154,7 @@ export default function Router() {
       path: '404',
       element: <Page404 />
     },
-    {
-      path: 'profile/:id',
-      element: <ProfilePage />
-    },
+
     {
       path: '*',
       element: <Navigate to="/404" replace />

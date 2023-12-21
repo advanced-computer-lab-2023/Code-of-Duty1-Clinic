@@ -38,40 +38,49 @@ export default function DoctorCard({ i, doctor }) {
 
   let ii = 0;
   return (
+
     <Card type="section">
+
+
       <Stack direction={'row'} spacing={0} mx={3} my={4}>
-        <Stack alignItems="center" justifyContent="center">
-          <Avatar
-            alt="User Img"
-            src="assets/images/avatars/avatar_13.jpg"
-            sx={{
-              width: 125,
-              height: 125,
-              border: 1,
-              borderColor: 'primary.main'
-            }}
-          />
-        </Stack>
+        <Button
+          fullWidth
+          onClick={() => {
+            console.log("fffff")
+            window.location.href = `http://localhost:3030/profile/${doctor._id}`;
+          }}>
+          <Stack alignItems="center" justifyContent="center">
+            <Avatar
+              alt="User Img"
+              src="assets/images/avatars/avatar_13.jpg"
+              sx={{
+                width: 125,
+                height: 125,
+                border: 1,
+                borderColor: 'primary.main'
+              }}
+            />
+          </Stack>
 
-        <Stack
-          sx={{ width: { xs: '100%', sm: '30%' }, ml: { xs: '0', sm: '50px' }, mr: { xs: '0', sm: '20px' } }}
-          spacing={0}
-          alignItems="baseline"
-          justifyContent="center"
-        >
-          <Typography variant="h5" color={'Highlight'} mb={1}>
-            Dr. {doctor.name}
-          </Typography>
-          <Typography variant="subtitle1">Specialty: {doctor.specialty}</Typography>
-          <Typography variant="subtitle1">Education: {doctor.educationBackground}</Typography>
-          <Typography variant="subtitle1" mb={1}>
-            Hospital: {doctor.hospital}
-          </Typography>
-          <Typography variant="subtitle1" fontSize={18} fontFamily={'Segoe UI'}>
-            Hourly Rate: {doctor.hourRate}
-          </Typography>
-        </Stack>
-
+          <Stack
+            sx={{ width: { xs: '100%', sm: '30%' }, ml: { xs: '0', sm: '50px' }, mr: { xs: '0', sm: '20px' } }}
+            spacing={0}
+            alignItems="baseline"
+            justifyContent="center"
+          >
+            <Typography variant="h5" color={'Highlight'} mb={1}>
+              Dr. {doctor.name}
+            </Typography>
+            <Typography variant="subtitle1">Specialty: {doctor.specialty}</Typography>
+            <Typography variant="subtitle1">Education: {doctor.educationBackground}</Typography>
+            <Typography variant="subtitle1" mb={1}>
+              Hospital: {doctor.hospital}
+            </Typography>
+            <Typography variant="subtitle1" fontSize={18} fontFamily={'Segoe UI'}>
+              Hourly Rate: {doctor.hourRate}
+            </Typography>
+          </Stack>
+        </Button>
         <Stack
           direction={'row'}
           spacing={1}
@@ -146,6 +155,7 @@ export default function DoctorCard({ i, doctor }) {
           </Button>
         </Stack>
       </Stack>
+
     </Card>
   );
 }
