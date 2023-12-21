@@ -41,29 +41,23 @@ function EditProfileModal({ user, open, onClose, onSave }) {
     const handleAddEmergencyContact = () => {
         setEditedUser((prev) => ({
             ...prev,
-            emergencyContact: [
-                ...(prev.emergencyContact || []),
-                { name: '', phone: '', relation: '' }
-            ]
+            emergencyContact:
+                { name: prev.emergencyContact?.name || '', phone: prev.emergencyContact?.phone || '', relation: prev.emergencyContact?.relation || '' }
+
         }));
     };
 
-    const handleEmergencyContactChange = (index, field, value) => {
+    const handleEmergencyContactChange = (field, value) => {
         setEditedUser((prev) => {
-            const updatedEmergencyContacts = [...(prev.emergencyContact || [])];
-            updatedEmergencyContacts[index] = {
-                ...updatedEmergencyContacts[index],
-                [field]: value
-            };
+            const updatedEmergencyContacts = (prev.emergencyContact || {});
+            updatedEmergencyContacts[field] = value;
             return { ...prev, emergencyContact: updatedEmergencyContacts };
         });
     };
 
-    const handleRemoveEmergencyContact = (index) => {
+    const handleRemoveEmergencyContact = () => {
         setEditedUser((prev) => {
-            const updatedEmergencyContacts = [...(prev.emergencyContact || [])];
-            updatedEmergencyContacts.splice(index, 1);
-            return { ...prev, emergencyContact: updatedEmergencyContacts };
+            return { ...prev, emergencyContact: {} };
         });
     };
 
@@ -167,46 +161,46 @@ function EditProfileModal({ user, open, onClose, onSave }) {
                     {user.role === 'Patient' && (
                         <>
                             {editedUser.emergencyContact &&
-                                editedUser.emergencyContact.map((contact, index) => (
-                                    <div key={index}>
-                                        <TextField
-                                            label={`Emergency Contact Name ${index + 1}`}
-                                            value={contact.name || ''}
-                                            onChange={(e) =>
-                                                handleEmergencyContactChange(
-                                                    index,
-                                                    'name',
-                                                    e.target.value
-                                                )
-                                            }
-                                        />
-                                        <TextField
-                                            label={`Emergency Contact Phone ${index + 1}`}
-                                            value={contact.phone || ''}
-                                            onChange={(e) =>
-                                                handleEmergencyContactChange(
-                                                    index,
-                                                    'phone',
-                                                    e.target.value
-                                                )
-                                            }
-                                        />
-                                        <TextField
-                                            label={`Emergency Contact Relation ${index + 1}`}
-                                            value={contact.relation || ''}
-                                            onChange={(e) =>
-                                                handleEmergencyContactChange(
-                                                    index,
-                                                    'relation',
-                                                    e.target.value
-                                                )
-                                            }
-                                        />
-                                        <Button onClick={() => handleRemoveEmergencyContact(index)}>
-                                            Remove
-                                        </Button>
-                                    </div>
-                                ))}
+
+                                <div >
+                                    <TextField
+                                        label={`Emergency Contact Name`}
+                                        value={editedUser.emergencyContact.name || ''}
+                                        onChange={(e) =>
+                                            handleEmergencyContactChange(
+
+                                                'name',
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                    <TextField
+                                        label={`Emergency Contact Phone`}
+                                        value={editedUser.emergencyContact.phone || ''}
+                                        onChange={(e) =>
+                                            handleEmergencyContactChange(
+
+                                                'phone',
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                    <TextField
+                                        label={`Emergency Contact Relation`}
+                                        value={editedUser.emergencyContact.relation || ''}
+                                        onChange={(e) =>
+                                            handleEmergencyContactChange(
+
+                                                'relation',
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                    {/* <Button onClick={() => handleRemoveEmergencyContact()}>
+                                        Remove
+                                    </Button> */}
+                                </div>
+                            }
                             <Button onClick={handleAddEmergencyContact}>
                                 Add Emergency Contact
                             </Button>
