@@ -106,6 +106,8 @@ const rescheduleAppointment = async (userID: string, appointmentID: any, newBody
   const newAppointment = { ...appointment.toJSON(), ...newBody }; // newBody will override some of the old values
   appointment.set(newAppointment);
   appointment.save();
+  
+  sendNotification("Rescheduled", appointment, newAppointment);
 
   return {
     status: StatusCodes.OK,
@@ -163,7 +165,7 @@ const scheduleFollowUp = async (userID: string, prevAppointmentID: string, appoi
   };
 
   const newAppointmentDoc = await Appointment.create(newAppointment);
-    sendNotification("Rescheduled",newAppointmentDoc);
+   
 
   return {
     status: StatusCodes.CREATED,

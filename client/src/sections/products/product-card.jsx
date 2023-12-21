@@ -18,7 +18,7 @@ import { MedicineImage } from '../upload/medicineImage';
 import 'react-toastify/dist/ReactToastify.css';
 // ----------------------------------------------------------------------
 
-export default function ShopProductCard({ product, onDetailsview }) {
+export default function ShopProductCard({ product, onDetailsview, addableToCart }) {
   const user = localStorage.getItem('userRole');
   let count = 1;
   const handleAddToCart = async (id, clickNumber) => {
@@ -144,14 +144,14 @@ export default function ShopProductCard({ product, onDetailsview }) {
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           {/* <ColorPreview colors={['red', 'blue', 'yellow', 'green']} /> */}
           {/* it suppose here to be product.colors */}
-          <Button
+          {addableToCart && <Button
             variant="contained"
             color="inherit"
             startIcon={<Iconify icon="eva:plus-fill" />}
             onClick={() => handleAddToCart(product._id, count)}
           >
             add to cart
-          </Button>
+          </Button>}
           {renderPrice}
         </Stack>
       </Stack>
