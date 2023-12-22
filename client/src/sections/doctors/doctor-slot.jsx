@@ -24,12 +24,17 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
   const today = daysOfWeek[new Date().getDay()];
   if (today == day) day = 'Today';
 
-  const user = { _id: localStorage.getItem('userID'), name: localStorage.getItem('userName'), email: localStorage.getItem('userEmail') };
+  const user = {
+    _id: localStorage.getItem('userID'),
+    name: localStorage.getItem('userName'),
+    email: localStorage.getItem('userEmail')
+  };
 
   const [openModal, setOpenModal] = useState(false);
   const [slot, setSlot] = useState({});
   const [family, setFamily] = useState([]);
   const [selectedUser, setSelectedUser] = useState({ id: '', name: '', email: '' });
+  const [discount, setDiscount] = useState(0);
   const [alignment, setAlignment] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [message, setMessage] = useState('');
@@ -50,6 +55,22 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
   const handleSelectUser = (e, option) => {
     if (option.nationalID) option._id = user._id;
     setSelectedUser({ id: option._id, name: option.name, email: user.email });
+
+    axiosInstance
+      .get('me/package')
+      .then((res) => res.data.result)
+      .then((res) => {
+        res.forEach((userPackage) => {
+          console.log('000000', userPackage.user._id == option._id);
+          console.log(userPackage.status != 'Unsubscribed');
+          if (userPackage.status != 'Unsubscribed' && userPackage.user._id == option._id) {
+            const discount = userPackage.package.familyDiscount;
+            setDiscount(discount);
+            console.log(discount);
+            console.log(slot.sessionPrice);
+          }
+        });
+      });
   };
 
   const createAppointment = async () => {
@@ -63,8 +84,8 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
       patientName: selectedUser.name,
       startDate: slot.startDate,
       endDate: slot.endDate,
-      sessionPrice: slot.sessionPrice,
-      patientEmail: selectedUser.email,
+      sessionPrice: slot.sessionPrice - slot.sessionPrice * (discount / 100),
+      patientEmail: selectedUser.email
     });
   };
 
@@ -81,8 +102,8 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
             {
               name: `Appointment with Dr. ${doctorName} on ${new Date(slot.startDate).toString().slice(0, 16)}
               from ${new Date(slot.startDate).toString().slice(16, 31)} to ${new Date(slot.endDate)
-                  .toString()
-                  .slice(16, 31)}`,
+                .toString()
+                .slice(16, 31)}`,
               price: slot.sessionPrice,
               quantity: 1
             }
@@ -94,7 +115,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
         window.location.href = res.data.url;
       } else {
         await axiosInstance.put(`/me/wallet`, {
-          amount: -selectedPackage.sessionPrice
+          amount: -slot.sessionPrice
         });
 
         await createAppointment();
@@ -104,6 +125,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
     } catch (err) {
       setMessage(err.response?.data.message || 'Network error');
       setOpenSnackbar(true);
+      console.log(err);
     }
   };
 
@@ -194,7 +216,12 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
               sx={{ my: 3 }}
               required
             >
-              <MenuItem key={user.id} value={'Me'} onClick={(e) => handleSelectUser(e, user)} sx={{ fontSize: 16 }}>
+              <MenuItem
+                key={user._id}
+                value={user.name}
+                onClick={(e) => handleSelectUser(e, user)}
+                sx={{ fontSize: 16 }}
+              >
                 Me
               </MenuItem>
               <Divider sx={{ fontSize: 15 }}>Family</Divider>
@@ -224,7 +251,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
               </ToggleButton>
             </ToggleButtonGroup>
             <Typography variant="h6" color={'green'} sx={{ mt: 5 }}>
-              Total Price: {slot.sessionPrice} USD
+              Total Price: {Number(slot.sessionPrice) - Number(slot.sessionPrice) * (discount / 100)} USD
             </Typography>
           </Stack>
         </DialogContent>

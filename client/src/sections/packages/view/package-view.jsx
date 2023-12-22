@@ -68,15 +68,15 @@ export default function PackageView() {
           products: [{ name: selectedPackage.name, price: selectedPackage.price, quantity: 1 }]
         });
 
-        await axiosInstance.post(`patients/${selectedUser.id}/package`, { packageID: selectedPackage._id });
+        await axiosInstance.post(`patients/${selectedUser.id}/package`, { package: selectedPackage });
 
         window.location.href = res.data.url;
       } else {
         await axiosInstance.put(`/me/wallet`, {
-          amount: -selectedPackage.sessionPrice
+          amount: -Number(selectedPackage.sessionPrice)
         });
 
-        await axiosInstance.post(`patients/${selectedUser.id}/package`, { packageID: selectedPackage._id });
+        await axiosInstance.post(`patients/${selectedUser.id}/package`, { package: selectedPackage });
 
         router.push('/viewPackage');
       }
@@ -119,11 +119,12 @@ export default function PackageView() {
         <Stack spacing={3} alignItems="center">
           <div style={{ width: '100%' }}>
             <Grid container spacing={3} pt={4}>
-              {userPackages.map((plan, i) => (
-                <Grid item xs={12} sm={4} md={4} key={i}>
-                  <PlanCard plan={plan} handleClick={handleClick} />
-                </Grid>
-              ))}
+              {userPackages &&
+                userPackages.map((plan, i) => (
+                  <Grid item xs={12} sm={4} md={4} key={i}>
+                    <PlanCard plan={plan} handleClick={handleClick} />
+                  </Grid>
+                ))}
             </Grid>
           </div>
         </Stack>

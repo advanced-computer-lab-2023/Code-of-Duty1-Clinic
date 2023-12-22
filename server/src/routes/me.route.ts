@@ -16,13 +16,15 @@ import {
   getHealthRecords,
   viewWallet,
   updateWallet,
+  getHealthPackage,
+  cancelSubscribtion,
+  subscribe,
   addSlots,
   viewContract,
   acceptContract,
   addNewDeliveryAddress,
   getMyPrescriptions,
-  getWeeklySlots,
-  getHealthPackage
+  getWeeklySlots
 } from '../services';
 
 const router = express.Router();
