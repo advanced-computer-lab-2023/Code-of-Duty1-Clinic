@@ -89,7 +89,7 @@ export default function DoctorCard({ i, doctor }) {
           sx={{ position: 'relative', width: '85%' }}
         >
           {/* Backward Navigation Button */}
-          <Button
+          {localStorage.getItem('userRole') == 'Patient' && <Button
             variant="contained"
             onClick={() => {
               setCheck((prev) => !prev);
@@ -110,10 +110,10 @@ export default function DoctorCard({ i, doctor }) {
             }}
           >
             <Iconify icon="system-uicons:backward" sx={{ mx: 1 }} />
-          </Button>
+          </Button>}
 
           {/* Sliding Component with DoctorDaySlots */}
-          <Slide in={check} direction="left" timeout={500} appear={false}>
+          {localStorage.getItem('userRole') == 'Patient' && <Slide in={check} direction="left" timeout={500} appear={false}>
             <Stack direction={'row'} spacing={1} alignItems="center" justifyContent="center">
               {Object.keys(weekSlots)
                 .slice(displayedDays, displayedDays + 3)
@@ -127,10 +127,10 @@ export default function DoctorCard({ i, doctor }) {
                   />
                 ))}
             </Stack>
-          </Slide>
+          </Slide>}
 
           {/* Forward Navigation Button */}
-          <Button
+          {localStorage.getItem('userRole') == 'Patient' && <Button
             variant="contained"
             onClick={() => {
               setCheck((prev) => !prev);
@@ -152,7 +152,7 @@ export default function DoctorCard({ i, doctor }) {
             }}
           >
             <Iconify icon="system-uicons:forward" sx={{ mx: 1 }} />
-          </Button>
+          </Button>}
         </Stack>
       </Stack>
 

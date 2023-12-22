@@ -103,11 +103,12 @@ const rescheduleAppointment = async (userID: string, appointmentID: any, newBody
   if (appointment.status !== 'Upcoming' || appointment.startDate < new Date(Date.now() + 2 * 60 * 60 * 1000))
     throw new HttpError(StatusCodes.BAD_REQUEST, 'You cannot reschedule a non-upcoming appointment');
 
-  const newAppointment = { ...appointment.toJSON(), ...newBody }; // newBody will override some of the old values
+  const newAppointment = { ...appointment.toJSON(), ...newBody };
+  await sendNotification("Rescheduled", appointment, newAppointment);
+  // newBody will override some of the old values
   appointment.set(newAppointment);
   appointment.save();
   
-  sendNotification("Rescheduled", appointment, newAppointment);
 
   return {
     status: StatusCodes.OK,
@@ -217,31 +218,35 @@ async function validateAppointment(userID: string, appointmentID: string) {
   return appointment;
 }
 const sendNotification = async (type: string, appointment: IAppointment, newAppointment?: IAppointment) => {
-  console.log("Sending notification on appointment update .....");
-  const users = await User.find({
-    _id: { $in: [appointment.patientID, appointment.doctorID] }
-  });
-  let title = `Your Appointment is ${type}`;
-  let time = (app: IAppointment) => `from ${app.startDate.toUTCString()} to ${app.endDate.toUTCString()}`;
-  let message = `Your appointment ${time(appointment)} is canceled`;
-  if (type == 'Rescheduled') {
-    message = `Your appointment ${time(appointment)} is rescheduled and your new appointment is ${time(newAppointment!)}`;
-  }
-  const getTitle = (user: ICommonUser) => {
-    return user.role == "patient" ? "user" : "doctor"
-  }
-  for (const user of users) {
-    try {
-      NotificationManager.notify(user._id.toString(), type, message, title, new Date());
-      let mailBody = `Hello ${getTitle(user)} ${user.name},\nWe hope this mail finds you will. we are sending this mail to let you know that ${message.toLowerCase()}\n\nBest Regards \nEl7ani Clinic Team `
-      sendEmail(user.email, title, mailBody);
-
-    } catch (e) {
-      console.log("Error while notifying for appointment update")
-      continue;
+  try {
+    console.log("Sending notification on appointment update .....");
+    const users = await User.find({
+      _id: { $in: [appointment.patientID, appointment.doctorID] }
+    });
+    let title = `Your Appointment is ${type}`;
+    let time = (app: IAppointment) => `from ${new Date(app.startDate).toUTCString()} to ${new Date(app.endDate).toUTCString()}`;
+    let message = `Your appointment ${time(appointment)} is canceled`;
+    if (type == 'Rescheduled') {
+      message = `Your appointment ${time(appointment)} is rescheduled,\n your new appointment is ${time(newAppointment!)}`;
     }
+    const getTitle = (user: ICommonUser) => {
+      return user.role == "Patient" ? "User" : "Doctor"
+    }
+    for (const user of users) {
+      try {
+        NotificationManager.notify(user._id.toString(), type, message, title, new Date());
+        let mailBody = `Hello ${getTitle(user)} ${user.name},\nWe hope this mail finds you will. we are sending this mail to let you know that \n${message}\n\nBest Regards \nEl7ani Clinic Team `
+        sendEmail(user.email, title, mailBody);
+
+      } catch (e) {
+        console.log("Error while notifying for appointment update")
+        continue;
+      }
+    }
+    console.log("Done Sending notification on appointment update");
+  } catch (e) { 
+    console.log("Error while notifying for appointment update")
   }
-  console.log("Done Sending notification on appointment update");
 }
 
 export {

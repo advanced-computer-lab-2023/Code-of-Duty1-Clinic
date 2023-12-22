@@ -5,7 +5,7 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 function PDFViewer({ pdfURL }) {
   return (
     <div>
-      <Worker workerUrl={`${import.meta.env.BASE_URL}pdf.worker.min2.js`}>
+      <Worker workerUrl={`${import.meta.env.BASE_URL}pdf.worker.min.js`}>
         <Viewer
           fileUrl={pdfURL}
           withCredentials={true}
