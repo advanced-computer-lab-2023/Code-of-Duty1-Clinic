@@ -133,11 +133,11 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   const renderDescription = (
     <Stack spacing={2}>
       <Stack>
-        <Typography>Description : </Typography>
+        <Typography fontWeight="bold">Description : </Typography>
         <Typography>{medicineProduct.description} </Typography>
       </Stack>
       <Stack direction={'row'} spacing={1}>
-        <Typography>medical use : </Typography>
+        <Typography fontWeight="bold">Medical use : </Typography>
         <Typography>{medicineProduct.medicalUse} </Typography>
       </Stack>
     </Stack>
@@ -223,7 +223,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
           {user === 'Pharmacist' && (
             <Stack spacing={1} sx={{ p: 3 }}>
               <Typography color="inherit" underline="hover" variant="subtitle2">
-                items left in the stock
+                Items left in the stock
               </Typography>
               <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 7 }}>
                 {medicineProduct.numStock}
@@ -233,7 +233,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
           {user === 'Pharmacist' && (
             <Stack spacing={1} sx={{ p: 3 }}>
               <Typography color="inherit" underline="hover" variant="subtitle2">
-                items sold
+                Items sold
               </Typography>
               <Typography color="inherit" underline="hover" variant="subtitle2" sx={{ pl: 4 }}>
                 {medicineProduct.numSold}

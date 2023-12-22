@@ -48,12 +48,12 @@ export default function DoctorsView() {
       <Grid container spacing={3}>
         {filteredDoctors
           ? filteredDoctors.map((doctor) => {
-              return (
-                <Grid key={doctor._id} item xs={12} md={12} sm={12}>
-                  <DoctorCard i={i++} doctor={doctor} />
-                </Grid>
-              );
-            })
+            return (
+              <Grid key={doctor._id} item xs={12} md={12} sm={12}>
+                <DoctorCard i={i++} doctor={doctor} />
+              </Grid>
+            );
+          })
           : null}
       </Grid>
     </Container>

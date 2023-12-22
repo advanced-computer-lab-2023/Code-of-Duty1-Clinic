@@ -11,6 +11,8 @@ import {
     Divider,
     Button,
 } from '@mui/material';
+
+import { CircularProgress } from '@mui/material';
 import EditProfileModal from './profileSettings';
 import PatientInfo from './patient/patientInfo';
 // Custom component to render ListItemText with bold styling for words before the colon
@@ -188,11 +190,14 @@ function ProfileInfo({ userID }) {
                             {/* Apply BoldBeforeColonText to each ListItemText */}
                             <BoldBeforeColonText primary={`Name: ${user.name || 'Not specified'}`} />
                             <BoldBeforeColonText primary={`Email: ${user.email || 'Not specified'}`} />
+                            <BoldBeforeColonText primary={`Username: ${user.username || 'Not specified'}`} />
                             <BoldBeforeColonText
                                 primary={`Birth Date: ${new Date(user.birthDate).toLocaleDateString() || 'Not specified'}`}
                             />
                             <BoldBeforeColonText primary={`Gender: ${user.gender || 'Not specified'}`} />
                             <BoldBeforeColonText primary={`Phone: ${user.phone || 'Not specified'}`} />
+                            <BoldBeforeColonText primary={`Role: ${user.role || 'Not specified'}`} />
+
                         </List>
                     </CardContent>
                 </Card>

@@ -62,7 +62,7 @@ export default function LoginView() {
         let target = destination;
         if (user.role != 'Patient' && user.role != 'Admin') {
           let response = await axiosInstance.get('upload/uploads');
-          if (response.data.result == 0) {
+          if (!response.data.result) {
             target = '/upload-document';
           }
         }
