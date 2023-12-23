@@ -3,6 +3,7 @@ import Modal from '@mui/material/Modal';
 import PDFViewer from './viewPDF';
 import ImageViewer from './viewImage.jsx';
 import IconButton from '@mui/material/IconButton';
+import { CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -101,15 +102,18 @@ const AdditionalContent = ({ doctorID, text, documentType, extension }) => {
 
 const DisplayRequests = ({ doctorID }) => {
   const [requests, setRequests] = useState({});
-
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const res = await axiosInstance.get(`/upload/doctor/registration/${doctorID}`);
         setRequests(res.data.result);
         console.log(res.data.result);
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -121,7 +125,7 @@ const DisplayRequests = ({ doctorID }) => {
     marginBottom: '5px',
     overflowY: 'auto',
   };
-
+  if (isLoading) { return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} /> }
   return (
     <div style={{ overflowY: 'auto', maxHeight: '50vh', maxWidth: '90vh', minWidth: '90vh' }}>
       {requests &&
