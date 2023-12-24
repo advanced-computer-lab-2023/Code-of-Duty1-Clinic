@@ -8,6 +8,7 @@ import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
+import { useRouter } from 'src/routes/hooks';
 
 import Iconify from 'src/components/iconify';
 
@@ -16,6 +17,8 @@ import DoctorDaySlots from './doctor-slot';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 export default function DoctorCard({ i, doctor }) {
+  const router = useRouter();
+
   const {
     isLoading,
     error,
@@ -44,7 +47,7 @@ export default function DoctorCard({ i, doctor }) {
           fullWidth
           onClick={() => {
             console.log('fffff');
-            window.location.href = `http://localhost:3030/profile/${doctor._id}`;
+            router.push(`/profile/${doctor._id}`);
           }}
         >
           <Stack alignItems="center" justifyContent="center">
@@ -87,70 +90,76 @@ export default function DoctorCard({ i, doctor }) {
           sx={{ position: 'relative', width: '85%' }}
         >
           {/* Backward Navigation Button */}
-          {localStorage.getItem('userRole') == 'Patient' && <Button
-            variant="contained"
-            onClick={() => {
-              setCheck((prev) => !prev);
-              setTimeout(() => {
-                setDisplayedDays((prev) => prev - 3);
+          {localStorage.getItem('userRole') == 'Patient' && (
+            <Button
+              variant="contained"
+              onClick={() => {
                 setCheck((prev) => !prev);
-              }, 400);
-            }}
-            disabled={displayedDays <= 0}
-            sx={{
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              minWidth: 'unset',
-              padding: '0',
-              position: 'absolute', // Fix the position
-              left: 0 // Align to the left of the parent Stack
-            }}
-          >
-            <Iconify icon="system-uicons:backward" sx={{ mx: 1 }} />
-          </Button>}
+                setTimeout(() => {
+                  setDisplayedDays((prev) => prev - 3);
+                  setCheck((prev) => !prev);
+                }, 400);
+              }}
+              disabled={displayedDays <= 0}
+              sx={{
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                minWidth: 'unset',
+                padding: '0',
+                position: 'absolute', // Fix the position
+                left: 0 // Align to the left of the parent Stack
+              }}
+            >
+              <Iconify icon="system-uicons:backward" sx={{ mx: 1 }} />
+            </Button>
+          )}
 
           {/* Sliding Component with DoctorDaySlots */}
-          {localStorage.getItem('userRole') == 'Patient' && <Slide in={check} direction="left" timeout={500} appear={false}>
-            <Stack direction={'row'} spacing={1} alignItems="center" justifyContent="center">
-              {Object.keys(weekSlots)
-                .slice(displayedDays, displayedDays + 3)
-                .map((day) => (
-                  <DoctorDaySlots
-                    key={ii++}
-                    day={day}
-                    slots={weekSlots[day]}
-                    doctorID={doctor._id}
-                    doctorName={doctor.name}
-                  />
-                ))}
-            </Stack>
-          </Slide>}
+          {localStorage.getItem('userRole') == 'Patient' && (
+            <Slide in={check} direction="left" timeout={500} appear={false}>
+              <Stack direction={'row'} spacing={1} alignItems="center" justifyContent="center">
+                {Object.keys(weekSlots)
+                  .slice(displayedDays, displayedDays + 3)
+                  .map((day) => (
+                    <DoctorDaySlots
+                      key={ii++}
+                      day={day}
+                      slots={weekSlots[day]}
+                      doctorID={doctor._id}
+                      doctorName={doctor.name}
+                    />
+                  ))}
+              </Stack>
+            </Slide>
+          )}
 
           {/* Forward Navigation Button */}
-          {localStorage.getItem('userRole') == 'Patient' && <Button
-            variant="contained"
-            onClick={() => {
-              setCheck((prev) => !prev);
-              setTimeout(() => {
-                setDisplayedDays((prev) => prev + 3);
+          {localStorage.getItem('userRole') == 'Patient' && (
+            <Button
+              variant="contained"
+              onClick={() => {
                 setCheck((prev) => !prev);
-              }, 400);
-            }}
-            disabled={displayedDays >= 6}
-            sx={{
-              borderRadius: '50%',
-              width: '40px',
-              height: '40px',
-              minWidth: 'unset',
-              padding: '0',
-              position: 'absolute', // Fix the position
-              left: 'auto', // Reset left to its default value
-              right: 0 // Align to the right of the parent Stack
-            }}
-          >
-            <Iconify icon="system-uicons:forward" sx={{ mx: 1 }} />
-          </Button>}
+                setTimeout(() => {
+                  setDisplayedDays((prev) => prev + 3);
+                  setCheck((prev) => !prev);
+                }, 400);
+              }}
+              disabled={displayedDays >= 6}
+              sx={{
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                minWidth: 'unset',
+                padding: '0',
+                position: 'absolute', // Fix the position
+                left: 'auto', // Reset left to its default value
+                right: 0 // Align to the right of the parent Stack
+              }}
+            >
+              <Iconify icon="system-uicons:forward" sx={{ mx: 1 }} />
+            </Button>
+          )}
         </Stack>
       </Stack>
     </Card>
