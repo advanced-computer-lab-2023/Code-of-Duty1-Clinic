@@ -29,7 +29,7 @@ router.delete('/:id/package', (req: Request, res: Response) => {
   controller(res)(cancelSubscribtion)(req.params.id);
 });
 
-router.use(isAuthorized('Doctor'));
+// router.use(isAuthorized('Doctor'));
 
 router.get('/:id/medicalhistory', (req: Request, res: Response) => {
   controller(res)(getHealthRecords)(req.params.id);
