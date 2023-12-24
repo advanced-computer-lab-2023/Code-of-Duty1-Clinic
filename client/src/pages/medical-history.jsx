@@ -4,7 +4,7 @@ import { RecordsList, MedicalHistoryUpload } from 'src/sections/upload';
 import MedicalHistoryView from 'src/sections/upload/Medical-History/view/medicalHistoryView';
 import { useParams } from 'react-router-dom';
 const MedicalHistoryPage = () => {
-  const { patientID } = useParams();
+  let { patientID } = useParams();
   return (
     <>
       <Helmet>
