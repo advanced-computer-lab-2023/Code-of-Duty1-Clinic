@@ -2,9 +2,29 @@ import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../utils';
 import { Patient, Package } from '../models';
 
-const getPackages = async (query: Object) => {
+const getPackages = async (query: Object, patientID: string) => {
   const packages = await Package.find({ ...query, isLatest: true }).sort({ price: 1 });
   if (!packages) throw new HttpError(StatusCodes.NOT_FOUND, 'No packages found');
+
+  const patient = await Patient.findById(patientID).select('package');
+  let family = patient?.family || [];
+  let discount = 0;
+
+  for (let member of family) {
+    if (!(member as any).userID) continue;
+
+    const familyMember = await Patient.findById((member as any).userID).select('package');
+
+    if (familyMember && familyMember.package?.packageID) {
+      const packageData = await Package.findById(familyMember.package.packageID);
+
+      if (packageData) discount = Math.max(discount, packageData.familyDiscount / 100 || 0);
+    }
+  }
+
+  packages.map((packageI) => {
+    packageI.price -= packageI.price * discount;
+  });
 
   return {
     status: StatusCodes.OK,

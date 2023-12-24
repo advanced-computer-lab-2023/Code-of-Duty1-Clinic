@@ -13,7 +13,7 @@ export default function MemberCard({ member }) {
             Name: {member.name}
           </Typography>
           <Typography variant="subtitle1" mb={1} noWrap>
-            {isRegistered ? `Natioanl ID: ${member.nationalID}` : `UserID: ${member.userID}`}
+            {isRegistered ? `UserID: ${member.userID}` : `Natioanl ID: ${member.nationalID}`}
           </Typography>
           <Typography variant="subtitle1" fontSize={18} fontFamily={'Segoe UI'}>
             Relation: {member.relation}

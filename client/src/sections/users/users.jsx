@@ -68,22 +68,22 @@ const ReqTable = () => {
   const filterUsers = () => {
     let filtered = users;
     console.log(filtered);
-    if (statusFilter !== 'all' && (roleFilter !== 'all')) {
-      filtered = users.filter((user) => user.status &&
-        user.role && user.status.toLowerCase() === statusFilter.toLowerCase() &&
-        user.role.toLowerCase() === roleFilter.toLowerCase());
-    }
-    else if (statusFilter !== 'all') {
+    if (statusFilter !== 'all' && roleFilter !== 'all') {
+      filtered = users.filter(
+        (user) =>
+          user.status &&
+          user.role &&
+          user.status.toLowerCase() === statusFilter.toLowerCase() &&
+          user.role.toLowerCase() === roleFilter.toLowerCase()
+      );
+    } else if (statusFilter !== 'all') {
       filtered = users.filter((user) => user.status && user.status.toLowerCase() === statusFilter.toLowerCase());
-    }
-
-    else if (roleFilter !== 'all') {
+    } else if (roleFilter !== 'all') {
       filtered = users.filter((user) => user.role && user.role.toLowerCase() === roleFilter.toLowerCase());
     }
 
     setFilteredUsers(filtered);
   };
-
 
   useEffect(() => {
     filterUsers();
@@ -105,7 +105,7 @@ const ReqTable = () => {
     maxWidth: '1100px',
     margin: 'auto',
     borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
   };
 
   return (
@@ -201,9 +201,11 @@ const ReqTable = () => {
             </div>
           )}
 
-          {selectedUser && <div style={{ padding: '20px' }}>
-            <DisplayRequests doctorID={selectedUser._id} />
-          </div>}
+          {selectedUser && (
+            <div style={{ padding: '20px' }}>
+              <DisplayRequests doctorID={selectedUser._id} />
+            </div>
+          )}
         </div>
       </Modal>
     </>

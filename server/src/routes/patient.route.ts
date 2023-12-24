@@ -18,18 +18,18 @@ const router = express.Router();
 router.use(isAuthenticated);
 // router.use(isAuthorized('Doctor'));
 
-
 router.get('/package', (req: Request, res: Response) => {
   controller(res)(getHealthPackage)(req.decoded.id);
 });
 router.post('/:id/package', (req: Request, res: Response) => {
-  controller(res)(subscribe)(req.params.id, req.body.packageID);
+  console.log('Hey', req.body);
+  controller(res)(subscribe)(req.params.id, req.body.package);
 });
 router.delete('/:id/package', (req: Request, res: Response) => {
   controller(res)(cancelSubscribtion)(req.params.id);
 });
 
-router.use(isAuthorized('Doctor'));
+// router.use(isAuthorized('Doctor'));
 
 router.get('/:id/medicalhistory', (req: Request, res: Response) => {
   controller(res)(getHealthRecords)(req.params.id);

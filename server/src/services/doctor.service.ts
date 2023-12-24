@@ -17,7 +17,7 @@ const getMyPatients = async (query: any) => {
   };
 };
 
-const viewAvailableAppointments = async (doctorID: string) => {
+const viewAvailableAppointments = async (doctorID: string, userID: string) => {
   const doctor = await Doctor.findById(doctorID);
   if (!doctor) throw new HttpError(StatusCodes.NOT_FOUND, 'Doctor not found');
 
@@ -97,7 +97,7 @@ const viewAvailableAppointments = async (doctorID: string) => {
           0
         );
 
-        const price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute + 1) / 60));
+        let price = Math.floor(doctor.hourRate * (slotHourEnd - slotHour + (slotMinuteEnd - slotMinute + 1) / 60));
 
         const id = uuidv4();
 
@@ -138,7 +138,7 @@ const getDoctors = async (query: any) => {
 
     const filteredDoctors = await Promise.all(
       doctors.map(async (doctor: any) => {
-        const { result: appointments } = await viewAvailableAppointments(doctor._id);
+        const { result: appointments } = await viewAvailableAppointments(doctor._id, '');
         const dayAppointments = (appointments as any)[day];
 
         for (const appointment of dayAppointments) {
@@ -148,7 +148,7 @@ const getDoctors = async (query: any) => {
         return false;
       })
     );
-
+    
     doctors = doctors.filter((doctor: any, index: number) => filteredDoctors[index]);
   }
 

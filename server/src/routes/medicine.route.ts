@@ -6,15 +6,15 @@ import { getMedicines, addMedicine, updateMedicine } from '../services';
 
 const router = express.Router();
 
-// ToDO
+router.use(isAuthenticated);
+
 router.get('/:id', (req: Request, res: Response) => {
   controller(res)(getMedicines)({ _id: req.params.id });
 });
 router.get('/', (req: Request, res: Response) => {
-  controller(res)(getMedicines)(req.query);
+  controller(res)(getMedicines)(req.query, req.decoded.id);
 });
 
-router.use(isAuthenticated);
 router.use(isAuthorized('Pharmacist'));
 router.post('/', (req: Request, res: Response) => {
   controller(res)(addMedicine)(req.body);

@@ -1,13 +1,27 @@
 import { StatusCodes } from 'http-status-codes';
 
-import { Medicine } from '../models';
+import { Medicine, Package, Patient } from '../models';
 import { IMedicine } from '../models/medicine.model';
 import { HttpError } from '../utils';
 import path from 'path';
-const getMedicines = async (query: any) => {
+
+const getMedicines = async (query: any, userID: string) => {
   if (query.name) query.name = new RegExp(query.name, 'i');
+
   const medicines = await Medicine.find(query);
   if (!medicines) throw new HttpError(StatusCodes.NOT_FOUND, 'No medicine found');
+
+  let discount = 0;
+  const patient = await Patient.findById(userID).select('package');
+  if (patient && patient.package?.packageID) {
+    const packageData = await Package.findById(patient.package.packageID);
+
+    if (packageData) discount = packageData.medicineDiscount / 100 || 0;
+  }
+
+  medicines.map((medicine) => {
+    medicine.price -= medicine.price * discount;
+  });
 
   return {
     status: StatusCodes.OK,
