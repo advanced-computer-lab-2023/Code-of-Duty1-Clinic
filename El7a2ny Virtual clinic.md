@@ -28,15 +28,11 @@ We hope that this project will help to further the continuing transformation of 
 ---
 ## Screenshots🖵
 
--![upload images](./screenshots/35.jpeg)
+-![upload images](./screenshots/d10.png)
 -![signin](./screenshots/d11.png)
--![getAppointment](./screenshots/41.jpeg)
+-![getAppointment](./screenshots/d12.png)
 -![signUp](./screenshots/d13.png)
--![getAppointment](./screenshots/42.jpeg)
--![getAppointment](./screenshots/43.jpeg)
--![getAppointment](./screenshots/44.jpeg)
--![getAppointment](./screenshots/45.jpeg)
--![getAppointment](./screenshots/46.jpeg)
+
 
 ## Tech/Framework Used🧰
 In order to provide a reliable and effective virtual clinic solution, the El7a2ny project makes use of a contemporary technology stack. The principal technologies and frameworks integrated into the project are listed below:

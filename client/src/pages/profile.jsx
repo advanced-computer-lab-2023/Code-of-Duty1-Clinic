@@ -12,7 +12,7 @@ export default function ProfilePage() {
             <Helmet>
                 <title> Profile </title>
             </Helmet>
-            {console.log("888888 8 8 8 ", id)}
+
             <ProfileView userID={id} />
         </>
     );

@@ -140,11 +140,6 @@ const navConfigByRole = {
       icon: icon('ic_upload')
     },
     {
-      title: 'Contract',
-      path: '/contract',
-      icon: icon('ic_contract')
-    },
-    {
       title: 'Chat',
       path: '/chat',
       icon: icon('ic_chat')
