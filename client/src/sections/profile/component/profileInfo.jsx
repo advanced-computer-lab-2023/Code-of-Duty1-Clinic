@@ -73,7 +73,7 @@ const SpecificInfo = ({ user }) => {
                         <BoldBeforeColonText
                             primary={`Weekly Schedule:`}
                         />
-                        {Object.entries(user.weeklySlots).map(([day, schedules]) => {
+                        {user?.weeklySlots && Object.entries(user.weeklySlots).map(([day, schedules]) => {
                             if (day == '_id') return;
                             return (
                                 <ListItem key={day}>

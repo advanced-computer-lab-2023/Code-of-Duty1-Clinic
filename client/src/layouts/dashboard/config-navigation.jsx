@@ -11,7 +11,7 @@ const navConfigByRole = {
     {
       title: 'Medicine',
       path: '/products',
-      icon: icon('ic_cart')
+      icon: icon('ic_medicine')
     },
     {
       title: 'Doctors',
@@ -21,7 +21,7 @@ const navConfigByRole = {
     {
       title: 'Appointments',
       path: '/appointments',
-      icon: icon('ic_user')
+      icon: icon('ic_appointment')
     },
     {
       title: 'My Prescriptions',
@@ -31,7 +31,7 @@ const navConfigByRole = {
     {
       title: 'Medical History',
       path: `/medical-history/${localStorage.getItem('userID')}`,
-      icon: icon('ic_disabled')
+      icon: icon('ic_history')
     },
     {
       title: 'Packages',
@@ -56,7 +56,7 @@ const navConfigByRole = {
     {
       title: 'Orders',
       path: '/orders',
-      icon: icon('ic_analytics')
+      icon: icon('ic_order')
     },
     {
       title: 'Addresses',
@@ -66,7 +66,7 @@ const navConfigByRole = {
     {
       title: 'chat',
       path: '/chat',
-      icon: icon('ic_analytics')
+      icon: icon('ic_chat')
     }
   ],
 
@@ -74,12 +74,12 @@ const navConfigByRole = {
     {
       title: 'Appointments',
       path: '/appointments',
-      icon: icon('ic_user')
+      icon: icon('ic_appointment')
     },
     {
       title: 'Patients',
       path: '/patients',
-      icon: icon('ic_user')
+      icon: icon('ic_patient')
     },
     {
       title: 'Weekly slots',
@@ -94,7 +94,7 @@ const navConfigByRole = {
     {
       title: 'Medicine',
       path: '/products',
-      icon: icon('ic_cart')
+      icon: icon('ic_medicine')
     },
     {
       title: 'Doctors',
@@ -109,7 +109,7 @@ const navConfigByRole = {
     {
       title: 'Chat',
       path: '/chat',
-      icon: icon('ic_analytics')
+      icon: icon('ic_chat')
     }
   ],
 
@@ -117,7 +117,7 @@ const navConfigByRole = {
     {
       title: 'Medicine',
       path: '/products',
-      icon: icon('ic_cart')
+      icon: icon('ic_medicine')
     },
     {
       title: 'Doctors',
@@ -127,12 +127,12 @@ const navConfigByRole = {
     {
       title: 'Orders',
       path: '/orders',
-      icon: icon('ic_analytics')
+      icon: icon('ic_order')
     },
     {
       title: 'Report',
       path: '/report',
-      icon: icon('ic_analytics')
+      icon: icon('ic_report')
     },
     {
       title: 'Upload Documents',
@@ -147,7 +147,7 @@ const navConfigByRole = {
     {
       title: 'Chat',
       path: '/chat',
-      icon: icon('ic_analytics')
+      icon: icon('ic_chat')
     }
   ],
 
@@ -155,12 +155,12 @@ const navConfigByRole = {
     {
       title: 'Requests',
       path: '/requests',
-      icon: icon('ic_user')
+      icon: icon('ic_requests')
     },
     {
       title: 'Report',
       path: '/report',
-      icon: icon('ic_analytics')
+      icon: icon('ic_report')
     },
     {
       title: 'Manage packages',
@@ -170,12 +170,12 @@ const navConfigByRole = {
     {
       title: 'Users',
       path: '/users',
-      icon: icon('ic_analytics')
+      icon: icon('ic_user')
     },
     {
       title: 'Add Admin',
       path: '/add-admin',
-      icon: icon('ic_analytics')
+      icon: icon('ic_addAdmin')
     }
   ]
 };

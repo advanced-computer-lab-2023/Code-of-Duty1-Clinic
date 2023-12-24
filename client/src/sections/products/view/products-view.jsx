@@ -142,7 +142,7 @@ export default function ProductsView() {
   return (
     <Container>
       <Typography variant="h4" sx={{ mb: 5 }}>
-        Products
+        Medicines
         {console.log(products)}
       </Typography>
 
@@ -243,7 +243,7 @@ export default function ProductsView() {
           .filter((product) => !(user === 'Patient' && product.isArchived))
           .map((product) => (
             <Grid key={product.id} xs={12} sm={6} md={3}>
-              <ProductCard product={product} onDetailsview={handleExpandProductDetails} />
+              <ProductCard product={product} onDetailsview={handleExpandProductDetails} addableToCart={localStorage.getItem('userRole') == 'Patient'} />
             </Grid>
           ))}
       </Grid>

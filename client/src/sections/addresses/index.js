@@ -1,0 +1,1 @@
+export { default as AddressesView } from './addresses';

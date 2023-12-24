@@ -38,17 +38,15 @@ export default function DoctorCard({ i, doctor }) {
 
   let ii = 0;
   return (
-
     <Card type="section">
-
-
       <Stack direction={'row'} spacing={0} mx={3} my={4}>
         <Button
           fullWidth
           onClick={() => {
-            console.log("fffff")
+            console.log('fffff');
             window.location.href = `http://localhost:3030/profile/${doctor._id}`;
-          }}>
+          }}
+        >
           <Stack alignItems="center" justifyContent="center">
             <Avatar
               alt="User Img"
@@ -98,7 +96,7 @@ export default function DoctorCard({ i, doctor }) {
                 setCheck((prev) => !prev);
               }, 400);
             }}
-            disabled={displayedDays === 0}
+            disabled={displayedDays <= 0}
             sx={{
               borderRadius: '50%',
               width: '40px',
@@ -139,7 +137,7 @@ export default function DoctorCard({ i, doctor }) {
                 setCheck((prev) => !prev);
               }, 400);
             }}
-            disabled={displayedDays === 6}
+            disabled={displayedDays >= 6}
             sx={{
               borderRadius: '50%',
               width: '40px',
@@ -155,7 +153,6 @@ export default function DoctorCard({ i, doctor }) {
           </Button>
         </Stack>
       </Stack>
-
     </Card>
   );
 }

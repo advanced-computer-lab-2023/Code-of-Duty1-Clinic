@@ -1,8 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes, useParams } from 'react-router-dom';
 
-import { CircularProgress } from '@mui/material';
-import ReactLoading from 'react-loading';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
@@ -72,7 +71,7 @@ export default function Router() {
       {
         path: 'profile/:id',
         element: <ProfilePage />
-      },
+      }
     ],
     Doctor: [
       { path: 'products', element: <ProductsPage /> },
@@ -89,7 +88,7 @@ export default function Router() {
       {
         path: 'profile/:id',
         element: <ProfilePage />
-      },
+      }
     ],
     Pharmacist: [
       { path: 'products', element: <ProductsPage /> },
@@ -103,7 +102,7 @@ export default function Router() {
       {
         path: 'profile/:id',
         element: <ProfilePage />
-      },
+      }
     ],
     Admin: [
       { path: 'requests', element: <RequestsPage /> },
@@ -114,7 +113,7 @@ export default function Router() {
       {
         path: 'profile/:id',
         element: <ProfilePage />
-      },
+      }
     ]
   };
 
@@ -130,12 +129,14 @@ export default function Router() {
       ) : (
         <Navigate to="/login" replace />
       ),
-      children: [{ index: true, element: <IndexPage /> },
-      {
-        path: 'reset-password',
-        element: <ResetPage />
-      },
-      ...(userRoutes[role] || [])]
+      children: [
+        { index: true, element: <IndexPage /> },
+        {
+          path: 'reset-password',
+          element: <ResetPage />
+        },
+        ...(userRoutes[role] || [])
+      ]
     },
     {
       path: 'login',
@@ -150,11 +151,6 @@ export default function Router() {
       path: 'forgot-password',
       element: <ForgotPage />
     },
-    {
-      path: '404',
-      element: <Page404 />
-    },
-
     {
       path: '*',
       element: <Navigate to="/404" replace />
