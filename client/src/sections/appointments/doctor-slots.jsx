@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
+import { useQuery, useMutation } from 'react-query';
 
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
@@ -23,7 +29,7 @@ export default function DoctorSlots({
 }) {
   const [selectedSlot, setSelectedSlot] = useState({});
 
-  const scheduleFollowUp = async () => {
+  const { isLoading: isLoadingSchedule, mutate: scheduleFollowUp } = useMutation(async () =>
     axiosInstance
       .post(`me/appointments/${_id}`, {
         startDate: selectedSlot.startDate,
@@ -37,10 +43,10 @@ export default function DoctorSlots({
       .catch((err) => {
         setMessage(err.response.data.message ?? 'Network Error');
         setOpenSnackbar(true);
-      });
-  };
+      })
+  );
 
-  const rescheduleAppointment = async () => {
+  const { isLoading: isLoadingReschedule, mutate: rescheduleAppointment } = useMutation(async () =>
     axiosInstance
       .put(`me/appointments/${_id}/reschedule`, {
         startDate: selectedSlot.startDate,
@@ -53,14 +59,20 @@ export default function DoctorSlots({
       .catch((err) => {
         setMessage(err.response.data.message ?? 'Network Error');
         setOpenSnackbar(true);
-      });
-  };
+      })
+  );
 
   const handleClick = (event, slot) => {
     setSelectedSlot(slot);
 
     const clickedButton = event.currentTarget;
     clickedButton.style.backgroundColor = 'DodgerBlue';
+  };
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === 'clickaway') return;
+
+    setOpenSnackbar(false);
   };
 
   return (
@@ -124,9 +136,14 @@ export default function DoctorSlots({
       </DialogContent>
       <DialogActions>
         <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-        <Button onClick={functionlity == 'Reschedule' ? rescheduleAppointment : scheduleFollowUp}>
+        <LoadingButton
+          loadingIndicator="Loading…"
+          loading={functionlity == 'Reschedule' ? isLoadingReschedule : isLoadingSchedule}
+          disabled={functionlity == 'Reschedule' ? isLoadingReschedule : isLoadingSchedule}
+          onClick={functionlity == 'Reschedule' ? rescheduleAppointment : scheduleFollowUp}
+        >
           {functionlity}
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

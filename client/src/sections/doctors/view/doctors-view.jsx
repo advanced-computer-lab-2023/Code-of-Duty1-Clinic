@@ -1,6 +1,9 @@
 import { useQuery, useMutation } from 'react-query';
 import { useState } from 'react';
 
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
@@ -31,8 +34,8 @@ export default function DoctorsView() {
 
   const [filteredDoctors, setFilteredDoctors] = useState([]);
 
-  if (isLoading) return 'Loading...';
-  if (error) return 'An error has occurred: ' + error.message;
+  if (isLoading) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+  if (error) return <Typography>An error has occurred: {error.response?.data.message || 'Network error'}</Typography>;
 
   let i = 0;
   return (
@@ -48,12 +51,12 @@ export default function DoctorsView() {
       <Grid container spacing={3}>
         {filteredDoctors
           ? filteredDoctors.map((doctor) => {
-            return (
-              <Grid key={doctor._id} item xs={12} md={12} sm={12}>
-                <DoctorCard i={i++} doctor={doctor} />
-              </Grid>
-            );
-          })
+              return (
+                <Grid key={doctor._id} item xs={12} md={12} sm={12}>
+                  <DoctorCard i={i++} doctor={doctor} />
+                </Grid>
+              );
+            })
           : null}
       </Grid>
     </Container>

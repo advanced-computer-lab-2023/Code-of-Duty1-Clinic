@@ -15,7 +15,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 import { axiosInstance } from '../../utils/axiosInstance';
-import { useAuthContext } from 'src/contexts/userContext';
 
 import { bgGradient } from 'src/theme/css';
 import Logo from 'src/components/logo';
@@ -71,7 +70,7 @@ export default function LoginView() {
         setError(res.data.message);
       }
     } catch (e) {
-      setError(e.message);
+      setError(e.response?.data.message || 'Network error');
     } finally {
       setLoading(false);
     }

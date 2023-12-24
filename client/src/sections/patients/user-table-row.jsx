@@ -86,11 +86,6 @@ export default function UserTableRow({
           sx: { width: 140 }
         }}
       >
-        <MenuItem onClick={viewProfile}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Profile
-        </MenuItem>
-
         <MenuItem onClick={viewHealthRecords}>
           <Iconify icon="" sx={{ mr: 2 }} />
           Health Records

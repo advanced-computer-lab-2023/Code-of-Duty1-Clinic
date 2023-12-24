@@ -22,9 +22,6 @@ export default function PackageAdmin() {
     setOpenSnackbar(false);
   };
 
-  //   if (isLoading) return 'Loading...';
-  //   if (error) return 'An error has occurred: ' + error.message;
-
   return (
     <>
       <Container>

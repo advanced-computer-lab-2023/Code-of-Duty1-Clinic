@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import TableRow from '@mui/material/TableRow';
@@ -9,6 +10,7 @@ import Iconify from 'src/components/iconify';
 import Popover from '@mui/material/Popover';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 import DoctorSlots from './doctor-slots';
 
@@ -32,8 +34,11 @@ export default function UserTableRow({
   const [openModal, setOpenModal] = useState(false);
   const [weekSlots, setWeekSlots] = useState({});
   const [functionality, setFunctionality] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const cancelAppointment = async () => {
+    setIsLoading(true);
+
     await axiosInstance
       .delete(`me/appointments/${_id}`)
       .then((res) => {
@@ -42,7 +47,8 @@ export default function UserTableRow({
       .catch((err) => {
         setOpenSnackbar(true);
         setMessage(err.response.data.message);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const approveRejectAppointment = async (isApproved) => {
@@ -132,7 +138,7 @@ export default function UserTableRow({
             <Divider />
             <MenuItem onClick={cancelAppointment}>
               <Iconify icon="material-symbols:cancel" sx={{ mr: 2 }} />
-              Cancel
+              {isLoading ? 'Loading...' : 'Cancel'}
             </MenuItem>
           </>
         )}

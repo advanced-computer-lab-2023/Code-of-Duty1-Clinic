@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useQuery, useMutation } from 'react-query';
 
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -7,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,6 +18,8 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { axiosInstance } from '../../utils/axiosInstance';
 
@@ -61,13 +65,9 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
       .then((res) => res.data.result)
       .then((res) => {
         res.forEach((userPackage) => {
-          console.log('000000', userPackage.user._id == option._id);
-          console.log(userPackage.status != 'Unsubscribed');
           if (userPackage.status != 'Unsubscribed' && userPackage.user._id == option._id) {
             const discount = userPackage.package.familyDiscount;
             setDiscount(discount);
-            console.log(discount);
-            console.log(slot.sessionPrice);
           }
         });
       });
@@ -89,7 +89,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
     });
   };
 
-  const handleReserve = async () => {
+  const { isLoading: isLoadingMutate, mutate: handleReserve } = useMutation(async () => {
     if (!alignment || !selectedUser.id) {
       setMessage('Some fields are not filled correctly');
       return setOpenSnackbar(true);
@@ -127,7 +127,7 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
       setOpenSnackbar(true);
       console.log(err);
     }
-  };
+  });
 
   const handleCloseSnackBar = (event, reason) => {
     if (reason === 'clickaway') return;
@@ -257,7 +257,14 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-          <Button onClick={handleReserve}>Book</Button>
+          <LoadingButton
+            loading={isLoadingMutate}
+            loadingIndicator="Loading…"
+            disabled={isLoadingMutate}
+            onClick={handleReserve}
+          >
+            Book
+          </LoadingButton>
         </DialogActions>
 
         <Snackbar
@@ -266,6 +273,11 @@ export default function DoctorDaySlots({ day, slots, doctorID, doctorName }) {
           autoHideDuration={5000}
           onClose={handleCloseSnackBar}
           message={message}
+          action={
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleCloseSnackBar}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          }
         />
       </Dialog>
     </>

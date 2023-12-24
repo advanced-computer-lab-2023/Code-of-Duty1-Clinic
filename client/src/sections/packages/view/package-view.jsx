@@ -18,6 +18,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import PlanCard from '../plan-view';
 
@@ -86,8 +87,8 @@ export default function PackageView() {
     }
   });
 
-  if (isLoadingPackages) return 'Loading...';
-  if (error) return 'An error has occurred' + error.message;
+  if (isLoadingPackages) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+  if (error) return <Typography>An error has occurred: {error.response?.data.message || 'Network error'}</Typography>;
 
   const handleClick = async (userPackage) => {
     if (family.length == 0)

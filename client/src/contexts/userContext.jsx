@@ -58,5 +58,3 @@ export const AuthContextProvider = ({ children }) => {
 
   return <AuthContext.Provider value={isLogged}>{children}</AuthContext.Provider>;
 };
-
-export const useAuthContext = () => useContext(AuthContext);

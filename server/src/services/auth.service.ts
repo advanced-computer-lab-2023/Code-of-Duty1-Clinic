@@ -6,7 +6,7 @@ const login = async (body: any) => {
   const { username, password } = body;
   if (!username || !password) throw new HttpError(StatusCodes.BAD_REQUEST, 'Username and password are required');
 
-  const user = await User.findOne({ username: username }).select('+password');
+  const user = await User.findOne({ username }).select('+password');
   if (!user) throw new HttpError(StatusCodes.NOT_FOUND, 'User not found');
 
   const isCorrect: boolean = user.isCorrectPassword!(password);
@@ -27,12 +27,17 @@ const register = async (body: any, files?: Express.Multer.File[]) => {
   if (!['Patient', 'Doctor', 'Pharmacist'].includes(body.role))
     throw new Error('Role is not correct or you cannot register as admin');
 
-  const user = new User(body);
-  await user.save();
+  const { username, email, phone } = body;
+
+  const user = await User.findOne({ $or: [{ username }, { email }, { phone }] });
+  if (user) throw new HttpError(StatusCodes.NOT_FOUND, 'A user with this data already exists');
+
+  const newUser = new User(body);
+  await newUser.save();
 
   if (body.role === 'Doctor' || body.role === 'Pharmacist') {
     const newRequest = new Request({
-      medicID: user._id
+      medicID: newUser._id
     });
     await newRequest.save();
   }
@@ -40,7 +45,7 @@ const register = async (body: any, files?: Express.Multer.File[]) => {
   return {
     status: StatusCodes.CREATED,
     message: 'User created successfully',
-    result: user
+    result: newUser
   };
 };
 

@@ -6,7 +6,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
-import { useAuthContext } from 'src/contexts/userContext';
 import { axiosInstance } from '../../utils/axiosInstance';
 
 import PrescriptionSummary from './prescription-summary';
@@ -20,6 +19,7 @@ export default function PrescriptionView({ patientID }) {
   const [dateFilter, setDateFilter] = useState('');
   const [filledFilter, setFilledFilter] = useState(false);
   const [nonFilledFilter, setNonFilledFilter] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchPrescriptions = async () => {
     try {
@@ -50,6 +50,8 @@ export default function PrescriptionView({ patientID }) {
 
   const handleAddPrescription = async () => {
     try {
+      setIsLoading(true);
+
       const body = {
         medicines: newMedicines,
         description: newDescription
@@ -59,6 +61,8 @@ export default function PrescriptionView({ patientID }) {
       fetchPrescriptions();
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -290,6 +294,7 @@ export default function PrescriptionView({ patientID }) {
             </div>
             <button
               onClick={handleAddPrescription}
+              disabled={isLoading}
               style={{
                 padding: '8px 16px',
                 borderRadius: '4px',
@@ -299,7 +304,7 @@ export default function PrescriptionView({ patientID }) {
                 cursor: 'pointer'
               }}
             >
-              Add Prescription
+              {isLoading ? 'Loading...' : 'Add Prescription'}
             </button>
           </Box>
         </div>
