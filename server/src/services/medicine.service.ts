@@ -16,7 +16,7 @@ const getMedicines = async (query: any, userID: string) => {
   if (patient && patient.package?.packageID) {
     const packageData = await Package.findById(patient.package.packageID);
 
-    if (packageData) discount = packageData.medicineDiscount || 0;
+    if (packageData) discount = packageData.medicineDiscount / 100 || 0;
   }
 
   medicines.map((medicine) => {

@@ -18,7 +18,7 @@ const getPackages = async (query: Object, patientID: string) => {
     if (familyMember && familyMember.package?.packageID) {
       const packageData = await Package.findById(familyMember.package.packageID);
 
-      if (packageData) discount = Math.max(discount, packageData.familyDiscount || 0);
+      if (packageData) discount = Math.max(discount, packageData.familyDiscount / 100 || 0);
     }
   }
 
