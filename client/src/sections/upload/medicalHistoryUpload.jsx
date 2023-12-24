@@ -81,6 +81,8 @@ const MedicalHistoryUpload = ({ patientID }) => {
 
   const closeModal = () => {
     setModalOpen(false);
+    window.location.reload();
+
   };
 
   return (

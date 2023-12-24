@@ -49,7 +49,7 @@ const Row = ({ text, additionalContent, onDelete, patientID }) => {
         onMouseLeave={() => setIsHovered(false)}
       >
         <div style={{ flex: 1 }}>{text}</div>
-        <IconButton onClick={() => onDelete(text)}>
+        <IconButton >
           {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
         <IconButton onClick={() => onDelete(text)}>
