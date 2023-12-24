@@ -41,6 +41,37 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   useEffect(() => {
     alternatives();
   }, []);
+  const renderAlternatives = () => {
+    if (filteredAlternatives.length === 0) {
+      return(<Box
+        sx={{
+          textAlign: 'center',
+          paddingTop: 4,
+          paddingLeft: 7
+        }}
+      >
+        <Typography variant="h4" fontWeight="bold">
+          No alternatives available.
+        </Typography>
+      </Box>);
+    }
+
+    return (
+      <Card sx={{ mt: 3 }}>
+      <Typography variant="h3" mt={3}>
+        Alternative Products
+      </Typography>
+      {filteredAlternatives.map((alternative) => (
+        <Card key={alternative._id} sx={{ mt: 2, p: 2, borderRadius: 8, boxShadow: 2 }}>
+          <Typography variant="subtitle1" fontWeight="bold">
+            {alternative.name}
+          </Typography>
+          <Typography color="textSecondary">{alternative.description}</Typography>
+        </Card>
+      ))}
+    </Card>
+    );
+  };
   // useEffect(() => {
   //   const loadMedicineProduct = async () => {
   //     try {
@@ -242,18 +273,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
           )}
         </Stack>
       </Card>
-      {medicineProduct.numStock === 0 && (
-        <Card>
-          <Typography variant="h5" mt={3}>
-            Alternative Products
-          </Typography>
-          {filteredAlternatives.map((alternative) => (
-            <Card key={alternative._id}>
-              <Typography>{alternative.name}</Typography>
-            </Card>
-          ))}
-        </Card>
-      )}
+      {renderAlternatives()}
     </Box>
   );
 }
