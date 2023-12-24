@@ -40,9 +40,9 @@ export default function ResetView() {
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Typography variant="h4">Reset Password</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        {/* <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           New User
-        </Button>
+        </Button> */}
       </Stack>
 
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1, p: 5 }}>
