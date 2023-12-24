@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// ... (other imports)
+
+// ... (other imports)
+
+// ... (other imports)
+
 export default function ProductEdit({ onClose, productID }) {
   const [selectedMenuItem, setSelectedMenuItem] = useState('description');
   const [infoText, setInfoText] = useState('');
@@ -15,15 +21,23 @@ export default function ProductEdit({ onClose, productID }) {
 
   // Function to handle the "Add" button click
   const handleEditDetails = async () => {
-    if (infoText === '') {
+    if (infoText === '' && selectedMenuItem !== 'activeIngredients') {
       toast.error('Please fill in the information before adding.', {
         position: toast.POSITION.TOP_RIGHT
       });
     } else {
       try {
-        const payload = {
+        let payload = {
           [selectedMenuItem]: infoText
         };
+
+        // If the selected menu item is "Active Ingredients," convert the string to an array
+        if (selectedMenuItem === 'activeIngredients') {
+          payload = {
+            [selectedMenuItem]: infoText.split(',').map((ingredient) => ingredient.trim())
+          };
+        }
+
         await axios.put(`http://localhost:3000/medicine/${productID}`, payload, { withCredentials: true });
         onClose();
       } catch (error) {
@@ -47,16 +61,29 @@ export default function ProductEdit({ onClose, productID }) {
           <MenuItem value="medicalUse">Medical Use</MenuItem>
           <MenuItem value="price">Price</MenuItem>
           <MenuItem value="numStock">Items Left</MenuItem>
+          <MenuItem value="activeIngredients">Active Ingredients</MenuItem>
         </Select>
 
         {/* Display the information based on the selected menu item */}
-        <TextField
-          label="Information"
-          variant="outlined"
-          fullWidth
-          value={infoText}
-          onChange={(e) => setInfoText(e.target.value)}
-        />
+        {selectedMenuItem !== 'activeIngredients' && (
+          <TextField
+            label="Information"
+            variant="outlined"
+            fullWidth
+            value={infoText}
+            onChange={(e) => setInfoText(e.target.value)}
+          />
+        )}
+        {/* Additional input for editing active ingredients */}
+        {selectedMenuItem === 'activeIngredients' && (
+          <TextField
+            label="Active Ingredients (comma-separated)"
+            variant="outlined"
+            fullWidth
+            value={infoText} // No need for join, as it's already a string
+            onChange={(e) => setInfoText(e.target.value)}
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} variant="outlined">

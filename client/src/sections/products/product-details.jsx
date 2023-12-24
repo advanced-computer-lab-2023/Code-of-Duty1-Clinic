@@ -43,33 +43,35 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
   }, []);
   const renderAlternatives = () => {
     if (filteredAlternatives.length === 0) {
-      return(<Box
-        sx={{
-          textAlign: 'center',
-          paddingTop: 4,
-          paddingLeft: 7
-        }}
-      >
-        <Typography variant="h4" fontWeight="bold">
-          No alternatives available.
-        </Typography>
-      </Box>);
+      return (
+        <Box
+          sx={{
+            textAlign: 'center',
+            paddingTop: 4,
+            paddingLeft: 7
+          }}
+        >
+          <Typography variant="h4" fontWeight="bold">
+            No alternatives available.
+          </Typography>
+        </Box>
+      );
     }
 
     return (
       <Card sx={{ mt: 3 }}>
-      <Typography variant="h3" mt={3}>
-        Alternative Products
-      </Typography>
-      {filteredAlternatives.map((alternative) => (
-        <Card key={alternative._id} sx={{ mt: 2, p: 2, borderRadius: 8, boxShadow: 2 }}>
-          <Typography variant="subtitle1" fontWeight="bold">
-            {alternative.name}
-          </Typography>
-          <Typography color="textSecondary">{alternative.description}</Typography>
-        </Card>
-      ))}
-    </Card>
+        <Typography variant="h3" mt={3}>
+          Alternative Products
+        </Typography>
+        {filteredAlternatives.map((alternative) => (
+          <Card key={alternative._id} sx={{ mt: 2, p: 2, borderRadius: 8, boxShadow: 2 }}>
+            <Typography variant="subtitle1" fontWeight="bold">
+              {alternative.name}
+            </Typography>
+            <Typography color="textSecondary">{alternative.description}</Typography>
+          </Card>
+        ))}
+      </Card>
     );
   };
   // useEffect(() => {
@@ -171,6 +173,14 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
         <Typography fontWeight="bold">Medical use : </Typography>
         <Typography>{medicineProduct.medicalUse} </Typography>
       </Stack>
+      <Stack direction={'row'} spacing={1}>
+        <Typography fontWeight="bold">Active Ingredients :</Typography>
+        {medicineProduct.activeIngredients && medicineProduct.activeIngredients.length > 0 ? (
+          <Typography>{medicineProduct.activeIngredients.join(', ')}</Typography>
+        ) : (
+          <Typography>No active ingredients available</Typography>
+        )}
+      </Stack>
     </Stack>
   );
   const handleCloseUploadImage = async () => {
@@ -188,7 +198,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
     setUploadImg('');
   };
   const handleOpenEditModal = () => {
-    setIsEditMadalOpen(true);
+    setIsEditModalOpen(true);
   };
   const handleCloseEditModal = async () => {
     try {
@@ -199,7 +209,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
     } catch (err) {
       console.log(err.message);
     }
-    setIsEditMadalOpen(false);
+    setIsEditModalOpen(false);
   };
   const renderEditMedicineButton = (
     <Button variant="outlined" sx={{ textTransform: 'uppercase' }} onClick={handleOpenEditModal}>
@@ -236,6 +246,7 @@ export default function ProductDetails({ product, onCloseProductDetails }) {
               {medicineProduct._id && renderStatus}
               {user === 'Pharmacist' && renderArchiveButton}
               {user == 'Pharmacist' && renderAddNewImageButton}
+              {user == 'Pharmacist' && renderEditMedicineButton}
             </Stack>
           </Stack>
         </Stack>

@@ -17,7 +17,8 @@ import {
   DialogContent,
   TextField,
   DialogActions,
-  Dialog
+  Dialog,
+  Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -26,7 +27,7 @@ import { axiosInstance } from 'src/utils/axiosInstance';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 export default function CartComponent() {
   const navigate = useNavigate();
 
@@ -221,8 +222,24 @@ export default function CartComponent() {
     </Dialog>
   );
 
+  const handleNavigateToMedicine = () => {
+    navigate('/products');
+  };
   return (
     <>
+      <Tooltip title="Go to Medicine">
+        <IconButton
+          onClick={handleNavigateToMedicine}
+          sx={{
+            position: 'fixed', // Use 'fixed' instead of 'absolute'
+            top: 40,
+            left: 280,
+            zIndex: 2001
+          }}
+        >
+          <ArrowBackIcon />
+        </IconButton>
+      </Tooltip>
       <Table
         sx={{
           border: '1px solid #ddd',
@@ -299,18 +316,35 @@ export default function CartComponent() {
           </TableRow>
         </TableBody>
         <Stack direction={'row'} spacing={2}>
-          <Button onClick={handleCheckout} disabled={!address || address == 'Add New Address'}>
-            pay with credit
-          </Button>
-          <Button
-            disabled={!address || address == 'Add New Address'}
-            onClick={() => handleWalletPayment(totalPrice * -1)}
-          >
-            pay with wallet
-          </Button>
-          <Button onClick={handleCashPayment} disabled={!address || address == 'Add New Address'}>
-            pay with cash
-          </Button>
+          <Tooltip title={address ? '' : 'Please select or add an address'}>
+            <div>
+              <Button onClick={handleCheckout} disabled={!address || address === 'Add New Address'} variant="outlined">
+                pay with credit
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title={address ? '' : 'Please select or add an address'}>
+            <div>
+              <Button
+                disabled={!address || address === 'Add New Address'}
+                onClick={() => handleWalletPayment(totalPrice * -1)}
+                variant="outlined"
+              >
+                pay with wallet
+              </Button>
+            </div>
+          </Tooltip>
+          <Tooltip title={address ? '' : 'Please select or add an address'}>
+            <div>
+              <Button
+                onClick={handleCashPayment}
+                disabled={!address || address === 'Add New Address'}
+                variant="outlined"
+              >
+                pay with cash
+              </Button>
+            </div>
+          </Tooltip>
         </Stack>
       </Table>
       <br />
