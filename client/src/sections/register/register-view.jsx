@@ -21,7 +21,6 @@ import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
 import { axiosInstance } from '../../utils/axiosInstance';
-import { RegistrationUpload } from 'src/sections/upload';
 
 // ----------------------------------------------------------------------
 
@@ -30,15 +29,15 @@ export default function RegisterView() {
 
   const router = useRouter();
 
+  const [currentTab, setCurrentTab] = useState(0);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm();
-
-  const [currentTab, setCurrentTab] = useState(0);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleTabChange = (e, tabIndex) => {
     e.preventDefault();
@@ -75,7 +74,7 @@ export default function RegisterView() {
       const data = await res.json();
 
       if (res.ok) router.push('/login');
-      else setError(data.message);
+      else setError(data.message || 'Network error');
     } catch (e) {
       console.log(e);
     } finally {

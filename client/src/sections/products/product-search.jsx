@@ -13,10 +13,17 @@ import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export default function ProductSearch({ onSearch }) {
+  const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({
     name: '',
     medicalUse: ''
   });
+
+  const handleSearch = () => {
+    setIsLoading(true);
+
+    onSearch(filters).finally(() => setIsLoading(false));
+  };
 
   const handleChange = (event) => {
     event.preventDefault();
@@ -28,8 +35,8 @@ export default function ProductSearch({ onSearch }) {
   };
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="space-between" m={3}>
-      <Stack direction="row" alignItems="center">
+    <Stack direction="row" alignItems="center" justifyContent="center" m={3}>
+      <Stack direction="row">
         <TextField
           name={'name'}
           onChange={handleChange}
@@ -57,14 +64,15 @@ export default function ProductSearch({ onSearch }) {
         />
       </Stack>
 
-      <Stack sx={{ mr: 6 }}>
+      <Stack sx={{ mx: 6 }}>
         <Button
-          onClick={() => onSearch(filters)}
+          onClick={handleSearch}
+          disabled={isLoading}
           variant="outlined"
           startIcon={<SearchIcon />}
           sx={{ minWidth: 130, minHeight: 50, fontSize: 16 }}
         >
-          Search
+          {isLoading ? 'Loading...' : 'Search'}
         </Button>
       </Stack>
     </Stack>

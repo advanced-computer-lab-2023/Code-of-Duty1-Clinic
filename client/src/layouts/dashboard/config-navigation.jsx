@@ -30,7 +30,7 @@ const navConfigByRole = {
     },
     {
       title: 'Medical History',
-      path: `/medical-history/${localStorage.getItem('userID')}`,
+      path: `/medical-history/`,
       icon: icon('ic_history')
     },
     {

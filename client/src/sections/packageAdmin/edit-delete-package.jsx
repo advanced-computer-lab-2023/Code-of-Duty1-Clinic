@@ -13,7 +13,8 @@ import {
   TextField,
   DialogActions,
   Button,
-  Snackbar
+  Snackbar,
+  CircularProgress
 } from '@mui/material';
 import PlanCard from './plan-card';
 
@@ -30,7 +31,7 @@ export default function EditDeletePackage({ setMessage, setOpenSnackbar }) {
   const [selectedPackage, setPackage] = useState({});
   const [openModal, setOpenModal] = useState(false);
 
-  if (isLoading) return 'Loading...';
+  if (isLoading) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
   if (error) {
     setMessage(err.response?.data.message || 'Network error');
     setOpenSnackbar(true);

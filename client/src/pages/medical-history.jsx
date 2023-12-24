@@ -5,6 +5,8 @@ import MedicalHistoryView from 'src/sections/upload/Medical-History/view/medical
 import { useParams } from 'react-router-dom';
 const MedicalHistoryPage = () => {
   let { patientID } = useParams();
+  patientID = patientID ? patientID : localStorage.getItem('userID');
+
   return (
     <>
       <Helmet>
@@ -12,9 +14,6 @@ const MedicalHistoryPage = () => {
       </Helmet>
 
       <div style={containerStyle}>
-
-
-
         <MedicalHistoryView patientID={patientID} />
       </div>
     </>

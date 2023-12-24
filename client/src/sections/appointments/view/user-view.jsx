@@ -1,4 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useQuery, useMutation } from 'react-query';
+
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -23,7 +29,6 @@ import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
 
 export default function AppointmentsView() {
-  const [appointments, setAppointments] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -42,26 +47,31 @@ export default function AppointmentsView() {
 
   const [anchorEl, setAnchorEl] = useState(null);
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
+  const {
+    isLoading: isLoadingData,
+    error,
+    data: appointments,
+    refetch
+  } = useQuery(
+    `Appointments`,
+    async () => {
       const params = {};
 
       if (filterValues.startDate) params.startDate = new Date(filterValues.startDate).toISOString();
       if (filterValues.endDate) params.endDate = new Date(filterValues.endDate).toISOString();
       if (filterValues.status) params.status = filterValues.status;
 
-      const response = axiosInstance
-        .get('/me/appointments', { params })
-        .then((res) => {
-          setAppointments(res.data.result || []);
-        })
-        .catch((err) => {
-          setOpenSnackbar(true);
-          setMessage(err.response?.data.message || 'Network error');
-        });
-    };
+      const appointments = await axiosInstance.get('/me/appointments', { params }).then((res) => res.data.result || []);
 
-    fetchAppointments();
+      return appointments;
+    },
+    {
+      refetchOnWindowFocus: false
+    }
+  );
+
+  useEffect(() => {
+    refetch();
   }, [filterValues]);
 
   const handleSort = (event, id) => {
@@ -88,33 +98,6 @@ export default function AppointmentsView() {
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const handleGetUpcomingAppointments = async () => {
-    try {
-      const response = await axiosInstance.get('/me/appointments?status=Upcoming');
-      setAppointments(response.data.result);
-    } catch (error) {
-      console.error('Error fetching upcoming appointments:', error);
-    }
-  };
-
-  const handleGetPastAppointments = async () => {
-    try {
-      const response = await axiosInstance.get('/me/appointments?status=Completed');
-      setAppointments(response.data.result);
-    } catch (error) {
-      console.error('Error fetching past appointments:', error);
-    }
-  };
-
-  const handleGetAllAppointments = async () => {
-    try {
-      const response = await axiosInstance.get('/me/appointments');
-      setAppointments(response.data.result);
-    } catch (error) {
-      console.error('Error fetching all appointments:', error);
-    }
-  };
-
   const handleFilterButtonClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -136,37 +119,13 @@ export default function AppointmentsView() {
     setOpenSnackbar(false);
   };
 
+  if (isLoadingData) return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+  if (error) return <Typography>An error has occurred: {error.response?.data.message || 'Network error'}</Typography>;
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Appointments</Typography>
-
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={handleGetAllAppointments}
-        >
-          Get All Appointments
-        </Button>
-
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={handleGetPastAppointments}
-        >
-          Get Past Appointments
-        </Button>
-
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={handleGetUpcomingAppointments}
-        >
-          Get Upcoming Appointments
-        </Button>
 
         <Button variant="contained" color="primary" onClick={handleFilterButtonClick}>
           Filter

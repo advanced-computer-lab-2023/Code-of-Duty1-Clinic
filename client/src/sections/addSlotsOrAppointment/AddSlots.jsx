@@ -131,9 +131,10 @@ const AddSlotsForm = () => {
           </form>
 
           <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             open={open}
-            autoHideDuration={6000}
-            onClose={handleClose}
+            autoHideDuration={5000}
+            onClose={handleCloseSnackBar}
             message={message}
             action={
               <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>

@@ -5,8 +5,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
-import { useAuthContext } from 'src/contexts/userContext';
-
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const AppointmentsPage = lazy(() => import('src/pages/appointments'));
@@ -57,7 +55,7 @@ export default function Router() {
       { path: 'appointments', element: <AppointmentsPage /> },
       { path: 'chat', element: <ViewChat /> },
       { path: 'requests', element: <RequestsPage /> },
-      { path: '/medical-history/:patientID', element: <MedicalHistoryPage /> },
+      { path: '/medical-history', element: <MedicalHistoryPage /> },
       { path: 'health-record', element: <HealthRecordPage /> },
       { path: 'prescription', element: <PrescriptionsPage /> },
       { path: 'packages', element: <PackagePage /> },
