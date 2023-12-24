@@ -38,21 +38,25 @@ const PatientsView = () => {
   const classes = useStyles();
   const [activeTab, setActiveTab] = useState('doctors');
   const [Packages, setPackages] = useState([]);
-
+  // const {
+  //   isLoading,
+  //   error,
+  //   data: weeklySlots
+  // } = useQuery(`packages`, () => axiosInstance.get(`/me/weeklySlots`).then((res) => res.data.result), {
+  //   refetchOnWindowFocus: false
+  // });
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
   };
-
+  const fetchPackages = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/payment/prices');
+      setPackages(response.data);
+    } catch (error) {
+      console.error('Error fetching packages:', error);
+    }
+  };
   useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/payment/prices');
-        setPackages(response.data);
-      } catch (error) {
-        console.error('Error fetching packages:', error);
-      }
-    };
-
     fetchPackages();
   }, []);
 

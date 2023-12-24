@@ -26,12 +26,10 @@ export default function AppView() {
     fetchWallet();
   }, []);
 
-  console.log(wallet);
-
   return (
     <Container maxWidth="xl">
-      <Typography variant="h4" sx={{ mb: 5 }}>
-        Hi, Welcome back 👋
+      <Typography variant="h4" sx={{ mb: 3 }}>
+        Welcome back 👋
       </Typography>
 
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -39,7 +37,7 @@ export default function AppView() {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={4}>
           <AppWidgetSummary
             title="Weekly Sales"
             total={7100}
@@ -48,7 +46,7 @@ export default function AppView() {
           />
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={4}>
           <AppWidgetSummary
             title="New Users"
             total={1331}
@@ -57,21 +55,12 @@ export default function AppView() {
           />
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={4}>
           <AppWidgetSummary
             title="Item Orders"
             total={115}
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Bug Reports"
-            total={8}
-            color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
           />
         </Grid>
 
