@@ -243,7 +243,7 @@ export default function CartComponent() {
   };
   return (
     <>
-      <Tooltip title="Go to Medicine">
+      {/* <Tooltip title="Go to Medicine">
         <IconButton
           onClick={handleNavigateToMedicine}
           sx={{
@@ -255,7 +255,7 @@ export default function CartComponent() {
         >
           <ArrowBackIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
       <Table
         sx={{
           border: '1px solid #ddd',

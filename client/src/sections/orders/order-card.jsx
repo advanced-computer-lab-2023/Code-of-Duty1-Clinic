@@ -140,13 +140,15 @@ export default function OrderCard({ order, onCancelOrder, onChangeOrderStatus })
               </Stack>
             </CardContent>
             <CardActions>
-              <Button size="small">Help</Button>
-              <Button size="small" onClick={handleOpenModal}>
+              <Button size="small" variant="outlined">
+                Help
+              </Button>
+              <Button size="small" onClick={handleOpenModal} variant="contained">
                 Details
               </Button>
-              {status !== 'Cancelled' && user === 'Patient' && (
+              {status !== 'Cancelled' && user === 'Patient' && status != 'Delivered' && (
                 <React.Fragment>
-                  <Button size="small" onClick={handleOpenCancelConfirmation}>
+                  <Button size="small" onClick={handleOpenCancelConfirmation} variant="outlined">
                     Cancel
                   </Button>
                   <Dialog open={isCancelConfirmationOpen} onClose={handleCloseCancelConfirmation}>
@@ -159,7 +161,7 @@ export default function OrderCard({ order, onCancelOrder, onChangeOrderStatus })
                 </React.Fragment>
               )}
               {status !== 'Cancelled' && user === 'Pharmacist' && (
-                <Button size="small" onClick={handleOpenChangeStatusModal}>
+                <Button size="small" onClick={handleOpenChangeStatusModal} variant="outlined">
                   Change Order State
                 </Button>
               )}
@@ -174,15 +176,47 @@ export default function OrderCard({ order, onCancelOrder, onChangeOrderStatus })
         aria-labelledby="order-details-modal"
         aria-describedby="order-details-description"
       >
-        <OrderDetails order={order} onCloseModal={handleCloseModal}></OrderDetails>
+        <OrderDetails order={order} onCLoseModal={handleCloseModal}></OrderDetails>
       </Modal>
       <Dialog open={isChangeStatusModalOpen} onClose={handleCloseChangeStatusModal}>
         <DialogTitle>Choose the new status</DialogTitle>
         <DialogActions>
-          <Button onClick={() => onChangeOrderStatus('Cancelled')}>Cancel</Button>
-          <Button onClick={() => onChangeOrderStatus('Processing')}>Processing</Button>
-          <Button onClick={() => onChangeOrderStatus('Shipped')}>Shipped</Button>
-          <Button onClick={() => onChangeOrderStatus('Delivered')}>Delivered</Button>
+          <Button
+            onClick={() => {
+              onChangeOrderStatus('Cancelled');
+              handleCloseChangeStatusModal(); // Close the modal after handling the status change
+            }}
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              onChangeOrderStatus('Processing');
+              handleCloseChangeStatusModal();
+            }}
+            variant="outlined"
+          >
+            Processing
+          </Button>
+          <Button
+            onClick={() => {
+              onChangeOrderStatus('Shipped');
+              handleCloseChangeStatusModal();
+            }}
+            variant="outlined"
+          >
+            Shipped
+          </Button>
+          <Button
+            onClick={() => {
+              onChangeOrderStatus('Delivered');
+              handleCloseChangeStatusModal();
+            }}
+            variant="outlined"
+          >
+            Delivered
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
